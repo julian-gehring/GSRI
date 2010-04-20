@@ -1,0 +1,215 @@
+%% LyX 1.6.4 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+
+\usepackage{float}
+\usepackage{url}
+\usepackage[unicode=true, pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=false]
+ {hyperref}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+%\VignetteIndexEntry{Introduction on how to use the Gene Set Regulation Index (GSRI) package to estimate the number of regulated genes in a gene set}
+%\VignettePackage{gsri}
+
+\makeatother
+
+\begin{document}
+
+\title{Gene Set Regulation Index (GSRI)}
+
+
+\author{Julian Gehring, Clemens Kreutz, Kilian Bartholomé}
+\maketitle
+\begin{abstract}
+This document gives an introduction in how to use the \textsf{GSRI}
+package. It estimates the number of significantly regulated genes
+in gene sets using the Gene Set Regulation Index (GSRI).
+\end{abstract}
+
+\section{Introduction}
+
+The \textsf{GSRI} package calculates the number of differentially
+expressed genes in a gene set. The method does not require a cut-off
+value for the distinction between regulated and unregulated genes.
+The approach is based on the fact that p-values obtained from a statistical
+test are uniformly distributed under the null hypothesis and accumulated
+around zero for the alternative hypothesis. Estimates of the method
+include the number and percentage of regulated genes as well as the
+corresponding standard errors, and the Gene Set Regulation Index (GSRI).
+The GSRI is the 5\% quantile of the distribution of the estimated
+number of differentially expressed genes obtained from bootstrapping
+the group samples. It indicates, that with a probability of 95\% more
+than GSRI genes in the gene set are differentially expressed. Utilizing
+the 5\% quantile instead of the expectation introduces a bias, but
+improves the precision, i.e. reduces the variability of the estimates
+and thereby improves the performance for a ranking of gene sets. This
+index can also be employed to test the hypothesis whether at least
+one gene in a set is regulated and to compare and rank the regulation
+of different gene sets. For details on the method, application to
+biological data sets and comparison to existing methods, see \cite{bartholom_estimation_2009}.
+
+<<echo=false>>=
+options(width=70)
+@
+
+
+\section{Calculate GSRI for a single gene set}
+
+First have a look at how to compute the GSRI for a single gene set.
+
+Simulate a gene set with $n=100$ genes with 30 regulated ones and
+$m=40$ samples (20 controls and 20 treatments). The expression data
+is stored in \textsf{expdata}, the phenotypes of the samples in \textsf{phenotype}\emph{.}
+
+<<simulateData>>=
+set.seed(0)
+data <- matrix(rnorm(4000, mean=0), nrow=100, ncol=40)
+data[1:30,1:20] <- rnorm(600,mean=1)
+phenotype <- factor(rep(c(0,1), each=20))
+geneSetName <- "Test Gene Set"
+@
+
+Calculate the gene set regulation index. Plot the results and omit
+writing the results to disc. 
+
+\begin{center}%
+\begin{figure}[H]
+<<gsri, fig=TRUE, echo=TRUE>>=
+library(GSRI)
+res <-gsri(data, phenotype, geneSetName, plotResults=TRUE, writeResults=FALSE)
+@
+
+
+\caption{Result figure from the \textsf{gsri} function. The plot shows the
+cumulative distribution of the p-values of the gene set. The black
+line indicates the estimate for the uniform distribution consistent
+with the null hypothesis. The estimated percentage of regulated genes
+and the GSRI are indicated in red and green.}
+
+\end{figure}
+\end{center}
+
+<<gsriOutput>>=
+print(res)
+@
+
+In this case the analysis reports \Sexpr{floor(res$numRegGenes)}
+regulated genes and a GSRI of \Sexpr{round(res$gsri,2)}.
+
+You can also include the Grenander correction for the distribution
+of p-values from the \textsf{fdrtool} package. It uses the assumption
+about the concave shape of the cumulative density distribution. Using
+the Grenander estimate reduces the variance, i.e. makes the approach
+more stable especially for small gene sets. On the downside the number
+of significant genes is overestimated for few regulated genes.
+
+\begin{center}
+
+<<gsriGrenander, fig=TRUE, echo=TRUE>>=
+res2 <-gsri(data, phenotype, "Test Gene Set with Grenander", useGrenander=TRUE)
+res2$numRegGenes
+@
+
+\end{center}
+
+
+\section{Apply own statistical tests}
+
+In the example shown above a t-test was used as a statistical test
+to compute the p-values. Groups were defined by \textsf{phenotype}.
+In the GSRI package itself two statistical tests are implemented.
+It provides a t-test and an F-test from the \textsf{genefilter} package,
+with the t-test as default. These tests can be chosen with the \textsf{test}\emph{
+}argument, with character strings \textsf{\textit{{}``ttest''}}
+and \textsf{\textit{{}``ftest''}} respectively.
+
+Depending on your experimental design it may be appropriate to choose
+other tests. These can be easily used with the \textsf{GSRI} package.
+
+Your function has to accept the inputs \textsf{data} (as matrix) and
+\textsf{phenotype} (as factor) like they were passed to the \textsf{gsri}
+routine. The optional argument \textsf{testArgs} can contain additional
+parameters. It will only be passed to your test function if it is
+specified. The function has to return a vector of p-values, one for
+each gene.\\
+An example for a user defined statistical test is shown here with
+the\textsf{ lm} function from the \textsf{stats} package. The \textsf{statFcn}
+function calculates a p-value for a single row of the data set, i.e.
+for a single gene.
+
+<<statFcn>>=
+statFcn <- function(d, p)  {
+m <- lm(d ~ p)
+pval <- summary(m)$coefficients[2,4]
+}
+@
+
+The user defined test function has to apply a test statistics on the
+whole data set. The following wrapper function can be used as a templete
+for test functions accepting only data vectors as an input. The \textsf{apply}
+function implements the loop over all genes.
+
+<<testFcn>>=
+testFcn <- function(data, phenotype)  {
+pvals <- apply(data, 1, statFcn, phenotype)
+return(pvals)
+}
+@
+
+The function \textsf{testFcn}\emph{ }is simply passed to the \textsf{gsri}\emph{
+}routine.
+
+<<gsriOwnTest>>=
+res3 <-gsri(data, phenotype, geneSetName, test=testFcn, plotResults=FALSE, nBootstraps=20)
+@
+
+
+\section{Read data from files for multiple gene sets}
+
+With the \textsf{gsriFromFile}\emph{ }function all data can be directly
+read from disc without prior importing and compute results for a number
+of gene sets.. In this example \textsf{\textit{data.gct}} contains
+the expression data, \textsf{\textit{phenotype.cls}} the phenotypes
+and \textsf{\textit{geneSets.gmt}}\emph{ }a list of possible gene
+sets. Calculation will be run for all specified gene sets.
+
+The files are located in the same directory as this vignette. The
+\textsf{system.file} function is used to construct valid paths independent
+of your current working directory. Please note that this is not mandatory
+for your own analysis. 
+
+These files have been created for demonstration and do not represent
+real biological data. Also note that real data will contain more genes
+and larger gene sets. To get more information on the file formats
+you may have a look at these files located in the same directory as
+this vignette or at \url{http://www.broadinstitute.org/cancer/software/gsea/wiki/index.php/Data_formats}.
+To obtain experimental data sets, see e.g. \url{http://www.broadinstitute.org/gsea/}.
+
+The four annotated pathways contain 7, 0, 4 and 2 regulated genes.
+Compare this with the estimated number of regulated genes.
+
+<<gsriFromFile>>=
+dataFileName <- system.file("extdata", "data.gct", package="GSRI")
+phenotypeFileName <- system.file("extdata", "phenotype.cls", package="GSRI")
+geneSetFileName <- system.file("extdata", "geneSets.gmt", package="GSRI")
+res4 <- gsriFromFile(dataFileName, phenotypeFileName, geneSetFileName)
+res4$numRegGenes
+@
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+
+
+\section*{\newpage{}Session info}
+
+<<sessionInfo>>=
+sessionInfo()
+@
+\end{document}

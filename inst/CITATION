@@ -1,0 +1,15 @@
+desc <- packageDescription("GSRI")
+year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", desc$Date)
+vers <- paste("R package version", desc$Version)
+
+citEntry(entry="Manual",
+title = "Gene Set Regulation Index (GSRI)",
+author = personList(as.person("Kilian Bartholome"),
+as.person("Julian Gehring")),
+year = year,
+note = vers,
+textVersion =
+paste("Kilian Bartholome, Julian Gehring",
+" (", year, "): Gene Set Regulation Index (GSRI). ",
+"Institute of Physics and Freiburg Center for Data Analysis and Modeling, 
+University of Freiburg, Freiburg, Germany. ", vers, ".", sep=""))

@@ -1,0 +1,6 @@
+importFrom(boot, boot)
+importFrom(graphics, lines, text)
+importFrom(stats, ecdf, quantile, sd)
+importFrom(utils, read.table, write.table)
+importFrom(genefilter, rowttests, rowFtests)
+export(gsri, gsriFromFile)
