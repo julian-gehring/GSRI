@@ -31,7 +31,7 @@ is regulated and to compare and rank the regulation of different gene sets, see
 Bartholomé et al. 2009.
 }
 \author{
-Kilian Bartholomé, Julian Gehring
+Kilian Bartholome, Julian Gehring
 
 Maintainer: Julian Gehring <julian.gehring@fdm.uni-freiburg.de>
 }
