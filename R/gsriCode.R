@@ -16,9 +16,8 @@ function (pvals, useGrenander)
       w <- diff(c(0, cdf))/tp
       cdf <- rep.int(cdf, tp)
     }
-    res <- list()
-    res$sortedPvals <- pvals
-    res$cdf <- cdf - cor
+    cdf <- cdf - cor
+    res <- list(sortedPvals=pvals, cdf=cdf)
     return(res)
 }
 getPvalues <-
@@ -49,7 +48,7 @@ function (x, y)
 gsri <-
 function (data, phenotype, geneSetName, useGrenander = FALSE, 
     plotResults = TRUE, writeResults = FALSE, nBootstraps = 100, 
-    test = "ttest", testArgs = NULL, alpha = 0.05) 
+    test = "ttest", testArgs = NULL, alpha = 0.05, prec = 4) 
 {
     nSamples <- dim(data)[2]
     if (!is.function(test) && !is.character(test)) 
@@ -61,8 +60,7 @@ function (data, phenotype, geneSetName, useGrenander = FALSE,
         stop("Sizes of 'data' and 'phenotype' do not match.")
     if (!is.factor(phenotype)) 
         phenotype <- factor(phenotype)
-    transposedData <- t(data)
-    b <- boot(transposedData, gsriBoot, nBootstraps, phenotype = phenotype, 
+    b <- boot(t(data), gsriBoot, nBootstraps, phenotype = phenotype, 
         useGrenander = useGrenander, test = test, testArgs = testArgs)
     p <- max(b$t0[[1]], 0)
     psd <- sd(b$t[, 1])
@@ -75,40 +73,13 @@ function (data, phenotype, geneSetName, useGrenander = FALSE,
     res <- getCDF(pvals, useGrenander)
     numRegGenes <- p * nGenes
     numRegGenesSd <- psd * nGenes
-    if (plotResults == TRUE) {
-        plot(res$sortedPvals, res$cdf, xlab = "p-values", ylab = "CDF(p)", 
-            main = geneSetName, xlim = c(0, 1), ylim = c(0, 1), 
-            pch = 20)
-        lines(c(0, 1), c(p, p), col = "red", lty = 2)
-        lines(c(0, 1), c(gsri[1], gsri[1]), col = "green", lty = 2)
-        text(1, p, sprintf("%s=%.2f", "%RegGene", p), cex = 0.8, 
-            adj = c(1, 0))
-        text(1, gsri[1], sprintf("%s=%.2f", "GSRI", gsri[1]), 
-            cex = 0.8, adj = c(1, 1))
-        xfit <- c(0, 1)
-        yfit <- p + (1 - p) * xfit
-        lines(xfit, yfit)
-    }
-    if (writeResults == TRUE) {
-        xfit <- res$sortedPvals
-        yfit <- p + (1 - p) * xfit
-        dataFileName <- paste("GeneSet_", geneSetName, "_data.txt", 
-            sep = "")
-        dataResults <- list()
-        dataResults$sorted_pvals <- signif(res$sortedPvals, digits = 4)
-        dataResults$cdf <- signif(res$cdf, digits = 4)
-        dataResults$fit <- signif(yfit, digits = 4)
-        write.table(dataResults, file = dataFileName, quote = FALSE, 
-            row.names = FALSE, sep = "\t")
-    }
-    result <- list()
-    result$geneSet <- geneSetName
-    result$percRegGenes <- p
-    result$percRegGenesSd <- psd
-    result$numRegGenes <- numRegGenes
-    result$numRegGenesSd <- numRegGenesSd
-    result$gsri <- gsri
-    result$nGenes <- nGenes
+    if (plotResults == TRUE)
+      plotResults(res, geneSetName, p, gsri)
+    if (writeResults == TRUE)
+      writeResults(res, geneSetName, p, prec)
+    result <- list(geneSet=geneSetName, percRegGenes=p, percRegGenesSd=psd,
+        numRegGenes=numRegGenes, numRegGenesSd=numRegGenesSd, gsri=gsri,
+        nGenes=nGenes)
     return(result)
 }
 gsriBoot <-
@@ -141,9 +112,8 @@ gsriFromFile <-
 function (dataFileName, phenotypeFileName, geneSetFileName, useGrenander = FALSE, 
     plotResults = FALSE, writeResults = FALSE, writeSummary = FALSE, 
     minGeneSetSize = 10, nBootstraps = 100, test = "ttest", testArgs = NULL, 
-    alpha = 0.05, verbose = TRUE) 
+    alpha = 0.05, verbose = TRUE, prec = 4) 
 {
-    prec <- 4
     if (file.exists(dataFileName) == FALSE) 
         stop(sprintf("%s '%s' %s", "File", dataFileName, "cannot be accessed."))
     if (file.exists(phenotypeFileName) == FALSE) 
@@ -180,7 +150,7 @@ function (dataFileName, phenotypeFileName, geneSetFileName, useGrenander = FALSE
             gsriRes <- gsri(geneSet$data, phenotype, geneSetName, 
                 useGrenander = useGrenander, plotResults = plotResults, 
                 writeResults = writeResults, test = test, testArgs = testArgs, 
-                alpha = alpha, nBootstraps = nBootstraps)
+                alpha = alpha, nBootstraps = nBootstraps, prec = prec)
             res$geneSet[c] <- gsriRes$geneSet
             res$percRegGenes[c] <- signif(gsriRes$percRegGenes, 
                 digits = prec)
@@ -247,4 +217,29 @@ function (x, y)
     tx <- t(x)
     b <- as.numeric((tx %*% y)/(tx %*% x))
     return(b)
+}
+
+plotResults <- function(res, geneSetName, p, gsri)  {
+  plot(res$sortedPvals, res$cdf, xlab = "p-values", ylab = "CDF(p)", 
+       main = geneSetName, xlim = c(0, 1), ylim = c(0, 1), pch = 20)
+  lines(c(0, 1), c(p, p), col = "red", lty = 2)
+  lines(c(0, 1), c(gsri[1], gsri[1]), col = "green", lty = 2)
+  text(1, p, sprintf("%s=%.2f", "%RegGene", p), cex = 0.8, 
+       adj = c(1, 0))
+  text(1, gsri[1], sprintf("%s=%.2f", "GSRI", gsri[1]), 
+       cex = 0.8, adj = c(1, 1))
+  xfit <- c(0, 1)
+  yfit <- p + (1 - p) * xfit
+  lines(xfit, yfit)
+}
+
+writeResults <- function(res, geneSetName, p, prec)  {
+  xfit <- res$sortedPvals
+  yfit <- p + (1 - p) * xfit
+  dataFileName <- paste("GeneSet_", geneSetName, "_data.txt", sep = "")
+  dataResults <- list(sorted_pvals=signif(res$sortedPvals, digits = prec),
+                      cdf=signif(res$cdf, digits = prec),
+                      fit=signif(yfit, digits = prec))
+  write.table(dataResults, file = dataFileName, quote = FALSE, 
+              row.names = FALSE, sep = "\t")
 }

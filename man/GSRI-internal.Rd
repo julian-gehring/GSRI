@@ -8,7 +8,9 @@
 \alias{loadCls}
 \alias{loadGct}
 \alias{multiStat}
+\alias{plotResults}
 \alias{slopeFast}
+\alias{writeResults}
 
 \description{Internal GSRI functions}
 
@@ -20,9 +22,14 @@ gsriBoot(inputData, d, phenotype, useGrenander, test, testArgs)
 loadCls(fileName)
 loadGct(fileName)
 multiStat(data, phenotype, test, testArgs)
+plotResults(res, geneSetName, p, gsri)
 slopeFast(x, y)
+writeResults(res, geneSetName, p, prec)
 }
-\author{Kilian Bartholomé, Julian Gehring}
+
+\author{
+  Kilian Bartholomé, Julian Gehring
+}
 
 \details{
   Internal functions of the GSRI package.
@@ -30,25 +37,25 @@ slopeFast(x, y)
 }
 
 \references{
-Functions of the following packages are used in this package:
+  Functions of the following packages are used in this package:
 
-Korbinian Strimmer (2009).
-fdrtool: Estimation and Control of (Local) False Discovery Rates.
-R package version 1.2.6.
-\url{http://CRAN.R-project.org/package=fdrtool}
+  Korbinian Strimmer (2009).
+  fdrtool: Estimation and Control of (Local) False Discovery Rates.
+  R package version 1.2.6.
+  \url{http://CRAN.R-project.org/package=fdrtool}
 
-R. Gentleman, V. Carey, W. Huber and F. Hahne.
-genefilter: methods for filtering genes from microarray experiments.
-R package version 1.28.2.
+  R. Gentleman, V. Carey, W. Huber and F. Hahne.
+  genefilter: methods for filtering genes from microarray experiments.
+  R package version 1.28.2.
 }
-
 
 \seealso{
-\code{\link{gsri}}
+  \code{\link{gsri}}
 
-\code{\link{gsriFromFile}}
+  \code{\link{gsriFromFile}}
 
-\code{\link{GSRI}}
+  \code{\link{GSRI}}
 }
+
 \keyword{internal}
 
