@@ -1,8 +1,8 @@
 Package: GSRI
 Type: Package
 Title: Gene Set Regulation Index
-Version: 1.1.1
-Date: 2010-04-27
+Version: 1.1.2
+Date: 2010-05-15
 Author: Kilian Bartholomé, Julian Gehring
 Maintainer: Julian Gehring <julian.gehring@fdm.uni-freiburg.de>
 Imports: boot, graphics, stats, utils, genefilter
@@ -11,4 +11,5 @@ Description: Estimates the number of differentially expressed genes in a gene se
 License: GPL-2
 LazyLoad: yes
 Encoding: UTF-8
+URL: http://www.fdmold.uni-freiburg.de/~jgehring/
 biocViews: Microarray, Transcription, DifferentialExpression, Genetics
