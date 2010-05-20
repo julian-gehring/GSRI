@@ -1,7 +1,10 @@
 \name{GSRI-package}
+
 \alias{GSRI-package}
 \alias{GSRI}
+
 \docType{package}
+
 \title{Gene Set Regulation Index (GSRI)}
 
 \description{
@@ -15,8 +18,8 @@
   \tabular{ll}{
     Package: \tab GSRI\cr
     Type: \tab Package\cr
-    Version: \tab 1.1.1\cr
-    Date: \tab 2010-04-27\cr
+    Version: \tab 1.1.4\cr
+    Date: \tab 2010-05-20\cr
     License: \tab GPL-2\cr
     LazyLoad: \tab yes\cr
   }
@@ -33,18 +36,18 @@
   a probability of 95\% more than GSRI genes in the gene set are
   differentially expressed. This index can also be employed to test the
   hypothesis whether at least one gene in a set is regulated and to
-  compare and rank the regulation of different gene sets, see Bartholomé
+  compare and rank the regulation of different gene sets, see Bartholome
   et al. 2009.
 }
 
 \author{
-  Kilian Bartholomé, Julian Gehring
+  Kilian Bartholome, Julian Gehring
 
   Maintainer: Julian Gehring <julian.gehring@fdm.uni-freiburg.de>
 }
 
 \references{
-  Kilian Bartholomé, Clemens Kreutz, and Jens Timmer:
+  Kilian Bartholome, Clemens Kreutz, and Jens Timmer:
   Estimation of gene induction enables a relevance-based ranking of gene sets,
   Journal of Computational Biology: A Journal of Computational Molecular Cell 
   Biology 16, no. 7 (July 2009): 959-967.

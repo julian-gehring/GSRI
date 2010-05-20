@@ -94,7 +94,7 @@ gsri(data, phenotype, geneSetName, useGrenander = FALSE, plotResults =
 }
 
 \author{
-  Kilian Bartholomé, Julian Gehring
+  Kilian Bartholome, Julian Gehring
 }
 
 \note{
@@ -124,9 +124,9 @@ gsri(data, phenotype, geneSetName, useGrenander = FALSE, plotResults =
 }
 
 \seealso{
-\code{\link{gsriFromFile}}
+  \code{\link{gsriFromFile}}
 
-\code{\link{GSRI}}
+  \code{\link{GSRI}}
 }
 
 \examples{
@@ -144,3 +144,4 @@ res <- gsri(data, phenotype, geneSetName)
 }
 
 \keyword{distribution}
+\keyword{htest}

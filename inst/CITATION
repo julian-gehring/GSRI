@@ -12,4 +12,4 @@ textVersion =
 paste("Kilian Bartholome, Julian Gehring",
 " (", year, "): Gene Set Regulation Index (GSRI). ",
 "Institute of Physics and Freiburg Center for Data Analysis and Modeling, 
-University of Freiburg, Freiburg, Germany. ", vers, ".", sep=""))
+University of Freiburg, Germany. ", vers, ".", sep=""))

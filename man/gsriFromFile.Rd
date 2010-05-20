@@ -106,7 +106,7 @@ gsriFromFile(dataFileName, phenotypeFileName, geneSetFileName,
 }
 
 \author{
-  Kilian Bartholomé, Julian Gehring
+  Kilian Bartholome, Julian Gehring
 }
 
 \note{
@@ -142,9 +142,9 @@ gsriFromFile(dataFileName, phenotypeFileName, geneSetFileName,
 }
 
 \seealso{
-\code{\link{gsri}}
+  \code{\link{gsri}}
 
-\code{\link{GSRI}}
+  \code{\link{GSRI}}
 }
 
 \examples{
@@ -158,3 +158,4 @@ res <- gsriFromFile(dataFileName, phenotypeFileName, geneSetFileName)
 }
 
 \keyword{distribution}
+\keyword{htest}

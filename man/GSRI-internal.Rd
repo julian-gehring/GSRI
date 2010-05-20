@@ -1,5 +1,7 @@
 \name{gsri-internal}
+
 \title{Internal GSRI functions}
+
 \alias{gsri-internal}
 \alias{getCDF}
 \alias{getPvalues}
@@ -28,7 +30,7 @@ writeResults(res, geneSetName, p, prec)
 }
 
 \author{
-  Kilian Bartholomé, Julian Gehring
+  Kilian Bartholome, Julian Gehring
 }
 
 \details{
@@ -58,4 +60,3 @@ writeResults(res, geneSetName, p, prec)
 }
 
 \keyword{internal}
-
