@@ -64,10 +64,10 @@ function (data, phenotype, geneSetName, useGrenander = FALSE,
     b <- boot::boot(t(data), GSRI:::gsriBoot, nBootstraps, phenotype = phenotype, 
         useGrenander = useGrenander, test = test, testArgs = testArgs)
     p <- max(b$t0[[1]], 0)
-    psd <- sd(b$t[, 1])
+    psd <- stats::sd(b$t[, 1])
     bias <- apply(b$t, 2, mean) - b$t0
     pt <- b$t - bias
-    gsri <- max(quantile(pt, alpha, na.rm = TRUE), 0)
+    gsri <- max(stats::quantile(pt, alpha, na.rm = TRUE), 0)
     pvals <- GSRI:::getPvalues(data, 1:nSamples, phenotype, test, 
         testArgs)
     nGenes <- length(pvals)
@@ -190,7 +190,7 @@ function (fileName)
     numCols <- length(colNames)
     colClasses <- c("character", "character", rep("numeric", 
         numCols))
-    data <- read.table(fileName, header = TRUE, skip = 2, row.names = 1, 
+    data <- utils::read.table(fileName, header = TRUE, skip = 2, row.names = 1, 
         na.strings = c("na", ""), sep = "\t", check.names = TRUE, 
         colClasses = colClasses, quote = "", as.is = TRUE)
     m <- as.matrix(data[, -1])
@@ -248,6 +248,6 @@ function (res, geneSetName, p, prec)
     dataResults <- list(sorted_pvals = signif(res$sortedPvals, 
         prec), cdf = signif(res$cdf, prec), fit = signif(yfit, 
         prec))
-    write.table(dataResults, file = dataFileName, quote = FALSE, 
+    utils::write.table(dataResults, file = dataFileName, quote = FALSE, 
         row.names = FALSE, sep = "\t")
 }
