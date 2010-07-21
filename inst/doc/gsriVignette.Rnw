@@ -1,4 +1,4 @@
-%% LyX 1.6.4 created this file.  For more info, see http://www.lyx.org/.
+%% LyX 1.6.5 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[english]{article}
 \usepackage[T1]{fontenc}
@@ -174,7 +174,7 @@ res3 <-gsri(data, phenotype, geneSetName, test=testFcn, plotResults=FALSE, nBoot
 
 With the \textsf{gsriFromFile}\emph{ }function all data can be directly
 read from disc without prior importing and compute results for a number
-of gene sets.. In this example \textsf{\textit{data.gct}} contains
+of gene sets. In this example \textsf{\textit{data.gct}} contains
 the expression data, \textsf{\textit{phenotype.cls}} the phenotypes
 and \textsf{\textit{geneSets.gmt}}\emph{ }a list of possible gene
 sets. Calculation will be run for all specified gene sets.
@@ -207,9 +207,12 @@ res4$numRegGenes
 
 
 
-\section*{\newpage{}Session info}
+\section*{\newpage{}}
 
-<<sessionInfo>>=
-sessionInfo()
+
+\section*{Session info}
+
+<<sessionInfo, results=tex, echo=FALSE>>=
+toLatex(sessionInfo(), locale=FALSE)
 @
 \end{document}
