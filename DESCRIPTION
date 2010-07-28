@@ -1,8 +1,8 @@
 Package: GSRI
 Type: Package
 Title: Gene Set Regulation Index
-Version: 1.1.5
-Date: 2010-07-21
+Version: 1.1.6
+Date: 2010-07-28
 Author: Kilian Bartholome, Julian Gehring
 Maintainer: Julian Gehring <julian.gehring@fdm.uni-freiburg.de>
 Imports: boot, graphics, stats, utils, genefilter

@@ -2,7 +2,6 @@ getCDF <-
 function (pvals, useGrenander) 
 {
     nGenes <- length(pvals)
-    cor <- 0.5/nGenes
     ord <- sort.list(pvals, method = "quick", na.last = NA)
     pvals <- pvals[ord]
     uniquePvals <- unique(pvals)
@@ -16,7 +15,7 @@ function (pvals, useGrenander)
         w <- diff(c(0, cdf))/tp
         cdf <- rep.int(cdf, tp)
     }
-    cdf <- cdf - cor
+    cdf <- cdf - 0.5/nGenes
     res <- list(sortedPvals = pvals, cdf = cdf)
     return(res)
 }
@@ -68,10 +67,13 @@ function (data, phenotype, geneSetName, useGrenander = FALSE,
     bias <- apply(b$t, 2, mean) - b$t0
     pt <- b$t - bias
     gsri <- max(stats::quantile(pt, alpha, na.rm = TRUE), 0)
-    pvals <- GSRI:::getPvalues(data, 1:nSamples, phenotype, test, 
-        testArgs)
+    pvals <- GSRI:::getPvalues(data, 1:nSamples, phenotype, test, testArgs)
+    res <- GSRI:::getCDF(pvals, useGrenander=FALSE)
+    if(useGrenander == TRUE)  {
+      res$cdf <- GSRI:::cdfCorrect(res$sortedPval, res$cdf, 1-p)
+      res$cdf <- GSRI:::grenanderInterp(res$sortedPvals, res$cdf)
+    }
     nGenes <- length(pvals)
-    res <- GSRI:::getCDF(pvals, useGrenander)
     numRegGenes <- p * nGenes
     numRegGenesSd <- psd * nGenes
     if (plotResults == TRUE) 
@@ -82,32 +84,6 @@ function (data, phenotype, geneSetName, useGrenander = FALSE,
         numRegGenes = numRegGenes, numRegGenesSd = numRegGenesSd, 
         gsri = gsri, nGenes = nGenes)
     return(result)
-}
-gsriBoot <-
-function (inputData, d, phenotype, useGrenander, test, testArgs) 
-{
-    data <- t(inputData)
-    pvals <- GSRI:::getPvalues(data, d, phenotype, test, testArgs)
-    nValidGenes <- length(pvals)
-    maxIter <- nValidGenes + 2
-    p <- 1
-    restOld <- 0
-    res <- GSRI:::getCDF(pvals, useGrenander)
-    for (nIterate in 1:maxIter) {
-        rest <- nValidGenes - ceiling(p * nValidGenes)
-        rest <- max(c(restOld, rest, 1))
-        rest <- min(nValidGenes - 1, rest)
-        if (restOld == rest) 
-            break
-        x <- res$sortedPvals[rest:nValidGenes] - 1
-        y <- res$cdf[rest:nValidGenes] - 1
-        p <- GSRI:::slopeFast(x, y)
-        restOld <- rest
-        if (is.na(p)) 
-            break
-    }
-    erg <- 1 - p
-    return(erg)
 }
 gsriFromFile <-
 function (dataFileName, phenotypeFileName, geneSetFileName, useGrenander = FALSE, 
@@ -250,4 +226,47 @@ function (res, geneSetName, p, prec)
         prec))
     utils::write.table(dataResults, file = dataFileName, quote = FALSE, 
         row.names = FALSE, sep = "\t")
+}
+gsriBoot <-
+function (data, d, phenotype, useGrenander, test, testArgs) 
+{
+  pvals <- GSRI:::getPvalues(t(data), d, phenotype, test, testArgs)
+  cdf <- GSRI:::getCDF(pvals, useGrenander=FALSE)
+  res <- GSRI:::fitSlope(cdf$sortedPvals-1, cdf$cdf-1)
+  if(useGrenander == TRUE)  {
+    cdf$cdf <- GSRI:::cdfCorrect(cdf$sortedPval, cdf$cdf, 1-res)
+    cdf$cdf <- GSRI:::grenanderInterp(cdf$sortedPvals, cdf$cdf)
+    res <- GSRI:::fitSlope(cdf$sortedPvals-1, cdf$cdf-1)
+  }
+  return(res)
+}
+fitSlope <-
+function(x, y)
+{
+  nValidGenes <- length(x)
+  maxIter <- nValidGenes
+  q <- 1
+  restOld <- 0
+  for (nIterate in 1:maxIter) {
+    rest <- nValidGenes - ceiling(q * nValidGenes)
+    rest <- max(c(restOld, rest, 1))
+    rest <- min(nValidGenes - 1, rest)
+    if (is.na(rest) || restOld == rest) 
+      break
+    ind <- rest:nValidGenes
+    q <- GSRI:::slopeFast(x[ind], y[ind])
+    restOld <- rest
+  }
+  res <- 1 - q
+  return(res)
+}
+cdfCorrect <-
+function(x, y, q0)
+{
+  z <- y
+  indLower <- y < q0*x
+  indUpper <- y > 1 - q0*(1 - x)
+  z[indLower] <- q0*x[indLower]
+  z[indUpper] <- 1 - q0*(1 - x[indUpper])
+  return(z)
 }

@@ -3,6 +3,8 @@
 \title{Internal GSRI functions}
 
 \alias{gsri-internal}
+\alias{cdfCorrect}
+\alias{fitSlope}
 \alias{getCDF}
 \alias{getPvalues}
 \alias{grenanderInterp}
@@ -17,10 +19,12 @@
 \description{Internal GSRI functions}
 
 \usage{
+cdfCorrect(x, y, q0)
+fitSlope(x, y)
 getCDF(pvals, useGrenander)
 getPvalues(data, d, phenotype, test, testArgs)
 grenanderInterp(x, y)
-gsriBoot(inputData, d, phenotype, useGrenander, test, testArgs)
+gsriBoot(data, d, phenotype, useGrenander, test, testArgs)
 loadCls(fileName)
 loadGct(fileName)
 multiStat(data, phenotype, test, testArgs)
