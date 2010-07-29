@@ -31,7 +31,7 @@ function (data, d, phenotype, test, testArgs)
 grenanderInterp <-
 function (x, y) 
 {
-    ll <- fdrtool::gcmlcm(x, y, type = "lcm")
+    ll <- gcmlcm(x, y, type = "lcm")
     pn <- vector("numeric", length(x))
     ind <- x %in% ll$x.knots
     pn[ind] <- ll$y.knots
