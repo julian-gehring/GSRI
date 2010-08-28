@@ -94,8 +94,8 @@ res <-gsri(data, phenotype, geneSetName, plotResults=TRUE, writeResults=FALSE)
 @
 
 
-\caption{Result figure from the \textsf{gsri} function. The plot shows the
-cumulative distribution of the p-values of the gene set. The black
+\caption{Result figure from the \Rfunction{gsri} function. The plot shows
+the cumulative distribution of the p-values of the gene set. The black
 line indicates the estimate for the uniform distribution consistent
 with the null hypothesis. The estimated percentage of regulated genes
 and the GSRI are indicated in red and green.}
