@@ -1,6 +1,6 @@
 %% LyX 1.6.5 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
-\documentclass[english]{article}
+\documentclass[a4paper,english]{article}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{babel}
@@ -9,7 +9,7 @@
 \usepackage{url}
 \usepackage[unicode=true, pdfusetitle,
  bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
- breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=false]
+ breaklinks=true,pdfborder={0 0 0},backref=false,colorlinks=false]
  {hyperref}
 
 \makeatletter
@@ -210,7 +210,8 @@ res4 <- gsriFromFile(dataFileName, phenotypeFileName, geneSetFileName)
 res4$numRegGenes
 @
 
-\appendix
+\newpage{}
+
 \bibliographystyle{plain}
 \bibliography{references}
 
