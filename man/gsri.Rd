@@ -56,7 +56,8 @@ gsri(data, phenotype, geneSetName, useGrenander = FALSE, plotResults =
     resulting GSRI will be the (1-alpha)*100\% confidence interval. If a
     vector of values is given, GSRI will be calculated for all values and
     passed to the output argument. Plots and file outputs will only
-    contain GSRI for the first value in the vector to simplifyoutput.}
+    contain GSRI for the first value in the vector to simplify the
+    output.}
   \item{prec}{Integer specifing the number of signifiant digits to write
     to files. For details see 'signif'.}
 }
