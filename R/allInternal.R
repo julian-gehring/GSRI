@@ -1,7 +1,6 @@
 calcGsri <- function(exprs, groups, name, id, weights,
                      grenander=TRUE, nBoot=100,
-                     test=NULL, testArgs=NULL, alpha=0.05, ...) { ## fix default for 'test'
-
+                     test=NULL, testArgs=NULL, alpha=0.05, ...) {
   
   if(length(id) == 0 || !is.logical(id))
     stop("Gene set has no matches in the expression data.")
@@ -56,9 +55,12 @@ calcGsri <- function(exprs, groups, name, id, weights,
 }
 
 
-multiStat <- function(exprs, groups, id, index, test, testArgs) { ## default args?
+multiStat <- function(exprs, groups, id, index, test, testArgs=NULL) {
 
-  pval <- test(exprs, groups, id, index, testArgs)
+  if(is.null(testArgs))
+    pval <- test(exprs, groups, id, index)
+  else
+    pval <- test(exprs, groups, id, index, testArgs)
   pval <- pval[!is.na(pval)]
   if(length(pval) != sum(id))
     stop("Test statistics must return one p-value for each gene in the gene set.")

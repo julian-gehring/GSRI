@@ -17,7 +17,6 @@ setMethod("gsri",
             parms <- list(weight=weight, nBoot=nBoot, test=test, alpha=alpha,
                           grenander=grenander, testArgs=testArgs)
             
-            
             object <- new("Gsri",
                           result=res$result, cdf=cdf, parms=parms)
             
