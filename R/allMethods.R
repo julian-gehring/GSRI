@@ -68,16 +68,23 @@ setMethod("gsri",
 setMethod("gsri",
           signature("matrix", "factor", "GeneSetCollection"),
           function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
-                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, nCores=NULL, ...) {
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, nCores=NULL,
+                   minSize=0, ...) {
 
             if(is.null(names))
               names <- names(geneSet)
+            nMatches <- sapply(geneSet, function(gs, names) sum(names %in% geneIds(gs)),
+                               rownames(exprs))
+            ind <- nMatches >= minSize
+            geneSet <- geneSet[ind]
+            if(length(geneSet) == 0)
+              stop("No gene set left.")
             res <- les:::mcsapply(geneSet, gsri, exprs=exprs, groups=groups, name=NULL,
                                   weight=weight, nBoot=nBoot, grenander=grenander, test=test,
                                   testArgs=testArgs, alpha=alpha, mc.cores=nCores)
 
             object <- new("Gsri",
-                          result=as.data.frame(do.call(rbind, lapply(res, getGsri)), row.names=names),
+                          result=as.data.frame(do.call(rbind, lapply(res, getGsri)), row.names=names[ind]),
                           cdf=sapply(res, getCdf),
                           parms=getParms(res[[1]])
                           )
@@ -88,11 +95,12 @@ setMethod("gsri",
 setMethod("gsri",
           signature("ExpressionSet", "factor", "GeneSetCollection"),
           function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
-                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, nCores=NULL, ...) {
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, nCores=NULL,
+                   minSize=0, ...) {
 
             object <- gsri(exprs(exprs), groups, geneSet, names=names, weight=weight,
                          nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
-                         grenander=grenander, nCores=nCores)
+                         grenander=grenander, nCores=nCores, minSize=minSize)
             
             return(object)
           })
