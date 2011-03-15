@@ -2,10 +2,8 @@
 \docType{methods}
 
 \alias{plot}
-\alias{plot,Gsri,missing-method}
-\alias{plot,Gsri,character-method}
+\alias{plot,Gsri,ANY-method}
 \alias{plot,Gsri,integer-method}
-\alias{plot,Gsri,numeric-method}
 
 \title{
   Plot the GSRI results

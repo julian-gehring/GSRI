@@ -180,7 +180,7 @@ setMethod("summary",
           })
 
 
-## sort ##
+## sortGsri ##
 setGeneric("sortGsri",
            function(x, names, decreasing=TRUE, na.last=NA, ...)
            standardGeneric("sortGsri"))
@@ -200,60 +200,77 @@ setMethod("sortGsri",
 
 
 ## plot ##
+setGeneric("plot",
+           function(x, y, ...)
+           standardGeneric("plot"))
+
+setMethod("plot",
+          signature("Gsri", "ANY"),
+          function(x, y, ...) {
+            
+            result <- getGsri(x)
+            sel <- result[y, ]
+            if(nrow(sel) > 1) {
+              sel <- sel[1, ]
+              warning("More than one gene set chosen, taking only the first one.")
+            }
+            ind <- which(rownames(result) %in% rownames(sel))
+            if(all(is.na(sel)) || length(ind) == 0)
+              stop("No valid index for selecting a gene set.")
+            plot(x, ind)
+          })
+
 setMethod("plot",
           signature("Gsri", "integer"),
           function(x, y, digits=2, ...) {
-            ##ind <- which(getGsr(x)  getGsri(x)[y, ])
-            if(length(y) != 1 || y > nrow(getGsri(x)))
-              stop("'y' must have exactly one match in 'x'.")
+
+            args <- list(...)
             result <- getGsri(x)[y, ]
+            
             p <- as.numeric(result[ ,1])  ## do with names
             g <- as.numeric(result[ ,4])  ## do with names
-            
-            graphics::plot(c(0, 1), c(p, p), col="red", type="l", 
-                           lty=2, xlab="p-values", ylab="CDF(p)", main=rownames(result), 
-                           xlim=c(0, 1), ylim=c(0, 1), ...)
-            graphics::lines(c(0, 1), c(g, g), col="blue", lty=2)
-            graphics::lines(c(0,1), p+(1-p)*c(0,1), col="gray")
-            graphics::points(x@pval[[y]], x@cdf[[y]], pch=20)
+
+            ## plot arguments
+            ## plot
+            plot1 <- list(x=NA, y=NA)
+            plot3 <- list(xlab="p-values", ylab="ECDF(p)", main=rownames(result),
+                          xlim=c(0, 1), ylim=c(0, 1))
+            plotArgs <- getArgs("plot", plot1, plot3, args)
+            ## reg
+            reg1 <- list(x=c(0, 1), y=c(p, p))
+            reg3 <- list(col="red", type="l", lty=2)
+            regArgs <- getArgs("reg", reg1, reg3, args)
+            ## gsri
+            gsri1 <- list(x=c(0, 1), y=c(g, g))
+            gsri3 <- list(col="blue", lty=2)
+            gsriArgs <- getArgs("gsri", gsri1, gsri3, args)
+            ## fit
+            fit1 <- list(x=c(0, 1), y=p+(1-p)*c(0, 1))
+            fit3 <- list(col="gray")
+            fitArgs <- getArgs("fit", fit1, fit3, args)
+            ## ecdf
+            ecdf1 <- list(x=x@cdf[[y]]$pval, y=x@cdf[[y]]$cdf)
+            ecdf3 <- list(type="p", pch=20)
+            ecdfArgs <- getArgs("ecdf", ecdf1, ecdf3, args)
+
             format <- paste("%s=%.", digits, "f", sep="")
-            graphics::text(1, p+0.01, sprintf(format, "%RegGene", p),
-                           cex=0.8, adj=c(1, 0))
-            graphics::text(1, g-0.01, sprintf(format, "GSRI", g),
-                           cex=0.8, adj=c(1,1))
+            ## regText
+            regText1 <- list(x=1, y=p+0.01)
+            regText3 <- list(labels=sprintf(format, "%RegGene", p), cex=0.8, adj=c(1, 0))
+            regTextArgs <- getArgs("regText", regText1, regText3, args)
+            ## gsriText
+            gsriText1 <- list(x=1, y=g-0.01)
+            gsriText3 <- list(labels=sprintf(format, "%GSRI", g), cex=0.8, adj=c(1, 1))
+            gsriTextArgs <- getArgs("gsriText", gsriText1, gsriText3, args)
             
-          })
-
-setMethod("plot",
-          signature("Gsri", "missing"),
-          function(x, y, ...) {
-
-            if(nrow(getGsri(x)) != 1)
-              stop("'x' contains more than one gene set.")
-            plot(x, 1L, ...)
-
-          })
-
-setMethod("plot",
-          signature("Gsri", "character"),
-          function(x, y, ...) {
-
-            if(length(y) != 1)
-              stop("'y' refers to more than one gene set.")
-            names <- rownames(getGsri(x))
-            ind <- match(y, names)
-            if(is.na(ind))
-              stop("'y' refers to no gene set.")
-            plot(x, ind, ...)
-            
-          })
-
-setMethod("plot",
-          signature("Gsri", "numeric"),
-          function(x, y, ...) {
-
-            plot(x, as.integer(y), ...)
-
+            ## plot calls
+            do.call("plot", plotArgs)
+            do.call("lines", regArgs)
+            do.call("lines", gsriArgs)
+            do.call("lines", fitArgs)
+            do.call("lines", ecdfArgs)
+            do.call("text", regTextArgs)
+            do.call("text", gsriTextArgs)
           })
 
 
