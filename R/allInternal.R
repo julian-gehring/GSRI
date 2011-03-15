@@ -13,10 +13,12 @@ calcGsri <- function(exprs, groups, name, id, weights,
     warning("Taking only first value of 'alpha'.")
   }
   nGenesGs <- sum(id)
+  gsriName <- sprintf("%s(%g%%)", "GSRI", alpha*100)
   if(nGenesGs == 0) {
     result <- data.frame(pRegGenes=NA, pRegGenesSd=NA, nRegGenes=NA,
                          gsri=NA, nGenes=nGenesGs, row.names=name)
-    res <- list(result=result, pval=NULL)
+    names(result)[4] <- gsriName
+    res <- list(result=result, cdf=NULL)
     return(res)
   }
 
@@ -52,7 +54,7 @@ calcGsri <- function(exprs, groups, name, id, weights,
   ## gsri results
   result <- data.frame(pRegGenes=l0, pRegGenesSd=lsd, nRegGenes=nRegGenes,
                        gsri=gsri, nGenes=nGenesGs, row.names=name)
-  names(result)[4] <- sprintf("%s(%g%%)", "GSRI", alpha*100)
+  names(result)[4] <- gsriName
 
   ## cdf results
   geneNames <- rownames(exprs[id, ])[order(pval)]
