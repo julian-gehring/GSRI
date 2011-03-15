@@ -71,7 +71,11 @@
 \begin_body
 
 \begin_layout Title
-Gene Set Regulation Index (GSRI) package
+GSRI package:
+\begin_inset Newline newline
+\end_inset
+
+Gene Set Regulation Index
 \end_layout
 
 \begin_layout Author
@@ -103,7 +107,7 @@ with the fraction
 \begin_inset Formula $r$
 \end_inset
 
- of significant 
+ of significant p-values 
 \begin_inset Formula $p$
 \end_inset
 
@@ -133,6 +137,10 @@ with the uniformly distributed
 
  translating to a linear CDF with slope 
 \begin_inset Formula $1-r$
+\end_inset
+
+ and intercept 
+\begin_inset Formula $r$
 \end_inset
 
 .
@@ -292,7 +300,7 @@ Data set
 \end_layout
 
 \begin_layout Standard
-For this introduction we use the expression data set provided by the 
+For the introduction we use the expression data set provided with the 
 \begin_inset ERT
 status open
 
@@ -330,12 +338,12 @@ status open
 
 
 \backslash
-Rvar{sex}
+Rvar{type}
 \end_layout
 
 \end_inset
 
- and 
+ of disease and 
 \begin_inset ERT
 status open
 
@@ -343,12 +351,12 @@ status open
 
 
 \backslash
-Rvar{type}
+Rvar{sex}
 \end_layout
 
 \end_inset
 
- of disease represented as factors, as well as the contiguous 
+ represented as factors, as well as the continuous 
 \begin_inset ERT
 status open
 
@@ -365,15 +373,7 @@ Rvar{score}
 \end_layout
 
 \begin_layout Scrap
-<<attachPackages>>=
-\begin_inset Newline newline
-\end_inset
-
-library(GSRI)
-\begin_inset Newline newline
-\end_inset
-
-library(GSEABase)
+<<extractData>>=
 \begin_inset Newline newline
 \end_inset
 
@@ -382,14 +382,6 @@ library(Biobase)
 \end_inset
 
 data(sample.ExpressionSet)
-\begin_inset Newline newline
-\end_inset
-
-@
-\end_layout
-
-\begin_layout Scrap
-<<extractData>>=
 \begin_inset Newline newline
 \end_inset
 
@@ -416,13 +408,34 @@ summary(phenotypes)
 @
 \end_layout
 
+\begin_layout Standard
+Please note that we are using this sample data to illustrate general workflows
+ for the analysis of gene sets with the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rpackage{GSRI}
+\end_layout
+
+\end_inset
+
+ package.
+ The results obtained here are far away from any biological meaning and
+ should not be interpreted in such a context.
+\end_layout
+
 \begin_layout Section
 Analysis for a single gene set
 \end_layout
 
 \begin_layout Standard
-For this expression data we estimate how many genes show a differential
- effect between the groups 
+Given the expression data we want to find out how many genes show a differential
+ effect with respect to the phenotypic variables, in our case the groups
+ 
 \begin_inset ERT
 status open
 
@@ -470,6 +483,10 @@ Rvar{type}
 \begin_inset Newline newline
 \end_inset
 
+library(GSRI)
+\begin_inset Newline newline
+\end_inset
+
 gAllProbes <- gsri(eset, phenotypes$type)
 \begin_inset Newline newline
 \end_inset
@@ -482,15 +499,53 @@ gAllProbes
 \end_layout
 
 \begin_layout Standard
-This indicates that around 14% of the genes seem to be regulated.
- However, taking the corresponding standard deviation of around 15% and
- the GSRI of 0 at the 5% level into account, we can doubt to look at differentia
-l effect.
+This indicates that around 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{round(getGsri(gAllProbes)[1]*100)}
+\end_layout
+
+\end_inset
+
+% of the genes seem to be regulated.
+ However, taking the corresponding standard deviation of around 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{round(getGsri(gAllProbes)[2]*100)}
+\end_layout
+
+\end_inset
+
+% and the GSRI of 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{round(getGsri(gAllProbes)[4]*100)}
+\end_layout
+
+\end_inset
+
+% at the 5% confidence level into account, we have just an indication for
+ a differential effect.
 \end_layout
 
 \begin_layout Standard
 In the next step we exclude the controls of the Affymetrix microarray since
- they are not relevant for our analysis.
+ they do not contain relevant information for our analysis.
  For this we define an object 
 \begin_inset ERT
 status open
@@ -577,6 +632,10 @@ Rpackage{GSEABase}
 
 \begin_layout Scrap
 <<gsriAllGenesSet>>=
+\begin_inset Newline newline
+\end_inset
+
+library(GSEABase)
 \begin_inset Newline newline
 \end_inset
 
@@ -672,7 +731,7 @@ Rpackage{GSEABase}
 \end_inset
 
  package provides methods for importing gene sets from different sources.
- Here we import a gene set from an xml file, with genes located on chromosome
+ Here we import a gene set from an .xml file, with genes located on chromosome
  17.
 \end_layout
 
@@ -737,8 +796,8 @@ Rclass{GeneSet}
 \end_layout
 
 \begin_layout Standard
-Here, we import five gene sets from a .gmt file and perform the analysis
- for those with respect to the 
+We import five gene sets from a .gmt file and perform the analysis for those
+ with respect to the 
 \begin_inset ERT
 status open
 
@@ -821,9 +880,9 @@ As pointed out in the introduction, the GSRI approach is independent of
 \end_layout
 
 \begin_layout Standard
-We arbitrarily define three groups based on the score variable indicating
- the progress of the disease.
- For this analysis we use the F-test provided by this package.
+As an example we arbitrarily define three groups based on the score variable
+ indicating the progress of the disease.
+ For this analysis we use the F-test provided with this package.
 \end_layout
 
 \begin_layout Scrap
@@ -852,7 +911,8 @@ g3
 \end_layout
 
 \begin_layout Standard
-The GSRI approach has several parameters that can be changed for the analysis.
+The GSRI approach has several parameters that can be changed in order to
+ adapt the analysis.
  For illustration we rename the gene set, change the number of bootstraps
  and confidence level for the GSRI calculation, and use a classical ECDF
  instead of the modified Grenander estimator for the cumulative density.
@@ -890,7 +950,7 @@ Rpackage{limma}
 
 \end_inset
 
- package which as an enhanced power for small sample sizes.
+ package which as an increased power for small sample sizes.
  The canonical structure of the test function has to be called as 
 \begin_inset ERT
 status open
@@ -1032,10 +1092,14 @@ The results of the GSRI analysis can be visualized, showing the empirical
 \end_inset
 
  as well as the estimated fraction 
-\begin_inset Formula $r$
+\begin_inset Formula $\hat{r}$
 \end_inset
 
- of significant genes and the GSRI.
+ of significant genes and the GSRI 
+\begin_inset Formula $\eta$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Scrap
@@ -1113,7 +1177,7 @@ Rmethod{plot}
  method has an advanced system in order to customize the plot in different
  aspects.
  This allows us to adapt nearly any property of the figure.
- For a detailed description, please refer to the help pages for the 
+ For a detailed description, please refer to the help pages of the 
 \begin_inset ERT
 status open
 
@@ -1193,8 +1257,9 @@ Weighting of genes in gene sets
 \end_layout
 
 \begin_layout Standard
-In contrast to other approaches estimating the degree of regulation does
- the GSRI package also allow assign weights for each gene in the calculation.
+In contrast to other approaches estimating the degree of regulation the
+ GSRI package does also allow assign the weighting of each gene in the calculati
+on.
  Such a step is useful for including additional information in the estimation
  process, for example the certainty that a gene is part of a gene set.
 \end_layout

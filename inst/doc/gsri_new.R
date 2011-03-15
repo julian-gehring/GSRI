@@ -1,25 +1,17 @@
 ###################################################
 ### chunk number 1: settings
 ###################################################
-#line 103 "gsri_new.Rnw"
+#line 104 "gsri_new.Rnw"
 set.seed(1)
 options(width=65)
 
 
 ###################################################
-### chunk number 2: attachPackages
+### chunk number 2: extractData
 ###################################################
-#line 119 "gsri_new.Rnw"
-library(GSRI)
-library(GSEABase)
+#line 120 "gsri_new.Rnw"
 library(Biobase)
 data(sample.ExpressionSet)
-
-
-###################################################
-### chunk number 3: extractData
-###################################################
-#line 126 "gsri_new.Rnw"
 eset <- sample.ExpressionSet
 eset
 exprs <- exprs(eset)
@@ -28,17 +20,19 @@ summary(phenotypes)
 
 
 ###################################################
-### chunk number 4: gsriAllProbes
+### chunk number 3: gsriAllProbes
 ###################################################
-#line 142 "gsri_new.Rnw"
+#line 144 "gsri_new.Rnw"
+library(GSRI)
 gAllProbes <- gsri(eset, phenotypes$type)
 gAllProbes
 
 
 ###################################################
-### chunk number 5: gsriAllGenesSet
+### chunk number 4: gsriAllGenesSet
 ###################################################
-#line 161 "gsri_new.Rnw"
+#line 166 "gsri_new.Rnw"
+library(GSEABase)
 gs <- GeneSet(eset, setName="allGenes")
 ind <- grep("^AFFX", geneIds(gs), invert=TRUE)
 gsAllGenes <- gs[ind]
@@ -46,9 +40,9 @@ gsAllGenes
 
 
 ###################################################
-### chunk number 6: gsriAllGenes
+### chunk number 5: gsriAllGenes
 ###################################################
-#line 168 "gsri_new.Rnw"
+#line 174 "gsri_new.Rnw"
 gAllGenesType <- gsri(eset, phenotypes$type, gsAllGenes, name="allGenesType")
 gAllGenesSex <- gsri(exprs, phenotypes$sex, gsAllGenes, name="allGenesSex")
 gAllGenesType
@@ -56,9 +50,9 @@ gAllGenesSex
 
 
 ###################################################
-### chunk number 7: gsriChr17
+### chunk number 6: gsriChr17
 ###################################################
-#line 184 "gsri_new.Rnw"
+#line 190 "gsri_new.Rnw"
 gsChr17 <- getBroadSets(system.file("extdata", "c1chr17.xml", package="GSRI"))
 gsChr17
 gChr17 <- gsri(eset, phenotypes$type, gsChr17)
@@ -66,9 +60,9 @@ gChr17
 
 
 ###################################################
-### chunk number 8: gsriCol5
+### chunk number 7: gsriCol5
 ###################################################
-#line 206 "gsri_new.Rnw"
+#line 212 "gsri_new.Rnw"
 gmt <- getGmt(system.file("extdata", "c1c10.gmt", package="GSRI"))
 gCol5 <- gsri(eset, phenotypes$type, gmt)
 gCol5
@@ -79,9 +73,9 @@ export(gCol5Sort, exportFile)
 
 
 ###################################################
-### chunk number 9: gsriScoreFtest
+### chunk number 8: gsriScoreFtest
 ###################################################
-#line 229 "gsri_new.Rnw"
+#line 235 "gsri_new.Rnw"
 phenotypes$class <- cut(phenotypes$score, seq(0, 1, length.out=4), label=c("low", "medium", "high"))
 summary(phenotypes$class)
 g3 <- gsri(eset, phenotypes$class, gsChr17, test=rowF)
@@ -89,17 +83,17 @@ g3
 
 
 ###################################################
-### chunk number 10: gsriAllGenesArgs
+### chunk number 9: gsriAllGenesArgs
 ###################################################
-#line 242 "gsri_new.Rnw"
+#line 248 "gsri_new.Rnw"
 g3arg2 <- gsri(eset, phenotypes$class, gsChr17, test=rowF, name="chr17_2", nBoot=50, alpha=0.1, grenander=FALSE)
 g3arg2
 
 
 ###################################################
-### chunk number 11: limmaTest
+### chunk number 10: limmaTest
 ###################################################
-#line 258 "gsri_new.Rnw"
+#line 264 "gsri_new.Rnw"
 library(limma)
 limmaTest <- function(exprs, groups, id, index, testArgs) {
     design <- cbind(offset=1, diff=groups)
@@ -113,23 +107,23 @@ g3Limma
 
 
 ###################################################
-### chunk number 12: plot1
+### chunk number 11: plot1
 ###################################################
-#line 279 "gsri_new.Rnw"
+#line 285 "gsri_new.Rnw"
 plot(g3)
 
 
 ###################################################
-### chunk number 13: plot2
+### chunk number 12: plot2
 ###################################################
-#line 294 "gsri_new.Rnw"
+#line 300 "gsri_new.Rnw"
 plot(gCol5, 5, ecdf=list(type="o"), plot=list(xlab="p", main="GSRI results: chr9"), reg=list(col="lightblue", lty=1, lwd=1.5), gsri=list(col="darkblue"))
 
 
 ###################################################
-### chunk number 14: weights
+### chunk number 13: weights
 ###################################################
-#line 320 "gsri_new.Rnw"
+#line 326 "gsri_new.Rnw"
 library(hgu95av2.db)
 gNames <- rownames(exprs(eset))
 ind <- Lkeys(hgu95av2GO) %in% gNames
@@ -146,9 +140,9 @@ gCol5go2
 
 
 ###################################################
-### chunk number 15: sessionInfo
+### chunk number 14: sessionInfo
 ###################################################
-#line 347 "gsri_new.Rnw"
+#line 353 "gsri_new.Rnw"
 toLatex(sessionInfo(), locale=FALSE)
 
 
