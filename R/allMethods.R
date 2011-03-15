@@ -1,7 +1,7 @@
 ## gsri ##
 setGeneric("gsri",
            function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
-                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE)
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...)
            standardGeneric("gsri"))
 
 setMethod("gsri",
@@ -63,13 +63,13 @@ setMethod("gsri",
 setMethod("gsri",
           signature("matrix", "factor", "GeneSetCollection"),
           function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
-                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, nCores=NULL) {
 
             if(is.null(names))
               names <- names(geneSet)
-            res <- sapply(geneSet, gsri, exprs=exprs, phenotype=phenotype, name=NULL,
-                          weight=weight, nBoot=nBoot, grenander=grenander, test=test,
-                          testArgs=testArgs, alpha=alpha)
+            res <- les:::mcsapply(geneSet, gsri, exprs=exprs, phenotype=phenotype, name=NULL,
+                                  weight=weight, nBoot=nBoot, grenander=grenander, test=test,
+                                  testArgs=testArgs, alpha=alpha, mc.cores=nCores)
 
             object <- new("Gsri",
                           result=as.data.frame(do.call(rbind, lapply(res, getGsri)), row.names=names),
@@ -84,11 +84,11 @@ setMethod("gsri",
 setMethod("gsri",
           signature("ExpressionSet", "factor", "GeneSetCollection"),
           function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
-                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, nCores=NULL) {
 
             object <- gsri(exprs(exprs), phenotype, geneSet, names=names, weight=weight,
                          nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
-                         grenander=grenander)
+                         grenander=grenander, nCores=nCores)
             
             return(object)
           })
@@ -174,7 +174,7 @@ setMethod("summary",
 
 ## sort ##
 setGeneric("sortGsri",
-           function(x, names, decreasing=FALSE, na.last=NA)
+           function(x, names, decreasing=FALSE, na.last=NA, ...)
            standardGeneric("sortGsri"))
 
 setMethod("sortGsri",

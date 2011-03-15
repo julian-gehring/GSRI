@@ -14,7 +14,7 @@
 }
 
 \usage{
-sortGsri(x, names, decreasing=FALSE, na.last=NA)
+sortGsri(x, names, decreasing=FALSE, na.last=NA, ...)
 }
 
 \arguments{
@@ -25,6 +25,7 @@ sortGsri(x, names, decreasing=FALSE, na.last=NA)
     the samples.}
   \item{decreasing}{missing, GeneSet, GeneSetClass}
   \item{na.last}{Character vector with the names of the gene set(s).}
+  \item{...}{Additional arguments}
 }
 
 \section{Methods}{

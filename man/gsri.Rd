@@ -20,7 +20,7 @@
 
 \usage{
 gsri(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100,
-test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE)
+test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...)
 }
 
 \arguments{
@@ -48,6 +48,7 @@ test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE)
   \item{grenander}{A logical indicating whether the modified Grenander
     estimator for the cumulative density should be used, instead of a
     classical ECDF (default: TRUE).}
+  \item{...}{Additional arguments}
 }
 
 \section{Methods}{
