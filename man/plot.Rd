@@ -19,14 +19,14 @@ plot(x, y, ...)
 }
 
 \arguments{
-  \item{x}{An object of class 'Gsri' containing the results to plot.}
+  \item{x}{An object of class \code{Gsri} containing the results to plot.}
   \item{y}{A single integer or character string specifying the results
-    of which gene set to plot. This has to be given if 'x' contains the
+    of which gene set to plot. This has to be given if \code{x} contains the
     results of several gene sets. An integer is interpreted as the index
     of the gene set (i.e. the row number), while a character is matched
     against the names of the gene sets.}
   \item{...}{Optional arguments used in order to customize the plot. See
-  the 'details' section.}
+    the \sQuote{details} section.}
 }
 
 \details{
@@ -38,7 +38,7 @@ plot(x, y, ...)
   distributed component along with the estimated fraction of regularized
   genes and the GSRI is shown.
 
-  The 'plot' method uses a special system in order to customize the
+  The \code{plot} method uses a special system in order to customize the
   graphical elements of the figure. It allows to refer to the different
   components with the name of the additional input argument; its value
   is a list containing named graphical parameters for the underlying
@@ -46,21 +46,21 @@ plot(x, y, ...)
   their contribution.
 
   \describe{
-    \item{'plot'}{Arguments for the axis and the labeling, passed to the
-      'plot' function.}
-    \item{'fit'}{Arguments for the fit of the linear component of the
+    \item{\code{plot}}{Arguments for the axis and the labeling, passed to the
+      \code{plot} function.}
+    \item{\code{fit}}{Arguments for the fit of the linear component of the
       ECDF, corresponding to the part without differential effect,
-      passed to the 'lines' function.}
-    \item{'ecdf'}{Arguments for the ECDF of the p-values, passed to the
-      'lines' function.}
-    \item{'reg'}{Arguments for the horizontal line indicating the fraction
-      of regulation, passed to the 'lines' function.}
-    \item{'regText'}{Arguments for the text label of 'reg', passed to
-      the 'text' function.}
-    \item{'gsri'}{Arguments for the horizontal line indicating the
-      GSRI, passed to the 'lines' function.}
-    \item{'gsriText'}{Arguments for the text label of 'gsri', passed to
-      the 'text' function.}
+      passed to the \code{lines} function.}
+    \item{\code{ecdf}}{Arguments for the ECDF of the p-values, passed to the
+      \code{lines} function.}
+    \item{\code{reg}}{Arguments for the horizontal line indicating the fraction
+      of regulation, passed to the \code{lines} function.}
+    \item{\code{regText}}{Arguments for the text label of \code{reg}, passed to
+      the \code{text} function.}
+    \item{\code{gsri}}{Arguments for the horizontal line indicating the
+      GSRI, passed to the \code{lines} function.}
+    \item{\code{gsriText}}{Arguments for the text label of \code{gsri}, passed to
+      the \code{text} function.}
   }
 
   Thus, changing for example the limit of the y-axis, the plot type and
@@ -69,7 +69,7 @@ plot(x, y, ...)
   \code{plot(x, plot=list(ylim=c(0, 0.8), xlab=expression(p)),
   ecdf=list(type="s", col="darkgreen"))}
 
-  For more details, please see the 'examples' section.
+  For more details, please see the \sQuote{examples} section.
 }
 
 \author{

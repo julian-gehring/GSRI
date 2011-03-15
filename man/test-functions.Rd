@@ -22,23 +22,23 @@ limmat(exprs, groups, id, index, testArgs)
 \arguments{
   \item{exprs}{A matrix of expression values of size n x m, with rows
     representing the genes and columns representing the samples. The
-    structure is the same as for the 'exprs' argument of the 'gsri'
+    structure is the same as for the \code{exprs} argument of the \code{gsri}
     method.}
   \item{groups}{A factor with the length m, specifying the groups
-    of the corresponding samples in 'exprs'.  The structure is the same
-    as for the 'exprs' argument of the 'groups'  method.}
-  \item{id}{Index vector for the rows of 'exprs' which are part of the
+    of the corresponding samples in \code{exprs}.  The structure is the same
+    as for the \code{exprs} argument of the \code{gsri} method.}
+  \item{id}{Index vector for the rows of \code{exprs} which are part of the
     current gene set.}
-  \item{index}{Index for the columns of 'exprs', such that 'exprs[
-    ,index] yields the bootstrapped expression matrix. Similar to the
-    'index' arguments from 'boot' of the \pkg{boot} package.}
-  \item{testArgs}{Optional list with arguments passed to the 'test'
-    function. If 'NULL' or missing it is not passed to 'test' and any
+  \item{index}{Index for the columns of \code{exprs}, such that \code{exprs[
+    ,index]} yields the bootstrapped expression matrix. Similar to the
+    \code{index} arguments for \code{boot} of the \pkg{boot} package.}
+  \item{testArgs}{Optional list with arguments passed to the \code{test}
+    function. If \sQuote{NULL} or missing it is not passed to \code{test} and any
     exisiting default value of the function is used instead.
     \describe{
-      \item{var.equal:}{For the 'rowF' function a logical indicating
+      \item{var.equal:}{For the \code{rowF} function a logical indicating
 	whether equal variances in the groups are assumed for the
-	F-test (default: TRUE). For details, please see 'rowFtests' in
+	F-test (default: TRUE). For details, please see \code{rowFtests} in
 	the \pkg{genefilter} package.
       }
     }
@@ -52,25 +52,25 @@ limmat(exprs, groups, id, index, testArgs)
 
   It is also possible to use custom test statistics for assessing the
   differential effect between groups for each gene. In this case the
-  function is passed as the 'test' argument to the 'gsri' method, while
+  function is passed as the \code{test} argument to the \code{gsri} method, while
   additional parameters for the function can be passed as a list via the
-  'testArgs' argument. The defined function is required to be called as
+  \code{testArgs} argument. The defined function is required to be called as
   
   \code{function(exprs, groups, id, index, testArgs)},
 
-  with 'exprs' the matrix of expression intensities of the microarray
-  and 'groups' the factor of group labels, with the same structure as
-  those passed initially to the 'gsri' method. The vector 'id' contains
+  with \code{exprs} the matrix of expression intensities of the microarray
+  and \code{groups} the factor of group labels, with the same structure as
+  those passed initially to the \code{gsri} method. The vector \code{id} contains
   the indices of the genes part of the current gene set and is used to
   subset the expression intensities if necessary. The function has to
   return one p-value for each gene in the gene set indicating its
-  differential effect. The vector 'index' contains the indicies of the
-  samples for the bootstrapping. Applying 'index' on the expression
+  differential effect. The vector \code{index} contains the indicies of the
+  samples for the bootstrapping. Applying \code{index} on the expression
   matrix in the form of \code{exprs[ ,index]} generates the bootstrapped
   data set.
   
   For details on how to define and use your custom test functions,
-  please refer to the 'examples' section or the vignette of this
+  please refer to the \sQuote{examples} section or the vignette of this
   package.
 }
 

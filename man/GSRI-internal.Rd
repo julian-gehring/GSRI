@@ -9,7 +9,7 @@
 \alias{calcGsri}
 \alias{getArgs}
 
-\description{Internal functions of the GSRI package}
+\description{Internal functions of the \pkg{GSRI} package}
 
 \usage{
 calcGsri(exprs, groups, name, id, weights, grenander=TRUE, nBoot=100,
@@ -20,26 +20,32 @@ bootInGroups(nSamples)
 getArgs(name, first=NULL, last=NULL, ...)
 }
 
+\details{
+  Internal functions of the \pkg{GSRI} package. Users should not call them
+  directly, but rather use the \code{gsri} methods.
+}
+
+\references{
+  The \pkg{GSRI} package uses the functionality of the following
+  packages:
+
+  Julian Gehring, Clemens Kreutz, Jens Timmer:
+  les: Identifying Loci of Enhanced Significance in Tiling Microarray Data
+  \url{http://bioconductor.org/help/bioc-views/release/bioc/html/les.html}
+
+  Korbinian Strimmer:
+  fdrtool: Estimation and Control of (Local) False Discovery Rates.
+  \url{http://CRAN.R-project.org/package=fdrtool}
+
+  Robert Gentleman, Vincent J. Carey, Wolfgang Huber, Florian Hahne:
+  genefilter: methods for filtering genes from microarray experiments.
+  \url{http://bioconductor.org/help/bioc-views/release/bioc/html/genefilter.html}
+}
+
 \author{
   Julian Gehring
 
   Maintainer: Julian Gehring <julian.gehring@fdm.uni-freiburg.de>
-}
-
-\details{
-  Internal functions of the GSRI package. Users should not call them
-  directly, but rather use the 'gsri' methods.
-}
-
-\references{
-  Functions of the following packages are used in this package:
-
-  Korbinian Strimmer (2009).
-  fdrtool: Estimation and Control of (Local) False Discovery Rates.
-  \url{http://CRAN.R-project.org/package=fdrtool}
-
-  R. Gentleman, V. Carey, W. Huber and F. Hahne.
-  genefilter: methods for filtering genes from microarray experiments.
 }
 
 \seealso{

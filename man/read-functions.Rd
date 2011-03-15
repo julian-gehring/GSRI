@@ -7,12 +7,12 @@
 \alias{readGct,character-method}
 
 \title{
-  Import of '.cls' and '.gct' files
+  Import of \file{.cls} and \file{.gct} files
 }
 
 \description{
-  Import the groups from '.cls' files and the expression data from
-  '.gct' files.
+  Import the groups from \file{.cls} files and the expression data from
+  \file{.gct} files.
 }
 
 \usage{
@@ -23,24 +23,24 @@ readGct(file, ...)
 \arguments{
   \item{file}{Character vector specifying the path of the file to be
     read in.}
-  \item{...}{Optinal arguments}
+  \item{...}{Optinal arguments, currently not used.}
 }
 
 \details{
   With these methods the expression data and the assignment of the
-  samples to groups can be read from '.cls' (categorical class) and
-  '.gct' (gene cluster text) files, respectively. Details on the
+  samples to groups can be read from \file{.cls} (categorical class) and
+  \file{.gct} (gene cluster text) files, respectively. Details on the
   specific formats can be found at
   \url{http://www.broadinstitute.org/cancer/software/gsea/wiki/index.php/Data_formats}.
 
-  Please note that the 'readCls' method reads only categorical class
+  Please note that the \code{readCls} method reads only categorical class
   labels, not continuous ones.
 }
 
 \value{
-  For a '.cls' file, a factor containing the groups.
+  For a \file{.cls} file, a factor containing the groups.
 
-  For a '.gct' file, a matrix containing the expression intensities, with
+  For a \file{.gct} file, a matrix containing the expression intensities, with
   rows corresponding to genes and columns to samples.
 }
 

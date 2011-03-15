@@ -10,7 +10,7 @@
 }
 
 \description{
-  Sort the results of an 'Gsri' object.
+  Sort the results of an \code{Gsri} object.
 }
 
 \usage{
@@ -18,16 +18,16 @@ sortGsri(x, names, decreasing=TRUE, na.last=NA, ...)
 }
 
 \arguments{
-  \item{x}{Object of class 'Gsri' whose results to sort.}
-  \item{names}{Columns along which the results of 'x' should be sorted,
+  \item{x}{Object of class \code{Gsri} whose results to sort.}
+  \item{names}{Columns along which the results of \code{x} should be sorted,
     eighter a character vector with the names of the columns or an
     integer vector with the index of the columns. If the vector has
     several elements, sorting is performed along all of them, starting
     with the first and using subsequent ones to break existing ties. If
-    names is not specified the results are sorted according to 'pRegGenes'.}
+    names is not specified the results are sorted according to \code{pRegGenes}.}
   \item{decreasing}{Logical indicating whether the sorting should be in
-    decreasing (default) or ascending order, see 'sort'.}
-  \item{na.last}{How 'NA' values in the results should be treated, see 'sort'.}
+    decreasing (default) or ascending order, see \code{sort}.}
+  \item{na.last}{How \code{NA} values in the results should be treated, see \code{sort}.}
   \item{...}{Additional arguments, currently not used.}
 }
 
@@ -39,12 +39,8 @@ sortGsri(x, names, decreasing=TRUE, na.last=NA, ...)
   }
 }
 
-\details{
-  nothing
-}
-
 \value{
-  An object of class 'Gsri', with sorted slots 'result' and 'cdf'.
+  An object of class \code{Gsri}, with sorted slots \code{result} and \code{cdf}.
 }
 
 \author{

@@ -11,11 +11,11 @@
 \alias{getParms,Gsri-method}
 
 \title{
-  Get methods for Gsri class
+  Get methods for \code{Gsri} class
 }
 
 \description{
-  Access and extract results from an object of class 'Gsri'.
+  Access and extract results from an object of class \code{Gsri}.
 }
 
 \usage{
@@ -25,34 +25,34 @@ getParms(object, ...)
 }
 
 \arguments{
-  \item{object}{An object of class 'Gsri' whose results to access.}
+  \item{object}{An object of class \code{Gsri} whose results to access.}
   \item{index}{Optional argument used to subset the results of
-    individual gene sets. For details, see the 'plot' method.}
+    individual gene sets. For details, see the \code{plot} method.}
   \item{...}{Additional arguments, currently not used.}
 }
 
 \details{
-  'getGsri' returns a data frame with the results of the GSRI analysis,
-   equivalent to the display of the 'print' and 'show' method. For each
+  \code{getGsri} returns a data frame with the results of the GSRI analysis,
+   equivalent to the display of the \code{print} and \code{show} method. For each
    gene set it contains the estimated fraction and total number of
    regulated genes, the standard deviation of the estimated fraction,
    the GSRI, and the total number of genes in the analysis.
+   
+   \code{getCdf} returns a data frame with ECDF of the p-values for a gene
+   set.
 
-  'getCdf' returns a data frame with ECDF of the p-values for a gene
-  set.
-
-  'getParms' returns a list with the parameters used in the analysis,
-  including the weights ('weight') for each gene in the gene set, the
-  number ('nBoot') of bootstraps for the calculation of the GSRI, the
-  function ('test') and its arguments ('testArgs') used for assessing
-  the differential effect between the groups, the confidence level for
-  the GSRI, and the application of the Grenander estimatior
-  ('grenander') in the calculation of the ECDF.
+   \code{getParms} returns a list with the parameters used in the analysis,
+   including the weights (\code{weight}) for each gene in the gene set, the
+   number (\code{nBoot}) of bootstraps for the calculation of the GSRI, the
+   function (\code{test}) and its arguments (\code{testArgs}) used for assessing
+   the differential effect between the groups, the confidence level for
+   the GSRI, and the application of the Grenander estimatior
+   (\code{grenander}) in the calculation of the ECDF.
 }
 
 \value{
-  'getGsri' and 'getCdf' return data frame with the results from the
-  GSRI analysis and the ECDF, respectively. 'getParms' returns a list
+  \code{getGsri} and \code{getCdf} return data frame with the results from the
+  GSRI analysis and the ECDF, respectively. \code{getParms} returns a list
   with the parameters used in the analysis.
 
   If more than one gene set is accessed, a list with one element per

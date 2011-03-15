@@ -9,7 +9,7 @@
 }
 
 \description{
-  Export the results of a 'Gsri' object to a file.
+  Export the results of a \code{Gsri} object to a file.
 }
 
 \usage{
@@ -17,17 +17,17 @@ export(object, file, ...)
 }
 
 \arguments{
-  \item{object}{An object of class 'Gsri' whose results to export.}
+  \item{object}{An object of class \code{Gsri} whose results to export.}
   \item{file}{Character vector specifying the path of the file to be
     written.}
-  \item{...}{Optional arguments}
+  \item{...}{Additional arguments, currently not used.}
 }
 
 \details{
-  The 'export' method writes the results of the GSRI analysis, as
-  obtained with 'getGsri', to a text file. The file is formatted with
-  the standard parameters of the 'write.table' function, while '\\t' is
-  used as field seperator.
+  The \code{export} method writes the results of the GSRI analysis, as
+  obtained with \code{getGsri}, to a text file. The file is formatted
+  with the standard parameters of the \code{write.table} function, while
+  \dQuote{\\t} is used as field seperator.
 }
 
 \author{

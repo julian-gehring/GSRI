@@ -24,13 +24,13 @@
   alternative hypothesis.
 
   Through non-parametric fitting of the uniform component of the p-value
-  distribution, the fraction of regulated genes \eqn{r}{'r'} in a gene
-  set is estimated. The GSRI \eqn{\eta}{'eta'} is then defined as the
-  \eqn{\alpha*100}{'alpha*100'}\%-quantile of the distribution of
-  \eqn{r}{'r'}, obtained from bootstrapping the samples within the
+  distribution, the fraction of regulated genes \eqn{r}{\sQuote{r}} in a gene
+  set is estimated. The GSRI \eqn{\eta}{\sQuote{eta}} is then defined as the
+  \eqn{\alpha*100}{\sQuote{alpha*100}}\%-quantile of the distribution of
+  \eqn{r}{\sQuote{r}}, obtained from bootstrapping the samples within the
   groups. The index indicates that with a probability of
-  \eqn{(1-\alpha)}{(1-'alpha')}\% more than a fraction of
-  \eqn{\eta}{'eta'} genes in the gene set is differentially
+  \eqn{(1-\alpha)}{(1-\sQuote{alpha})}\% more than a fraction of
+  \eqn{\eta}{\sQuote{eta}} genes in the gene set is differentially
   expressed. It can also be employed to test the hypothesis whether at
   least one gene in a gene set is regulated. Further, different gene
   sets can be compared or ranked according to the estimated amount of
@@ -100,16 +100,6 @@ groups <- factor(rep(1:2, each=10))
 
 ## Estimate the number of differentially expressed genes
 res <- gsri(exprs, groups)
-
-\dontrun{
-## Read expression data, groups and gene sets from files
-## Input files can be found in the vignette directory of this package
-dataFileName <- system.file("extdata", "data.gct", package="GSRI")
-groupsFileName <- system.file("extdata", "phenotype.cls", package="GSRI")
-geneSetFileName <- system.file("extdata", "geneSets.gmt", package="GSRI")
-
-res2 <- gsriFromFile(dataFileName, groupsFileName, geneSetFileName)
-}
 }
 
 \keyword{package}

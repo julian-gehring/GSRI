@@ -9,15 +9,15 @@
 \alias{summary}
 \alias{summary,Gsri-method}
 \title{
-  Class 'Gsri'
+  Class \code{Gsri}
 }
 
 \description{
-  Objects of the class 'Gsri' contain the results of the GSRI analysis.
+  Objects of the class \code{Gsri} contain the results of the GSRI analysis.
 }
 
 \section{Objects from the class}{
-  Objects of class 'Gsri' are returned by the 'gsri' methods.
+  Objects of class \code{Gsri} are returned by the \code{gsri} methods.
 }
 
 \section{Slots}{
@@ -25,33 +25,33 @@
     \item{\code{result}:}{Data frame containing the results of the GSRI
       estimation, with one row for each gene set and the columns:
       \describe{
-	\item{pRegGenes:}{Fraction of regulated genes in the gene set}
-	\item{pRegGenesSd:}{Standard deviation of 'pRegGenes' obtained
+	\item{\code{pRegGenes}:}{Fraction of regulated genes in the gene set}
+	\item{\code{pRegGenesSd}:}{Standard deviation of \code{pRegGenes} obtained
 	  from bootstrapping.}
-	\item{nRegGenes:}{Total number of regulated genes in the gene
+	\item{\code{nRegGenes}:}{Total number of regulated genes in the gene
 	  set.}
-	\item{GSRI(x\%):}{Gene Set Regulation Index, corresponding to
-	  the 'x'\% quantile of the bootstrapped distribution.}
-	\item{nGenes:}{Total number of genes in the gene set.}
+	\item{\code{GSRI('alpha'\%)}:}{Gene Set Regulation Index, corresponding to
+	  the \sQuote{alpha}\% quantile of the bootstrapped distribution.}
+	\item{\code{nGenes}:}{Total number of genes in the gene set.}
       }
     }
     \item{\code{cdf}:}{List of data frames containing the ECDF of the
       p-values. Each data frame covers one gene set, with the columns:
       \describe{
-	\item{pval:}{P-values obtained from the 'test' function.}
-	\item{cdf:}{Empirical cumulative density.}
+	\item{\code{pval}:}{P-values obtained from the \code{test} function.}
+	\item{\code{cdf}:}{Empirical cumulative density.}
       }
     }
     \item{\code{parms}:}{List containing the parameter values used in
       the analysis, with the elements:
       \describe{
-	\item{weight:}{Weights for each gene in the gene set}
-	\item{nBoot:}{Number of bootstraps for the calculation of the GSRI}
-	\item{test:}{Statistical test function}
-	\item{alpha:}{Confidence level for the GSRI}
-	\item{grenander:}{Application of the Grenander estimatior in the
+	\item{\code{weight}:}{Weights for each gene in the gene set}
+	\item{\code{nBoot}:}{Number of bootstraps for the calculation of the GSRI}
+	\item{\code{test}:}{Statistical test function}
+	\item{\code{alpha}:}{Confidence level for the GSRI}
+	\item{\code{grenander}:}{Application of the Grenander estimatior in the
 	  calculation of the ECDF}
-	\item{testArgs:}{Optional arguments for 'test' function}
+	\item{\code{testArgs}:}{Optional arguments for \code{test} function}
       }
     }
   }
