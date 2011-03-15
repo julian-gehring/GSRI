@@ -77,7 +77,7 @@ setMethod("gsri",
             ind <- nMatches >= minSize
             geneSet <- geneSet[ind]
             if(length(geneSet) == 0)
-              stop("No gene set left.")
+              stop("No gene set with the minimal number of genes.")
             res <- les:::mcsapply(geneSet, gsri, exprs=exprs, groups=groups, name=NULL,
                                   weight=weight, nBoot=nBoot, grenander=grenander, test=test,
                                   testArgs=testArgs, alpha=alpha, mc.cores=nCores)

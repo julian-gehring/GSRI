@@ -505,6 +505,71 @@ end{figure}
 
 \end_layout
 
+\begin_layout Scrap
+<<weights>>=
+\begin_inset Newline newline
+\end_inset
+
+library(hgu95av2.db)
+\begin_inset Newline newline
+\end_inset
+
+gNames <- rownames(exprs(eset))
+\begin_inset Newline newline
+\end_inset
+
+ind <- Lkeys(hgu95av2GO) %in% gNames
+\begin_inset Newline newline
+\end_inset
+
+evidence <- factor(toTable(hgu95av2GO)[ind,"Evidence"])
+\begin_inset Newline newline
+\end_inset
+
+summary(evidence)
+\begin_inset Newline newline
+\end_inset
+
+l <- lapply(gNames, function(name, names, evidence) evidence[names %in%
+ name], gNames, evidence)
+\begin_inset Newline newline
+\end_inset
+
+expInd <- sapply(l, function(l) any(l %in% "EXP"))
+\begin_inset Newline newline
+\end_inset
+
+goWeight <- rep(0.5, length.out=length(expInd))
+\begin_inset Newline newline
+\end_inset
+
+goWeight[expInd] <- 1
+\begin_inset Newline newline
+\end_inset
+
+gCol5go <- gsri(eset, phenotypes$type, weight=goWeight)
+\begin_inset Newline newline
+\end_inset
+
+gCol5go
+\begin_inset Newline newline
+\end_inset
+
+gCol5go2 <- gsri(eset, phenotypes$type, gmt, weight=goWeight)
+\begin_inset Newline newline
+\end_inset
+
+gCol5go2
+\begin_inset Newline newline
+\end_inset
+
+@
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section
 Todo
 \end_layout

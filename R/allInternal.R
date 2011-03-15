@@ -25,10 +25,15 @@ calcGsri <- function(exprs, groups, name, id, weights,
   ## calculate Lambda
   pval <- multiStat(exprs, groups, id, 1:ncol(exprs), test, testArgs)
   nPval <- length(pval)
+  nGenes <- nrow(exprs)
   if(is.null(weights))
-    weights <- rep(1/nGenesGs, nGenesGs)
-  if((length(weights) != nGenesGs) || (length(weights) != nPval))
-    stop("Argument 'weight' must contain exactly one value for each gene in the gene set.")
+    weights <- rep(1/nGenes, nGenes)
+  if(length(weights) == nGenes)
+    weights <- weights[id]
+  if(length(weights) != nGenesGs)
+    stop("'weight' must contain one value for each gene.")
+  if(length(pval) != nGenesGs)
+    stop("'test' must return one p-value for each gene in the gene set.")
   cdf <- les:::wcdfGrenander(pval, weights, nPval, grenander, FALSE)
   l0 <- les:::itLinReg(cdf$pval, cdf$cdf, weights, nPval, FALSE, FALSE, FALSE)
 

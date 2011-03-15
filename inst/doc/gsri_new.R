@@ -102,9 +102,28 @@ plot(gCol5, 5, ecdf=list(type="s"))
 
 
 ###################################################
-### chunk number 12: sessionInfo
+### chunk number 12: weights
 ###################################################
-#line 173 "gsri_new.Rnw"
+#line 155 "gsri_new.Rnw"
+library(hgu95av2.db)
+gNames <- rownames(exprs(eset))
+ind <- Lkeys(hgu95av2GO) %in% gNames
+evidence <- factor(toTable(hgu95av2GO)[ind,"Evidence"])
+summary(evidence)
+l <- lapply(gNames, function(name, names, evidence) evidence[names %in% name], gNames, evidence)
+expInd <- sapply(l, function(l) any(l %in% "EXP"))
+goWeight <- rep(0.5, length.out=length(expInd))
+goWeight[expInd] <- 1
+gCol5go <- gsri(eset, phenotypes$type, weight=goWeight)
+gCol5go
+gCol5go2 <- gsri(eset, phenotypes$type, gmt, weight=goWeight)
+gCol5go2
+
+
+###################################################
+### chunk number 13: sessionInfo
+###################################################
+#line 190 "gsri_new.Rnw"
 toLatex(sessionInfo(), locale=FALSE)
 
 

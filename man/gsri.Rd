@@ -43,10 +43,10 @@ test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...)
     argument. Has to have as many unique elements as gene sets in the
     analysis.}
   \item{weight}{Optional numerical vector of weights specifying the
-    certainty a gene is part of the gene set. If missing all genes are
-    assumed to have the same certainty. Please note that the weights are
+    certainty a gene is part of the gene set. If \code{NULL} all genes are
+    assumed to have the same weight. Please note that the weights are
     defined in a relative way and thus any kind of positive
-    scores/weights are feasable. Must have as many elements as eighter
+    weights is feasable. Must have as many elements as eighter
     the genes defined in \code{geneSet} or in \code{exprs}.}
   \item{nBoot}{Integer with the number of bootstrap samples to be drawn
     in the calculation of the GSRI (default: 100).}
