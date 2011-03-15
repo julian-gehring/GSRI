@@ -174,12 +174,12 @@ setMethod("summary",
 
 ## sort ##
 setGeneric("sortGsri",
-           function(x, names, decreasing=FALSE, na.last=NA, ...)
+           function(x, names, decreasing=TRUE, na.last=NA, ...)
            standardGeneric("sortGsri"))
 
 setMethod("sortGsri",
           signature("Gsri"),
-          function(x, names, decreasing=FALSE, na.last=NA) {
+          function(x, names, decreasing=TRUE, na.last=NA) {
 
             res <- getGsri(x)
             sub <- subset(res, select=names)

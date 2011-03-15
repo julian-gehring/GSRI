@@ -14,17 +14,18 @@
 }
 
 \usage{
-sortGsri(x, names, decreasing=FALSE, na.last=NA, ...)
+sortGsri(x, names, decreasing=TRUE, na.last=NA, ...)
 }
 
 \arguments{
-  \item{x}{A matrix or an expression set of size n x m, containing
-    the expression values for the genes, with rows representing the
-    genes and columns representing the arrays.}
-  \item{names}{A factor of length m representing the groupss of
-    the samples.}
-  \item{decreasing}{missing, GeneSet, GeneSetClass}
-  \item{na.last}{Character vector with the names of the gene set(s).}
+  \item{x}{Object of class 'Gsri', as obtained from the 'gsri' methods,
+    whose results should be sorted.}
+  \item{names}{Name(s) of the column(s) along which the results of 'x'
+    should be sorted. If a vector the results are sorted first along the
+    first name, then the second, and so on.}
+  \item{decreasing}{Logical indicating whether the sorting should be in
+    decreasing (default) or ascending order.}
+  \item{na.last}{How 'NA' values in the results should be treated. See 'sort'}
   \item{...}{Additional arguments}
 }
 
