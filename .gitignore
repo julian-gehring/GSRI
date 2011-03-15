@@ -1,3 +1,4 @@
 *~
 .Rhistory
-gsri.pdf
+inst/doc/*.pdf
+
