@@ -1,7 +1,8 @@
 calcGsri <- function(exprs, groups, name, id, weights,
                      grenander=TRUE, nBoot=100,
-                     test="ttest", testArgs=NULL, alpha=0.05, ...) {
+                     test=NULL, testArgs=NULL, alpha=0.05, ...) { ## fix default for 'test'
 
+  
   if(length(id) == 0 || !is.logical(id))
     stop("Gene set has no matches in the expression data.")
   if(ncol(exprs) != length(groups))
@@ -9,23 +10,31 @@ calcGsri <- function(exprs, groups, name, id, weights,
   if(!(is.function(test) && length(formals(test)) > 1))
     stop("'test' must be a function with at least two input arguments.")
   nGenesGs <- sum(id)
-  
-  pval <- multiStat(exprs, groups, id, grenander, test, testArgs)
+
+  ## reorder data for bootstrapping
+  ord <- order(groups)
+  exprs <- exprs[ ,ord]
+  groups <- groups[ord]
+  nSamples <- tabulate(groups)
+
+  ## calculate Lambda
+  pval <- multiStat(exprs, groups, id, 1:ncol(exprs), test, testArgs)
   nPval <- length(pval)
   if(is.null(weights))
     weights <- rep(1/nGenesGs, nGenesGs)
   if((length(weights) != nGenesGs) || (length(weights) != nPval))
-    stop("'weight' must contain one value for each gene in the gene set.")
-  les <- les:::fitGsri(pval, NULL, weights, nPval, grenander, se=FALSE, custom=FALSE)
-  p <- les[1]
-  
-  pb <- replicate(nBoot, gsriBoot(exprs, groups, weights, id, grenander, test, testArgs))
-  pb <- pb - mean(pb) + p
-  psd <- stats::sd(pb)
-  gsri <- max(stats::quantile(pb, alpha, na.rm=TRUE), 0)
+    stop("Argument 'weight' must contain exactly one value for each gene in the gene set.")
+  l0 <- les:::fitGsri(pval, NULL, weights, nPval, grenander, se=FALSE, custom=FALSE)[1]
 
-  nRegGenes <- as.integer(floor(p*nGenesGs))
-  result <- data.frame(pRegGenes=p, pRegGenesSd=psd, nRegGenes=nRegGenes,
+  ## bootstrapping
+  lb <- replicate(nBoot,
+                  gsriBoot(exprs, groups, weights, id, grenander, test, testArgs, nSamples))
+  lb <- lb - mean(lb) + l0
+  lsd <- stats::sd(lb)
+  gsri <- max(stats::quantile(lb, alpha, na.rm=TRUE), 0)
+
+  nRegGenes <- as.integer(floor(l0*nGenesGs))
+  result <- data.frame(pRegGenes=l0, pRegGenesSd=lsd, nRegGenes=nRegGenes,
                        gsri=gsri, nGenes=nGenesGs, row.names=name)
   names(result)[4] <- sprintf("%s(%g%%)", "GSRI", alpha*100)
   res <- list(result=result, pval=pval)
@@ -34,45 +43,33 @@ calcGsri <- function(exprs, groups, name, id, weights,
 }
 
 
-multiStat <- function(exprs, groups, id, grenander, test, testArgs) {
+multiStat <- function(exprs, groups, id, index, test, testArgs) { ## default args?
 
-  pval <- test(exprs, groups, id, testArgs)
+  pval <- test(exprs, groups, id, index, testArgs)
+  pval <- pval[!is.na(pval)]
   if(length(pval) != sum(id))
     stop("Test statistics must return one p-value for each gene in the gene set.")
-  #pval <- pval[!is.na(pval)] ## needed?
 
   return(pval)
 }
 
 
-gsriBoot <- function(exprs, groups, weights, id, grenander, test, testArgs) {
+gsriBoot <- function(exprs, groups, weights, id, grenander, test, testArgs, nSamples) {
 
-  bo <- bootWithinGroup(exprs, groups)
-  pval <- multiStat(bo$exprs, bo$groups, id, grenander, test, testArgs)
-  res <- les:::fitGsri(pval, NULL, weights, length(pval), grenander, se=TRUE, custom=FALSE)[1]
+  index <- bootInGroups(nSamples)
+  pval <- multiStat(exprs, groups, id, index, test, testArgs)
+  res <- les:::fitGsri(pval, NULL, weights, length(pval), grenander, se=FALSE, custom=FALSE)[1]
 
   return(res)
 }
 
 
-bootWithinGroup <- function(exprs, groups, weights) {
-
-  ord <- order(groups)
-  exprs <- exprs[ ,ord,drop=FALSE]
-  groups <- groups[ord] ## needed for correct resampling
-
-  nLevels <- nlevels(groups) ## or length(nSamples) ? factor w/o group?
-  nSamples <- tabulate(groups)
+bootInGroups <- function(nSamples) {
 
   perm <- unlist(lapply(nSamples, sample.int, replace=TRUE))
-  offset <- rep.int(cumsum(c(0, nSamples[-length(nSamples)])), nSamples)
-  ordBoot <- perm + offset
+  offset <- rep.int(cumsum(c(0L, nSamples[-length(nSamples)])), nSamples)
+  index <- perm + offset
+  ## check: only one group, groups with one sample, etc.
 
-  exprs <- exprs[ ,ordBoot,drop=FALSE]
-  if(!identical(groups, groups[ordBoot])) ## remove? just control
-    warning("Bootstrapping lead to changes in the groups.")
-  res <- list(exprs=exprs, groups=groups)
-
-  return(res)
+  return(index)
 }
-

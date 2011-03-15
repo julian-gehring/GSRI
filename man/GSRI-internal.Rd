@@ -5,16 +5,16 @@
 \alias{GSRI-internal}
 \alias{gsriBoot}
 \alias{multiStat}
-\alias{bootWithinGroups}
+\alias{bootInGroups}
 \alias{calcGsri}
 
 \description{Internal GSRI functions}
 
 \usage{
-gsriBoot(exprs, groups, weights, id, grenander, test, testArgs)
-multiStat(exprs, groups, id, grenander, test, testArgs)
-bootWithinGroup(exprs, groups, weights)
-calcGsri(exprs, groups, name, id, weights, grenander=TRUE, nBoot=100, test="ttest", testArgs=NULL, alpha=0.05, ...)
+gsriBoot(exprs, groups, weights, id, grenander, test, testArgs, nSamples)
+multiStat(exprs, groups, id, index, test, testArgs)
+bootInGroups(nSamples)
+calcGsri(exprs, groups, name, id, weights, grenander=TRUE, nBoot=100, test=NULL, testArgs=NULL, alpha=0.05, ...)
 }
 
 \author{

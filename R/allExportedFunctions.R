@@ -1,14 +1,18 @@
-rowt <- function(exprs, groups, id, testArgs)
-  genefilter::rowttests(exprs[id, ,drop=FALSE], groups)$p.value
+rowt <- function(exprs, groups, id, index, testArgs) {
+  #genefilter:::rowcoltt(exprs[id, ,drop=FALSE], groups, FALSE, 1L)$p.value
+  genefilter::rowttests(exprs[id,index,drop=FALSE], groups)$p.value
+}
 
 
-rowF <- function(exprs, groups, id, testArgs)
-  genefilter::rowFtests(exprs[id, ,drop=FALSE], groups)$p.value
+rowF <- function(exprs, groups, id, index, testArgs=TRUE) {
+  #genefilter:::rowcolFt(exprs[id, ,drop=FALSE], groups, testArgs, 1L)$p.value
+  genefilter::rowFtests(exprs[id,index,drop=FALSE], groups)$p.value
+}
 
 
-limmat <- function(exprs, groups, id, testArgs) {
+limmat <- function(exprs, groups, id, index, testArgs) {
   design <- cbind(offset=1, diff=groups)
-  fit <- limma::lmFit(exprs, design)
+  fit <- limma::lmFit(exprs[ ,index,drop=FALSE], design)
   fit <- limma::eBayes(fit)
   pval <- fit$p.value[id,"diff"]
 
@@ -16,9 +20,9 @@ limmat <- function(exprs, groups, id, testArgs) {
 }
 
 
-limmatGsri <- function(exprs, groups, id, testArgs) {
+limmatGsri <- function(exprs, groups, id, index, testArgs) {
   design <- cbind(offset=1, diff=groups)
-  fit <- limma::lmFit(exprs, design)
+  fit <- limma::lmFit(exprs[ ,index,drop=FALSE], design)
   fit <- limma::eBayes(fit)
   pval <- fit$p.value[ ,"diff"]
 

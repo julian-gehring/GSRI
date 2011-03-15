@@ -15,10 +15,10 @@
 }
 
 \usage{
-rowt(exprs, groups, id, testArgs)
-rowF(exprs, groups, id, testArgs)
-limmat(exprs, groups, id, testArgs)
-limmatGsri(exprs, groups, id, testArgs)
+rowt(exprs, groups, id, index, testArgs)
+rowF(exprs, groups, id, index, testArgs)
+limmat(exprs, groups, id, index, testArgs)
+limmatGsri(exprs, groups, id, index, testArgs)
 }
 
 \arguments{
@@ -26,9 +26,12 @@ limmatGsri(exprs, groups, id, testArgs)
     representing the genes and columns representing the arrays.}
   \item{groups}{A factor with the length m, specifying the groups
     of the corresponding arrays in 'exprs'.}
-  \item{id}{Index for the rows of 'exprs' which are part of the
+  \item{id}{Index vector for the rows of 'exprs' which are part of the
     current gene set.}
-  \item{testArgs}{Optinal arguments, not used in the default functions.}
+  \item{index}{Index for the columns of 'exprs' leading to the
+    resampling of the samples. Similar to the 'index' arguments as known
+    from 'boot' of the 'boot' package.}
+  \item{testArgs}{Optinal arguments used by the test functions.}
 }
 
 \details{
