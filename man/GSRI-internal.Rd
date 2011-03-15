@@ -7,6 +7,7 @@
 \alias{multiStat}
 \alias{bootInGroups}
 \alias{calcGsri}
+\alias{getArgs}
 
 \description{Internal GSRI functions}
 
@@ -14,7 +15,9 @@
 gsriBoot(exprs, groups, weights, id, grenander, test, testArgs, nSamples)
 multiStat(exprs, groups, id, index, test, testArgs)
 bootInGroups(nSamples)
-calcGsri(exprs, groups, name, id, weights, grenander=TRUE, nBoot=100, test=NULL, testArgs=NULL, alpha=0.05, ...)
+calcGsri(exprs, groups, name, id, weights, grenander=TRUE, nBoot=100,
+test=NULL, testArgs=NULL, alpha=0.05, ...)
+getArgs(name, first=NULL, last=NULL, ...)
 }
 
 \author{
