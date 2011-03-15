@@ -185,8 +185,26 @@ setGeneric("summary",
 
 setMethod("summary",
           signature("Gsri"),
-          function(object, ...) {
-            show(object)
+          function(object, names, decreasing=TRUE, na.last=NA, digits=4, ...) {
+
+            if(!missing(names))
+              object <- sortGsri(object, names, decreasing, na.last)
+            result <- round(getGsri(object), digits)
+            nGeneSet <- nrow(result)
+            textGeneSet <- if(nGeneSet == 1) "gene set" else "gene sets"
+            intro <- sprintf("%s %d %s:\n\n", "* Summary of the GSRI analysis for",
+                             nGeneSet, textGeneSet)
+            parms <- getParms(object)
+            parmTable <- data.frame(nBoot=parms$nBoot, alpha=parms$alpha[1],
+                                    grenander=parms$grenander,
+                                    weighting=!is.null(parms$weight), row.names="")
+            
+            cat(intro)
+            cat("** Results\n")
+            print(result)
+            cat("\n")
+            cat("** Parameter\n")
+            print(parmTable)
           })
 
 
