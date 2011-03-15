@@ -4,7 +4,7 @@
 \begin_header
 \textclass literate-article
 \begin_preamble
-%\VignetteIndexEntry{Introduction on how to use the Gene Set Regulation Index (GSRI) package to estimate the number of regulated genes in a gene set}
+%\VignetteIndexEntry{Introduction on how to use the Gene Set Regulation Index (GSRI) package to estimate the number of regulated genes in gene sets}
 %\VignettePackage{GSRI}
 
 \newcommand{\Robject}[1]{{\texttt{#1}}}
@@ -190,11 +190,11 @@ centering
 \backslash
 includegraphics[width=0.5
 \backslash
-columnwidth]{x_gsri_pdf}
+columnwidth]{fig_gsri_pdf}
 \backslash
 includegraphics[width=0.5
 \backslash
-columnwidth]{x_gsri_cdf}
+columnwidth]{fig_gsri_cdf}
 \end_layout
 
 \begin_layout Plain Layout
@@ -1136,7 +1136,7 @@ centering
 
 
 \backslash
-includegraphics{gsri_new-plot1}
+includegraphics{gsri-plot1}
 \end_layout
 
 \begin_layout Plain Layout
@@ -1228,7 +1228,7 @@ centering
 
 
 \backslash
-includegraphics{gsri_new-plot2}
+includegraphics{gsri-plot2}
 \end_layout
 
 \begin_layout Plain Layout

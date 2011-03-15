@@ -18,7 +18,7 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
-%\VignetteIndexEntry{Introduction on how to use the Gene Set Regulation Index (GSRI) package to estimate the number of regulated genes in a gene set}
+%\VignetteIndexEntry{Introduction on how to use the Gene Set Regulation Index (GSRI) package to estimate the number of regulated genes in gene sets}
 %\VignettePackage{GSRI}
 
 \newcommand{\Robject}[1]{{\texttt{#1}}}
@@ -72,7 +72,7 @@ distribution is shown in Figure \ref{fig:pval_cdf_dist}.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.5\columnwidth]{x_gsri_pdf}\includegraphics[width=0.5\columnwidth]{x_gsri_cdf}
+\includegraphics[width=0.5\columnwidth]{fig_gsri_pdf}\includegraphics[width=0.5\columnwidth]{fig_gsri_cdf}
 \caption{\label{fig:pval_cdf_dist}Distributions of p-values  in the probability and cumulative density, as shown in the left and right panel, respectively. The ratio $r$ of significant tests have an unknown distribution shifted towards zero, while the remaining fraction of $1-r$ tests exhibit a uniform distribution. This translates to a linear CDF with slope $1-r$ and intercept $r$. By fitting the linear component of the CDF, as indicated by the dashed line, the ratio of significant tests can be estimated.}
 \end{figure}
 
@@ -285,7 +285,7 @@ plot(g3)
 
 \begin{figure}
 \centering
-\includegraphics{gsri_new-plot1}
+\includegraphics{gsri-plot1}
 \caption{\label{fig:plot1}Visualization of GSRI results}
 \end{figure}
 
@@ -300,7 +300,7 @@ plot(gCol5, 5, ecdf=list(type="o"), plot=list(xlab="p", main="GSRI results: chr9
 
 \begin{figure}
 \centering
-\includegraphics{gsri_new-plot2}
+\includegraphics{gsri-plot2}
 \caption{\label{fig:plot2}Visualization of GSRI results, with customized parameters.}
 \end{figure}
 
