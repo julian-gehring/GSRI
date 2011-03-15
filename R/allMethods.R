@@ -161,6 +161,10 @@ setMethod("show",
 
 
 ## summary ##
+setGeneric("summary",
+           function(object, ...)
+           standardGeneric("summary"))
+
 setMethod("summary",
           signature("Gsri"),
           function(object, ...) {
