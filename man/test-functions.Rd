@@ -13,8 +13,8 @@
 }
 
 \usage{
-rowt(exprs, groups, testArgs)
-rowF(exprs, groups, testArgs)
+rowt(exprs, groups, id, testArgs)
+rowF(exprs, groups, id, testArgs)
 }
 
 \arguments{
@@ -22,6 +22,8 @@ rowF(exprs, groups, testArgs)
     representing the genes and columns representing the arrays.}
   \item{groups}{A factor with the length m, specifying the groups
     of the corresponding arrays in 'exprs'.}
+  \item{id}{Index for the rows of 'exprs' which are part of the
+    current gene set.}
   \item{testArgs}{Optinal arguments, not used in the default functions.}
 }
 

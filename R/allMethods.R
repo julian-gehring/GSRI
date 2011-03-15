@@ -7,9 +7,10 @@ setGeneric("gsri",
 setMethod("gsri",
           signature("matrix", "factor", "missing"),
           function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
-                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...) {
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE,
+                   id=!logical(nrow(exprs)), ...) {
             
-            res <- calcGsri(exprs, groups, names, weight,
+            res <- calcGsri(exprs, groups, names, id, weight,
                             grenander, nBoot, test, testArgs, alpha)
             parms <- list(weight=weight, nBoot=nBoot, test=test, alpha=alpha,
                           grenander=grenander, testArgs=testArgs)
@@ -39,11 +40,10 @@ setMethod("gsri",
 
             if(is.null(names))
               names <- setName(geneSet)
-            id <- geneIds(geneSet)
-            id <- intersect(id, rownames(exprs))
-            object <- gsri(exprs[id, ], groups, names=names, weight=weight,
+            id <-  rownames(exprs) %in% geneIds(geneSet)
+            object <- gsri(exprs, groups, names=names, weight=weight,
                            nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
-                           grenander=grenander)
+                           grenander=grenander, id=id)
 
             return(object)
           })

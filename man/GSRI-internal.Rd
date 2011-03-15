@@ -3,7 +3,6 @@
 \title{Internal GSRI functions}
 
 \alias{gsri-internal}
-\alias{getPvalues}
 \alias{gsriBoot}
 \alias{multiStat}
 \alias{bootWithinGroups}
@@ -12,11 +11,10 @@
 \description{Internal GSRI functions}
 
 \usage{
-getPvalues(exprs, d, groups, test, testArgs)
-gsriBoot(exprs, index, groups, cweight, grenander, test, testArgs, ...)
-multiStat(exprs, label, grenander, test, testArgs)
-bootWithinGroup(exprs, label)
-calcGsri(exprs, groups, name, weight, grenander=TRUE, nBoot=100, test="ttest", testArgs=NULL, alpha=0.05, ...)
+gsriBoot(exprs, index, groups, id, cweight, grenander, test, testArgs, ...)
+multiStat(exprs, groups, id, grenander, test, testArgs)
+bootWithinGroup(exprs, groups)
+calcGsri(exprs, groups, name, id, weight, grenander=TRUE, nBoot=100, test="ttest", testArgs=NULL, alpha=0.05, ...)
 }
 
 \author{

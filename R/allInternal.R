@@ -1,14 +1,16 @@
-calcGsri <- function(exprs, groups, name,
+calcGsri <- function(exprs, groups, name, id, 
                      weight, grenander=TRUE, nBoot=100,
                      test="ttest", testArgs=NULL, alpha=0.05, ...) {
 
-  nGenes <- nrow(exprs)
+  if(length(id) == 0 || !all(is.logical(id)))
+    stop("Gene set has no matches in the expression data.")
   if(ncol(exprs) != length(groups))
     stop("Number of columns of 'exprs' must match 'groups'.")
   if(!(is.function(test) && length(formals(test)) > 1))
     stop("'test' must be a function with at least two input arguments.")
-
-  pval <- multiStat(exprs, groups, grenander, test, testArgs)
+  nGenesGs <- sum(id)
+  
+  pval <- multiStat(exprs, groups, id, grenander, test, testArgs)
   nPval <- length(pval)
   if(is.null(weight))
     weight <- rep(1, nPval)
@@ -18,8 +20,8 @@ calcGsri <- function(exprs, groups, name,
   
   ## pval <- multiStat(exprs, 1:ncol(exprs), groups, test, testArgs)
   b <- boot::boot(t(exprs), gsriBoot, nBoot,
-                  groups=groups, cweight=weight, grenander=grenander,
-                  test=test, testArgs=testArgs)
+                  groups=groups, id=id, cweight=weight, 
+                  grenander=grenander, test=test, testArgs=testArgs)
   p1 <- max(b$t0[[1]], 0)
   bias <- apply(b$t, 2, mean) - b$t0
   pt <- b$t - bias
@@ -31,9 +33,9 @@ calcGsri <- function(exprs, groups, name,
   #p <- max(b$t0, 0)
   #psd <- stats::sd(pb)
   #gsri <- max(stats::quantile(pb, alpha, na.rm=TRUE), 0)
-  nRegGenes <- as.integer(floor(p*nGenes))
+  nRegGenes <- as.integer(floor(p*nGenesGs))
   result <- data.frame(pRegGenes=p0, pRegGenesSd=psd0, nRegGenes=nRegGenes,
-                       gsri=gsri, nGenes=nGenes, row.names=name)
+                       gsri=gsri, nGenes=nGenesGs, row.names=name)
   names(result)[4] <- sprintf("%s(%g%%)", "GSRI", alpha*100)
   res <- list(result=result, pval=pval)
   #res <- result
@@ -42,18 +44,18 @@ calcGsri <- function(exprs, groups, name,
 }
 
 
-multiStat <- function(exprs, label, grenander, test, testArgs) {
+multiStat <- function(exprs, groups, id, grenander, test, testArgs) {
 
-  pval <- test(exprs, label, testArgs)
+  pval <- test(exprs, groups, id, testArgs)
   pval <- pval[!is.na(pval)] ## needed?
 
   return(pval)
 }
 
 
-gsriBoot <- function(exprs, index, groups, cweight, grenander, test, testArgs, ...) {
+gsriBoot <- function(exprs, index, groups, id, cweight, grenander, test, testArgs, ...) {
 
-  pval <- multiStat(t(exprs), groups[index], grenander, test, testArgs)
+  pval <- multiStat(t(exprs), groups[index], id, grenander, test, testArgs)
   p <- les:::fitGsri(pval, NULL, cweight, length(pval), grenander, FALSE, FALSE)[1]
 
   return(p)
@@ -69,34 +71,25 @@ gsriBoot <- function(exprs, index, groups, cweight, grenander, test, testArgs, .
 #}
 
 
-bootWithinGroup <- function(exprs, label) {
+bootWithinGroup <- function(exprs, groups) {
 
-  ord <- order(label)
+  ord <- order(groups)
   exprs <- exprs[ ,ord, drop=FALSE]
-  label <- label[ord]
+  groups <- groups[ord]
 
-  nLevels <- nlevels(label) ## or length(nSamples) ? factor w/o group?
-  nSamples <- tabulate(label)
+  nLevels <- nlevels(groups) ## or length(nSamples) ? factor w/o group?
+  nSamples <- tabulate(groups)
 
   perm <- unlist(lapply(nSamples, sample.int, replace=TRUE))
   offset <- rep.int(cumsum(c(0, nSamples[-length(nSamples)])), nSamples)
   ordBoot <- perm + offset
 
   exprs <- exprs[ ,ordBoot, drop=FALSE]
-  labelOrd <- label[ordBoot]
-  if(!identical(label, labelOrd))
+  groupsOrd <- groups[ordBoot]
+  if(!identical(groups, groupsOrd))
     warning("Bootstrapping lead to changes in the groups.")
 
-  return(list(exprs=exprs, label=labelOrd))
+  return(list(exprs=exprs, groups=groupsOrd))
 }
 
-
-getPvalues <-
-function (exprs, d, groups, test, testArgs) {
-  
-    pvals <- GSRI:::multiStat(as.matrix(exprs), groups[d], test,  testArgs)
-    pvals <- pvals[!is.na(pvals)]
-    
-    return(pvals)
-}
 
