@@ -1,6 +1,6 @@
 calcGsri <- function(data, phenotype, name,
                      weight, grenander=TRUE, nBoot=100,
-                     test="ttest", testArgs=NULL, ..., alpha=0.05) {
+                     test="ttest", testArgs=NULL, alpha=0.05, ...) {
 
   nGenes <- nrow(data)
   if(ncol(data) != length(phenotype))
@@ -90,14 +90,10 @@ bootWithinGroup <- function(exprs, label) {
 }
 
 
-
-
-
 getPvalues <-
 function (data, d, phenotype, test, testArgs) 
 {
-    phenotype <- phenotype[d]
-    pvals <- GSRI:::multiStat(as.matrix(data), phenotype, test, 
+    pvals <- GSRI:::multiStat(as.matrix(data), phenotype[d], test, 
         testArgs)
     pvals <- pvals[!is.na(pvals)]
     return(pvals)

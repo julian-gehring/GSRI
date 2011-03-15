@@ -70,9 +70,9 @@ setMethod("gsri",
             res <- sapply(geneSet, gsri, exprs=exprs, phenotype=phenotype, name=NULL,
                           weight=weight, nBoot=nBoot, grenander=grenander, test=test,
                           testArgs=testArgs, alpha=alpha)
-            
+
             object <- new("Gsri",
-                          result=as.data.frame(t(sapply(res, getGsri)), row.names=names),
+                          result=as.data.frame(do.call(rbind, lapply(res, getGsri)), row.names=names),
                           pval=sapply(res, getPval),
                           cdf=sapply(res, getCdf),
                           parms=getParms(res[[1]])
