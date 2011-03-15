@@ -19,14 +19,15 @@
 }
 
 \usage{
-getGsri(object)
-getPval(object)
-getCdf(object)
-getParms(object)
+getGsri(object, ...)
+getPval(object, ...)
+getCdf(object, ...)
+getParms(object, ...)
 }
 
 \arguments{
   \item{object}{An object of class 'Gsri' which results are exported.}
+  \item{...}{Additional arguments, currently not used.}
 }
 
 \details{

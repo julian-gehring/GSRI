@@ -14,7 +14,7 @@
 \usage{
 getPvalues(exprs, d, groups, test, testArgs)
 gsriBoot(exprs, index, groups, cweight, grenander, test, testArgs, ...)
-multiStat(exprs, label, weight, grenander, test, ...)
+multiStat(exprs, label, weight, grenander, test, testArgs)
 bootWithinGroup(exprs, label)
 calcGsri(exprs, groups, name, weight, grenander=TRUE, nBoot=100, test="ttest", testArgs=NULL, alpha=0.05, ...)
 }

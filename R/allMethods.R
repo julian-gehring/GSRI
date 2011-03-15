@@ -7,7 +7,7 @@ setGeneric("gsri",
 setMethod("gsri",
           signature("matrix", "factor", "missing"),
           function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
-                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...) {
             
             res <- calcGsri(exprs, groups, names, weight,
                             grenander, nBoot, test, testArgs, alpha)
@@ -23,7 +23,7 @@ setMethod("gsri",
 setMethod("gsri",
           signature("ExpressionSet", "factor", "missing"),
           function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
-                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...) {
 
             object <- gsri(exprs(exprs), groups, names=names, weight=weight,
                            nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
@@ -35,7 +35,7 @@ setMethod("gsri",
 setMethod("gsri",
           signature("matrix", "factor", "GeneSet"),
           function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
-                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...) {
 
             if(is.null(names))
               names <- setName(geneSet)
@@ -51,7 +51,7 @@ setMethod("gsri",
 setMethod("gsri",
           signature("ExpressionSet", "factor", "GeneSet"),
           function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
-                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...) {
 
             object <- gsri(exprs(exprs), groups, geneSet, names=names, weight=weight,
                            nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
@@ -63,7 +63,7 @@ setMethod("gsri",
 setMethod("gsri",
           signature("matrix", "factor", "GeneSetCollection"),
           function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
-                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, nCores=NULL) {
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, nCores=NULL, ...) {
 
             if(is.null(names))
               names <- names(geneSet)
@@ -84,7 +84,7 @@ setMethod("gsri",
 setMethod("gsri",
           signature("ExpressionSet", "factor", "GeneSetCollection"),
           function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
-                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, nCores=NULL) {
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, nCores=NULL, ...) {
 
             object <- gsri(exprs(exprs), groups, geneSet, names=names, weight=weight,
                          nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
@@ -96,7 +96,7 @@ setMethod("gsri",
 
 ## getGsri ##
 setGeneric("getGsri",
-           function(object)
+           function(object, ...)
            standardGeneric("getGsri"))
 
 setMethod("getGsri",
@@ -107,7 +107,7 @@ setMethod("getGsri",
 
 ## getPval ##
 setGeneric("getPval",
-           function(object)
+           function(object, ...)
            standardGeneric("getPval"))
 
 setMethod("getPval",
@@ -118,7 +118,7 @@ setMethod("getPval",
 
 ## getCdf ##
 setGeneric("getCdf",
-           function(object)
+           function(object, ...)
            standardGeneric("getCdf"))
 
 setMethod("getCdf",
@@ -129,7 +129,7 @@ setMethod("getCdf",
 
 ## getParms ##
 setGeneric("getParms",
-           function(object)
+           function(object, ...)
            standardGeneric("getParms"))
 
 setMethod("getParms",

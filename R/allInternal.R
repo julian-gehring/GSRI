@@ -10,7 +10,7 @@ calcGsri <- function(exprs, groups, name,
   if(is.null(weight))
     weight <- rep(1, nGenes)
 
-  pval <- multiStat(exprs, groups, weight, grenander, test, ...)
+  pval <- multiStat(exprs, groups, weight, grenander, test, testArgs)
   les <- les:::fitGsri(pval, NULL, weight, nGenes, grenander, se=TRUE, custom=FALSE)
   p0 <- les[1]
   psd0 <- les[2]
@@ -26,7 +26,7 @@ calcGsri <- function(exprs, groups, name,
   
   p <- p1
   #pb <- replicate(nBoot,
-  #                gsriBoot(exprs, groups, weight, grenander, test, ...))
+  #                gsriBoot(exprs, groups, weight, grenander, test, testArgs))
   #p <- max(b$t0, 0)
   #psd <- stats::sd(pb)
   #gsri <- max(stats::quantile(pb, alpha, na.rm=TRUE), 0)
@@ -41,9 +41,9 @@ calcGsri <- function(exprs, groups, name,
 }
 
 
-multiStat <- function(exprs, label, weight, grenander, test, ...) {
+multiStat <- function(exprs, label, weight, grenander, test, testArgs) {
 
-  pval <- test(exprs, label, ...)
+  pval <- test(exprs, label, testArgs)
   pval <- pval[!is.na(pval)] ## needed?
 
   return(pval)
@@ -52,17 +52,17 @@ multiStat <- function(exprs, label, weight, grenander, test, ...) {
 
 gsriBoot <- function(exprs, index, groups, cweight, grenander, test, testArgs, ...) {
 
-  pval <- multiStat(t(exprs), groups[index], cweight, grenander, test, ...)
+  pval <- multiStat(t(exprs), groups[index], cweight, grenander, test, testArgs)
   p <- les:::fitGsri(pval, NULL, cweight, length(pval), grenander, FALSE, FALSE)[1]
 
   return(p)
 }
 
 
-#gsriBoot <- function(exprs, groups, weight, grenander, test, ...) {
+#gsriBoot <- function(exprs, groups, weight, grenander, test, testArgs) {
 #
 #  boot <- bootWithinGroup(exprs, groups)
-#  res <- multiStat(boot$exprs, boot$label, weight, grenander, test, ...) ## weight[ord] !!!
+#  res <- multiStat(boot$exprs, boot$label, weight, grenander, test, testArgs) ## weight[ord] !!!
 #
 #  return(res)
 #}
@@ -91,11 +91,11 @@ bootWithinGroup <- function(exprs, label) {
 
 
 getPvalues <-
-function (exprs, d, groups, test, testArgs) 
-{
-    pvals <- GSRI:::multiStat(as.matrix(exprs), groups[d], test, 
-        testArgs)
+function (exprs, d, groups, test, testArgs) {
+  
+    pvals <- GSRI:::multiStat(as.matrix(exprs), groups[d], test,  testArgs)
     pvals <- pvals[!is.na(pvals)]
+    
     return(pvals)
 }
 

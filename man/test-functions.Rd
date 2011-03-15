@@ -13,8 +13,8 @@
 }
 
 \usage{
-rowt(exprs, groups, ...)
-rowF(exprs, groups, ...)
+rowt(exprs, groups, testArgs)
+rowF(exprs, groups, testArgs)
 }
 
 \arguments{
@@ -22,7 +22,7 @@ rowF(exprs, groups, ...)
     representing the genes and columns representing the arrays.}
   \item{groups}{A factor with the length m, specifying the groups
     of the corresponding arrays in 'exprs'.}
-  \item{...}{Optinal arguments, not used in the default functions.}
+  \item{testArgs}{Optinal arguments, not used in the default functions.}
 }
 
 \details{
