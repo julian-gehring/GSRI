@@ -43,6 +43,8 @@ setMethod("gsri",
 
             if(is.null(names))
               names <- setName(geneSet)
+            if(is.na(names))
+              names <- NULL
             id <-  rownames(exprs) %in% geneIds(geneSet)
             object <- gsri(exprs, groups, names=names, weight=weight,
                            nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
