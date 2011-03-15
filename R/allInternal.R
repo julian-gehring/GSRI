@@ -7,11 +7,12 @@ calcGsri <- function(exprs, groups, name,
     stop("Number of columns of 'exprs' must match 'groups'.")
   if(!(is.function(test) && length(formals(test)) > 1))
     stop("'test' must be a function with at least two input arguments.")
-  if(is.null(weight))
-    weight <- rep(1, nGenes)
 
-  pval <- multiStat(exprs, groups, weight, grenander, test, testArgs)
-  les <- les:::fitGsri(pval, NULL, weight, nGenes, grenander, se=TRUE, custom=FALSE)
+  pval <- multiStat(exprs, groups, grenander, test, testArgs)
+  nPval <- length(pval)
+  if(is.null(weight))
+    weight <- rep(1, nPval)
+  les <- les:::fitGsri(pval, NULL, weight, nPval, grenander, se=TRUE, custom=FALSE)
   p0 <- les[1]
   psd0 <- les[2]
   
@@ -41,7 +42,7 @@ calcGsri <- function(exprs, groups, name,
 }
 
 
-multiStat <- function(exprs, label, weight, grenander, test, testArgs) {
+multiStat <- function(exprs, label, grenander, test, testArgs) {
 
   pval <- test(exprs, label, testArgs)
   pval <- pval[!is.na(pval)] ## needed?
@@ -52,7 +53,7 @@ multiStat <- function(exprs, label, weight, grenander, test, testArgs) {
 
 gsriBoot <- function(exprs, index, groups, cweight, grenander, test, testArgs, ...) {
 
-  pval <- multiStat(t(exprs), groups[index], cweight, grenander, test, testArgs)
+  pval <- multiStat(t(exprs), groups[index], grenander, test, testArgs)
   p <- les:::fitGsri(pval, NULL, cweight, length(pval), grenander, FALSE, FALSE)[1]
 
   return(p)
