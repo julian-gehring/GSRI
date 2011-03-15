@@ -1,9 +1,9 @@
 rowt <- function(exprs, groups, id, testArgs)
-  genefilter::rowttests(exprs[id, ], groups)$p.value
+  genefilter::rowttests(exprs[id, ,drop=FALSE], groups)$p.value
 
 
 rowF <- function(exprs, groups, id, testArgs)
-  genefilter::rowFtests(exprs[id, ], groups)$p.value
+  genefilter::rowFtests(exprs[id, ,drop=FALSE], groups)$p.value
 
 
 limmat <- function(exprs, groups, id, testArgs) {
