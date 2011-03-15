@@ -138,6 +138,9 @@ test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE)
 }
 
 \examples{
+data <- matrix(rnorm(100*20), 100)
+phenotype <- factor(rep(1:2, each=10))
+
 \dontrun{
 ## Simulate expression data for a gene set of:
 ## 100 genes, 40 samples (20 treatment, 20 control)

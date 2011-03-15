@@ -11,10 +11,11 @@ setMethod("gsri",
             
             res <- calcGsri(exprs, phenotype, names, weight,
                             grenander, nBoot, test, testArgs, alpha)
-            ##object <- new("Gsri", result=res$result, pval=list(res$pval))
             parms <- list(weight=weight, nBoot=nBoot, test=test, alpha=alpha,
                           grenander=grenander, testArgs=testArgs)
-            object <- new("Gsri", result=res, parms=parms)
+            object <- new("Gsri",
+                          result=res$result, pval=list(res$pval), cdf=list(res$pval),
+                          parms=parms)
             
             return(object)
           })
@@ -24,9 +25,9 @@ setMethod("gsri",
           function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
                    test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
 
-            res <- calcGsri(exprs(exprs), phenotype, names, weight,
-                            grenander, nBoot, test, testArgs, alpha)
-            object <- new("Gsri", result=res)
+            object <- gsri(exprs(exprs), phenotype, names=names, weight=weight,
+                           nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
+                           grenander=grenander)
             
             return(object)
           })
@@ -38,9 +39,10 @@ setMethod("gsri",
             
             id <- geneIds(geneSet)
             id <- intersect(id, rownames(exprs))
-            res <- calcGsri(exprs[id, ], phenotype, names, weight,
-                            grenander, nBoot, test, testArgs, alpha)            
-            object <- new("Gsri", result=res)
+            object <- gsri(exprs[id, ], phenotype, names=names, weight=weight,
+                           nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
+                           grenander=grenander)
+
             return(object)
           })
 
@@ -48,11 +50,11 @@ setMethod("gsri",
           signature("ExpressionSet", "factor", "GeneSet"),
           function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
                    test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
+
+            object <- gsri(exprs(exprs), phenotype, geneSet, names=names, weight=weight,
+                           nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
+                           grenander=grenander)
             
-            id <- geneIds(geneSet)
-            res <- calcGsri(exprs(exprs[id, ]), phenotype, names, weight,
-                            grenander, nBoot, test, testArgs, alpha)            
-            object <- new("Gsri", result=res)
             return(object)
           })
 
@@ -60,22 +62,20 @@ setMethod("gsri",
           signature("matrix", "factor", "GeneSetCollection"),
           function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
                    test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
-            
-            extract <- function(geneSet, data, phenotype, name, weight, grenander,
-                                nBoot, test, testArgs, alpha) {
-              id <- geneIds(geneSet)
-              res <- calcGsri(exprs[id, ], phenotype, names, weight,
-                              grenander, nBoot, test, testArgs, alpha)
-            }
-            res <- sapply(geneSet, extract, data=exprs, phenotype=phenotype, name=names,
-                          weight=weight, nBoot=nBoot, grenander=grenander, test=test,
-                          testArgs=testArgs, alpha=alpha)
-            res <- as.data.frame(t(res))
+
             if(is.null(names))
               names <- names(geneSet)
-            rownames(res) <- names
-            object <- new("Gsri", result=res)
+            res <- sapply(geneSet, gsri, exprs=exprs, phenotype=phenotype, name=NULL,
+                          weight=weight, nBoot=nBoot, grenander=grenander, test=test,
+                          testArgs=testArgs, alpha=alpha)
             
+            object <- new("Gsri",
+                          result=as.data.frame(t(sapply(res, getGsri)), row.names=names),
+                          pval=sapply(res, getPval),
+                          cdf=sapply(res, getCdf),
+                          parms=getParms(res[[1]])
+                          )
+
             return(object)
           })
 
@@ -83,21 +83,10 @@ setMethod("gsri",
           signature("ExpressionSet", "factor", "GeneSetCollection"),
           function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
                    test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
-            
-            extract <- function(geneSet, data, phenotype, name, weight, grenander,
-                                nBoot, test, testArgs, alpha) {
-              id <- geneIds(geneSet)
-              res <- calcGsri(exprs[id, ], phenotype, names, weight,
-                              grenander, nBoot, test, testArgs, alpha)
-            }
-            res <- sapply(geneSet, extract, data=exprs, phenotype=phenotype, name=names,
-                          weight=weight, nBoot=nBoot, grenander=grenander, test=test,
-                          testArgs=testArgs, alpha=alpha)
-            res <- as.data.frame(t(res))
-            if(is.null(names))
-              names <- names(geneSet)
-            rownames(res) <- names
-            object <- new("Gsri", result=res)
+
+            object <- gsri(exprs(exprs), phenotype, geneSet, names=names, weight=weight,
+                         nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
+                         grenander=grenander)
             
             return(object)
           })
@@ -114,6 +103,27 @@ setMethod("getGsri",
             return(object@result)
           })
 
+## getPval ##
+setGeneric("getPval",
+           function(object)
+           standardGeneric("getPval"))
+
+setMethod("getPval",
+          signature("Gsri"),
+          function(object) {
+            return(object@pval)
+          })
+
+## getCdf ##
+setGeneric("getCdf",
+           function(object)
+           standardGeneric("getCdf"))
+
+setMethod("getCdf",
+          signature("Gsri"),
+          function(object) {
+            return(object@cdf)
+          })
 
 ## getParms ##
 setGeneric("getParms",

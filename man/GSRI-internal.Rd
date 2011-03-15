@@ -3,34 +3,18 @@
 \title{Internal GSRI functions}
 
 \alias{gsri-internal}
-\alias{cdfCorrect}
-\alias{fitSlope}
-\alias{getCDF}
 \alias{getPvalues}
-\alias{grenanderInterp}
 \alias{gsriBoot}
-\alias{loadCls}
-\alias{loadGct}
 \alias{multiStat}
-\alias{plotResults}
-\alias{slopeFast}
-\alias{writeResults}
+\alias{bootWithinGroups}
 
 \description{Internal GSRI functions}
 
 \usage{
-cdfCorrect(x, y, q0)
-fitSlope(x, y)
-getCDF(pvals, useGrenander)
 getPvalues(data, d, phenotype, test, testArgs)
-grenanderInterp(x, y)
-gsriBoot(data, d, phenotype, useGrenander, test, testArgs)
-loadCls(fileName)
-loadGct(fileName)
-multiStat(data, phenotype, test, testArgs)
-plotResults(res, geneSetName, p, gsri)
-slopeFast(x, y)
-writeResults(res, geneSetName, p, prec)
+gsriBoot(data, index, phenotype, cweight, grenander, test, testArgs, ...)
+multiStat(data, label, weight, grenander, test, ...)
+bootWithinGroup(exprs, label)
 }
 
 \author{
@@ -47,12 +31,10 @@ writeResults(res, geneSetName, p, prec)
 
   Korbinian Strimmer (2009).
   fdrtool: Estimation and Control of (Local) False Discovery Rates.
-  R package version 1.2.6.
   \url{http://CRAN.R-project.org/package=fdrtool}
 
   R. Gentleman, V. Carey, W. Huber and F. Hahne.
   genefilter: methods for filtering genes from microarray experiments.
-  R package version 1.28.2.
 }
 
 \seealso{

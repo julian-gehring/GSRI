@@ -2,8 +2,12 @@
 \docType{methods}
 
 \alias{getGsri}
+\alias{getPval}
+\alias{getCdf}
 \alias{getParms}
 \alias{getGsri,Gsri-method}
+\alias{getPval,Gsri-method}
+\alias{getCdf,Gsri-method}
 \alias{getParms,Gsri-method}
 
 \title{
@@ -16,6 +20,8 @@
 
 \usage{
 getGsri(object)
+getPval(object)
+getCdf(object)
 getParms(object)
 }
 

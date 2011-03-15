@@ -1,24 +1,98 @@
-getCDF <-
-function (pvals, useGrenander) 
-{
-    nGenes <- length(pvals)
-    ord <- sort.list(pvals, method = "quick", na.last = NA)
-    pvals <- pvals[ord]
-    uniquePvals <- unique(pvals)
-    rcdf <- stats::ecdf(pvals)
-    x <- environment(rcdf)$x
-    cdf <- environment(rcdf)$y
-    if (useGrenander == TRUE) 
-        cdf <- GSRI:::grenanderInterp(x, cdf)
-    if (nGenes != length(uniquePvals)) {
-        tp <- as.numeric(table(pvals))
-        w <- diff(c(0, cdf))/tp
-        cdf <- rep.int(cdf, tp)
-    }
-    cdf <- cdf - 0.5/nGenes
-    res <- list(sortedPvals = pvals, cdf = cdf)
-    return(res)
+calcGsri <- function(data, phenotype, name,
+                     weight, grenander=TRUE, nBoot=100,
+                     test="ttest", testArgs=NULL, ..., alpha=0.05) {
+
+  nGenes <- nrow(data)
+  if(ncol(data) != length(phenotype))
+    stop("Number of columns of 'data' must match 'phenotype'.")
+  if(!(is.function(test) && length(formals(test)) > 1))
+    stop("'test' must be a function with at least two input arguments.")
+  if(is.null(weight))
+    weight <- rep(1, nGenes)
+
+  pval <- multiStat(data, phenotype, weight, grenander, test, ...)
+  les <- les:::fitGsri(pval, NULL, weight, nGenes, grenander, se=TRUE, custom=FALSE)
+  p0 <- les[1]
+  psd0 <- les[2]
+  
+  ## pval <- multiStat(data, 1:ncol(data), phenotype, test, testArgs)
+  b <- boot::boot(t(data), gsriBoot, nBoot,
+                  phenotype=phenotype, cweight=weight, grenander=grenander,
+                  test=test, testArgs=testArgs)
+  p1 <- max(b$t0[[1]], 0)
+  bias <- apply(b$t, 2, mean) - b$t0
+  pt <- b$t - bias
+  gsri <- max(stats::quantile(pt, alpha, na.rm=TRUE), 0)
+  
+  p <- p1
+  #pb <- replicate(nBoot,
+  #                gsriBoot(data, phenotype, weight, grenander, test, ...))
+  #p <- max(b$t0, 0)
+  #psd <- stats::sd(pb)
+  #gsri <- max(stats::quantile(pb, alpha, na.rm=TRUE), 0)
+  nRegGenes <- as.integer(floor(p*nGenes))
+  result <- data.frame(pRegGenes=p0, pRegGenesSd=psd0, nRegGenes=nRegGenes,
+                       gsri=gsri, nGenes=nGenes, row.names=name)
+  names(result)[4] <- sprintf("%s(%g%%)", "GSRI", alpha*100)
+  res <- list(result=result, pval=pval)
+  #res <- result
+  
+  return(res)
 }
+
+
+multiStat <- function(data, label, weight, grenander, test, ...) {
+
+  pval <- test(data, label, ...)
+  pval <- pval[!is.na(pval)] ## needed?
+
+  return(pval)
+}
+
+
+gsriBoot <- function(data, index, phenotype, cweight, grenander, test, testArgs, ...) {
+
+  pval <- multiStat(t(data), phenotype[index], cweight, grenander, test, ...)
+  p <- les:::fitGsri(pval, NULL, cweight, length(pval), grenander, FALSE, FALSE)[1]
+
+  return(p)
+}
+
+
+#gsriBoot <- function(data, phenotype, weight, grenander, test, ...) {
+#
+#  boot <- bootWithinGroup(data, phenotype)
+#  res <- multiStat(boot$data, boot$label, weight, grenander, test, ...) ## weight[ord] !!!
+#
+#  return(res)
+#}
+
+
+bootWithinGroup <- function(exprs, label) {
+
+  ord <- order(label)
+  exprs <- exprs[ ,ord, drop=FALSE]
+  label <- label[ord]
+
+  nLevels <- nlevels(label) ## or length(nSamples) ? factor w/o group?
+  nSamples <- tabulate(label)
+
+  perm <- unlist(lapply(nSamples, sample.int, replace=TRUE))
+  offset <- rep.int(cumsum(c(0, nSamples[-length(nSamples)])), nSamples)
+  ordBoot <- perm + offset
+
+  exprs <- exprs[ ,ordBoot, drop=FALSE]
+  labelOrd <- label[ordBoot]
+  if(!identical(label, labelOrd))
+    warning("Bootstrapping lead to changes in the phenotype.")
+
+  return(list(data=exprs, label=labelOrd))
+}
+
+
+
+
+
 getPvalues <-
 function (data, d, phenotype, test, testArgs) 
 {
@@ -28,145 +102,4 @@ function (data, d, phenotype, test, testArgs)
     pvals <- pvals[!is.na(pvals)]
     return(pvals)
 }
-grenanderInterp <-
-function (x, y) 
-{
-    ll <- gcmlcm(x, y, type = "lcm")
-    pn <- vector("numeric", length(x))
-    ind <- x %in% ll$x.knots
-    pn[ind] <- ll$y.knots
-    for (i in 2:length(ll$x.knots)) {
-        xx <- ll$x.knots[(i - 1):i]
-        yy <- ll$y.knots[(i - 1):i]
-        ind <- (x > xx[1]) & (x < xx[2])
-        xi <- x[ind]
-        yi <- ll$slope.knots[i - 1] * (xi - xx[1]) + yy[1]
-        pn[ind] <- yi
-    }
-    return(pn)
-}
-loadCls <-
-function (fileName) 
-{
-    clsCont <- readLines(fileName)
-    nSamples <- as.integer(unlist(strsplit(clsCont[[1]], " "))[1])
-    phen <- unlist(strsplit(clsCont[[3]], " "))
-    phenotype <- factor(phen)
-    return(phenotype)
-}
-loadGct <-
-function (fileName) 
-{
-    temp <- readLines(fileName, n = 3)
-    colNames <- noquote(unlist(strsplit(temp[3], "\t")))[c(-1, 
-        -2)]
-    numCols <- length(colNames)
-    colClasses <- c("character", "character", rep("numeric", 
-        numCols))
-    data <- utils::read.table(fileName, header = TRUE, skip = 2, row.names = 1, 
-        na.strings = c("na", ""), sep = "\t", check.names = TRUE, 
-        colClasses = colClasses, quote = "", as.is = TRUE)
-    m <- as.matrix(data[, -1])
-    return(m)
-}
-multiStat <-
-function (data, phenotype, test, testArgs) 
-{
-    if (!is.function(test)) {
-        if (test == "ttest") 
-            pvals <- genefilter::rowttests(data, phenotype)$p.value
-        if (test == "ftest") 
-            pvals <- genefilter::rowFtests(data, phenotype)$p.value
-    }
-    else {
-        if (is.null(testArgs)) 
-            pvals <- test(data, phenotype)
-        else pvals <- test(data, phenotype, testArgs)
-    }
-    return(pvals)
-}
-plotResults <-
-function (res, geneSetName, p, gsri) 
-{
-    xfit <- c(0, 1)
-    yfit <- p + (1 - p) * xfit
-    graphics::plot(c(0, 1), c(p, p), col = "red", type = "l", 
-        lty = 2, xlab = "p-values", ylab = "CDF(p)", main = geneSetName, 
-        xlim = c(0, 1), ylim = c(0, 1))
-    graphics::lines(c(0, 1), c(gsri[1], gsri[1]), col = "blue", 
-        lty = 2)
-    graphics::lines(xfit, yfit, col = "gray")
-    graphics::points(res$sortedPvals, res$cdf, xlab = "p-values", 
-        ylab = "CDF(p)", main = geneSetName, xlim = c(0, 1), 
-        ylim = c(0, 1), pch = 20)
-    graphics::text(1, p + 0.01, sprintf("%s=%.2f", "%RegGene", 
-        p), cex = 0.8, adj = c(1, 0))
-    graphics::text(1, gsri[1] - 0.01, sprintf("%s=%.2f", "GSRI", 
-        gsri[1]), cex = 0.8, adj = c(1, 1))
-}
-slopeFast <-
-function (x, y) 
-{
-    tx <- t(x)
-    b <- as.numeric((tx %*% y)/(tx %*% x))
-    return(b)
-}
-writeResults <-
-function (res, geneSetName, p, prec) 
-{
-    xfit <- res$sortedPvals
-    yfit <- p + (1 - p) * xfit
-    dataFileName <- paste("GeneSet_", geneSetName, "_data.txt", 
-        sep = "")
-    dataResults <- list(sorted_pvals = signif(res$sortedPvals, 
-        prec), cdf = signif(res$cdf, prec), fit = signif(yfit, 
-        prec))
-    utils::write.table(dataResults, file = dataFileName, quote = FALSE, 
-        row.names = FALSE, sep = "\t")
-}
-gsriBoot <-
-function (data, d, phenotype, useGrenander, test, testArgs) 
-{
-  pvals <- GSRI:::getPvalues(t(data), d, phenotype, test, testArgs)
-  cdf <- GSRI:::getCDF(pvals, useGrenander=FALSE)
-  res <- GSRI:::fitSlope(cdf$sortedPvals-1, cdf$cdf-1)
-  if(useGrenander == TRUE)  {
-    cdf$cdf <- GSRI:::cdfCorrect(cdf$sortedPval, cdf$cdf, 1-res)
-    cdf$cdf <- GSRI:::grenanderInterp(cdf$sortedPvals, cdf$cdf)
-    res <- GSRI:::fitSlope(cdf$sortedPvals-1, cdf$cdf-1)
-  }
-  return(res)
-}
-fitSlope <-
-function(x, y)
-{
-  nValidGenes <- length(x)
-  maxIter <- nValidGenes
-  q <- 1
-  restOld <- 0
-  for (nIterate in 1:maxIter) {
-    rest <- nValidGenes - ceiling(q * nValidGenes)
-    rest <- max(c(restOld, rest, 1))
-    rest <- min(nValidGenes - 1, rest)
-    if (is.na(rest) || restOld == rest) 
-      break
-    ind <- rest:nValidGenes
-    q <- GSRI:::slopeFast(x[ind], y[ind])
-    restOld <- rest
-  }
-  res <- 1 - q
-  return(res)
-}
-cdfCorrect <-
-function(x, y, q0)
-{
-  z <- y
-  indLower <- y < q0*x
-  indUpper <- y > 1 - q0*(1 - x)
-  z[indLower] <- q0*x[indLower]
-  z[indUpper] <- 1 - q0*(1 - x[indUpper])
-  return(z)
-}
-calcGsri <- function(...) {
-  ## dummy
-}
+
