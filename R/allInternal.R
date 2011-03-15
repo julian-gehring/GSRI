@@ -28,9 +28,9 @@ calcGsri <- function(exprs, groups, name, id, weights,
   ## show progress
   if(verbose == TRUE) {
     if(is.null(name))
-      msg <- sprintf("%s %d %s.", "Calculate GSRI for gene set with", nGenesGs, "genes")
+      msg <- sprintf("%s %d %s.", "Calculating GSRI for gene set with", nGenesGs, "genes")
     else
-      msg <- sprintf("%s '%s' (%d %s).", "Calculate GSRI for gene set", name, nGenesGs, "genes.")
+      msg <- sprintf("%s '%s' (%d %s).", "Calculating GSRI for gene set", name, nGenesGs, "genes.")
     message(msg)
   }
 
