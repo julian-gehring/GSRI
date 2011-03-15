@@ -1,5 +1,7 @@
+## gsri ##
 setGeneric("gsri",
-           function(exprs, phenotype, geneSet, ...)
+           function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE)
            standardGeneric("gsri"))
 
 setMethod("gsri",
@@ -55,7 +57,7 @@ setMethod("gsri",
           })
 
 setMethod("gsri",
-          signature("ANY", "factor", "GeneSetCollection"),
+          signature("matrix", "factor", "GeneSetCollection"),
           function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
                    test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
             
@@ -70,7 +72,30 @@ setMethod("gsri",
                           testArgs=testArgs, alpha=alpha)
             res <- as.data.frame(t(res))
             if(is.null(names))
-              names <- names(gsc)
+              names <- names(geneSet)
+            rownames(res) <- names
+            object <- new("Gsri", result=res)
+            
+            return(object)
+          })
+
+setMethod("gsri",
+          signature("ExpressionSet", "factor", "GeneSetCollection"),
+          function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
+            
+            extract <- function(geneSet, data, phenotype, name, weight, grenander,
+                                nBoot, test, testArgs, alpha) {
+              id <- geneIds(geneSet)
+              res <- calcGsri(exprs[id, ], phenotype, names, weight,
+                              grenander, nBoot, test, testArgs, alpha)
+            }
+            res <- sapply(geneSet, extract, data=exprs, phenotype=phenotype, name=names,
+                          weight=weight, nBoot=nBoot, grenander=grenander, test=test,
+                          testArgs=testArgs, alpha=alpha)
+            res <- as.data.frame(t(res))
+            if(is.null(names))
+              names <- names(geneSet)
             rownames(res) <- names
             object <- new("Gsri", result=res)
             
@@ -78,12 +103,7 @@ setMethod("gsri",
           })
 
 
-setMethod("show",
-          signature("Gsri"),
-          function(object) {
-            print(object@result)
-          })
-
+## getGsri ##
 setGeneric("getGsri",
            function(object)
            standardGeneric("getGsri"))
@@ -91,10 +111,11 @@ setGeneric("getGsri",
 setMethod("getGsri",
           signature("Gsri"),
           function(object) {
-            object@result
+            return(object@result)
           })
 
 
+## getParms ##
 setGeneric("getParms",
            function(object)
            standardGeneric("getParms"))
@@ -102,9 +123,40 @@ setGeneric("getParms",
 setMethod("getParms",
           signature("Gsri"),
           function(object) {
-            data.frame(object@parms, row.names="")
+            return(object@parms)
           })
 
+
+## export ##
+setGeneric("export",
+           function(object, file, ...)
+           standardGeneric("export"))
+
+setMethod("export",
+          signature("Gsri", "character"),
+          function(object, file, digits=Inf) {
+            result <- round(getGsri(object), digits)
+            write.table(result, file, sep="\t")
+          })
+
+
+## show ##
+setMethod("show",
+          signature("Gsri"),
+          function(object) {
+            print(object@result)
+          })
+
+
+## summary ##
+setMethod("summary",
+          signature("Gsri"),
+          function(object, ...) {
+            show(object)
+          })
+
+
+## plot ##
 setMethod("plot",
           signature("Gsri", "ANY"),
           function(x, y, digits=2, ...) {
@@ -131,18 +183,7 @@ setMethod("plot",
           })
 
 
-setGeneric("export",
-           function(object, file, ...)
-           standardGeneric("export"))
-
-setMethod("export",
-          signature("Gsri", "character"),
-          function(object, file, digits=Inf) {
-            result <- round(getGsri(object), digits)
-            write.table(result, file, sep="\t")
-          })
-
-
+## readCls ##
 setGeneric("readCls",
            function(file, ...)
            standardGeneric("readCls"))
@@ -163,6 +204,7 @@ setMethod("readCls",
           })
 
 
+## readGct ##
 setGeneric("readGct",
            function(file, ...)
            standardGeneric("readGct"))

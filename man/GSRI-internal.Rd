@@ -58,8 +58,6 @@ writeResults(res, geneSetName, p, prec)
 \seealso{
   \code{\link{gsri}}
 
-  \code{\link{gsriFromFile}}
-
   \code{\link{GSRI}}
 }
 

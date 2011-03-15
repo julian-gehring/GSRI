@@ -1,65 +1,81 @@
 \name{gsri}
+\docType{methods}
 
 \alias{gsri}
+\alias{gsri-methods}
+\alias{gsri,ExpressionSet,factor,GeneSet-method}
+\alias{gsri,ExpressionSet,factor,GeneSetCollection-method}
+\alias{gsri,ExpressionSet,factor,missing-method}
+\alias{gsri,matrix,factor,GeneSet-method}
+\alias{gsri,matrix,factor,GeneSetCollection-method}
+\alias{gsri,matrix,factor,missing-method}
 
 \title{
-  Gene Set Regulation Index (GSRI)
+  Methods for the Gene Set Regulation Index (GSRI)
 }
 
 \description{
-  Estimates the number of differentially expressed genes for a single
-  gene set.
+  Estimates the number of differentially expressed genes in gene sets.
 }
 
 \usage{
-gsri(data, phenotype, geneSetName, useGrenander = FALSE, plotResults =
-     TRUE, writeResults = FALSE, nBootstraps = 100, test = "ttest",
-     testArgs = NULL, alpha = 0.05, prec = 4)
+gsri(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100,
+test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE)
 }
 
 \arguments{
-  \item{data}{A data frame or matrix of size n x m containing the gene
-    expression dataset with rows representing genes and columns
-    samples.}
-  \item{phenotype}{Vector of size m containing the phenotypes of the
-    samples. If not already a factorial variable it will be internally
-    converted to a factor.}
-  \item{geneSetName}{Character string with the name of the gene
-    set. Used for identification of the data set, has no influence on
-    the calculation.}
-  \item{useGrenander}{Logical indicating whether the grenander estimate
-    from the \pkg{fdrtool} package should be used additionally (default:
-    FALSE). For details see the Notes section below.}
-  \item{plotResults}{Logical indicating whether the results should be
-    plotted (default: FALSE). The plot shows the cumulative density
-    function of calculated p-values, the fit of the uniform distribution,
-    the estimated number of regulated genes and the estimated GSRI for
-    each gene set.}
-  \item{writeResults}{Logical indicating whether a list of the estimated
-    regulated genes for each gene set should be written to a text file in
-    the working directory (default: FALSE). The file will be named
-    'GeneSet_#geneSetName#_data.txt', with #geneSetName# taken from the
-    'geneSetName' argument.}
-  \item{nBootstraps}{Number of bootstrap samples to be drawn (default:
-    100)}
-  \item{test}{Character string or function name to specify the
-    statistical test to calculate p-values for effect between
-    groups. Groups are defined by the 'phenotype' argument. In this
-    package both a t-test (default: "ttest") and an F-test ("ftest")
-    between groups are implemented and can be chosen with the according
-    character string. A user-defined function can also be passed as an
-    argument in order to specify own test statistics. For details see the
-    Notes section below.}
+  \item{exprs}{A matrix or an expression set of size n x m, containing
+    the expression values for the genes, with rows representing the
+    genes and columns representing the arrays.}
+  \item{phenotype}{A factor of length m representing the phenotypes of
+    the samples.}
+  \item{geneSet}{missing, GeneSet, GeneSetClass}
+  \item{names}{Character vector with the names of the gene set(s).}
+  \item{weight}{Weights}
+  \item{nBoot}{An integer specifying the number of bootstrap samples to
+    be drawn (default: 100).}
+  \item{test}{A function specifying the statistical test used to assess
+    the effect between the groups in terms of p-values. The groups are
+    given by the 'phenotype' argument. Here, a t-test (rowt) and F-test
+    (rowF) are implemented (default: rowt). A user-defined function can
+    also be given, in order to specify a custom test statistics. For
+    details see the 'Notes' section.}
   \item{testArgs}{Optional arguments passed to the function 'test' if
     specified (default: NULL)}
-  \item{alpha}{Significance level for bootstrap (default: 0.05). The
-    resulting GSRI will be the (1-alpha)*100\% confidence interval. If a
-    vector of values is given, GSRI will be calculated for all values and
-    passed to the output argument. Plots and file outputs will only
-    contain GSRI for the first value in the vector to simplify the
-    output.}
-  \item{prec}{Integer specifing the number of signifiant digits to write
-    to files. For details see 'signif'.}
+  \item{alpha}{A numeric specifying the significance level for
+    bootstrapping. The resulting GSRI is the lower bound of the
+    (1-\eqn{alpha}{alpha})*100\% confidence interval.}
+  \item{grenander}{A logical indicating whether the modified Grenander
+    estimator for the cumulative density should be used, instead of a
+    classical ECDF (default: TRUE).}
+}
+
+\section{Methods}{
+  \describe{
+    \item{
+      \code{signature(exprs="matrix", phenotype="factor", geneSet="missing")}
+    }{bla}
+
+    \item{
+      \code{signature(exprs="ExpressionSet", phenotype="factor", geneSet="missing")}
+    }{bla}
+
+    \item{
+      \code{signature(exprs="matrix", phenotype="factor", geneSet="GeneSet")}
+    }{bla}
+    
+    \item{
+      \code{signature(exprs="ExpressionSet", phenotype="factor", geneSet="GeneSet")}
+    }{bla}
+    
+    \item{
+      \code{signature(exprs="matrix", phenotype="factor", geneSet="GeneSetCollection")}
+    }{bla}
+    
+    \item{
+      \code{signature(exprs="ExpressionSet", phenotype="factor", geneSet="GeneSetCollection")}
+    }{bla}
+    }
 }
 
 \details{
@@ -79,19 +95,12 @@ gsri(data, phenotype, geneSetName, useGrenander = FALSE, plotResults =
 }
 
 \value{
-  A list with components:
-  
-  \item{geneSet}{Name of gene set}
-  \item{percRegGenes}{Estimated percentage of differentially expressed
-    genes} 
-  \item{percRegGenesSd}{Estimated standard deviation of the percentage
-    of differentially expressed genes}
-  \item{numRegGenes}{Estimated number of differentially expressed
-    genes}
-  \item{numRegGenesSd}{Estimated standard deviation of the number of
-    differentially expressed genes}
-  \item{gsri}{Gene Set Regulation Index}
-  \item{nGenes}{Number of genes in gene set}
+  An object of class 'Gsri' with the slots:
+
+  \item{result}{Result of the estimation.}
+  \item{pval}{List with the p-values for each gene set.}
+  \item{cdf}{List with the cumulative denstiy for each gene set.}
+  \item{parms}{Parameter values used in the analysis.}
 }
 
 \author{
@@ -125,12 +134,11 @@ gsri(data, phenotype, geneSetName, useGrenander = FALSE, plotResults =
 }
 
 \seealso{
-  \code{\link{gsriFromFile}}
-
   \code{\link{GSRI}}
 }
 
 \examples{
+\dontrun{
 ## Simulate expression data for a gene set of:
 ## 100 genes, 40 samples (20 treatment, 20 control)
 ## and 30 regulated genes
@@ -143,6 +151,6 @@ geneSetName <- "Test Gene Set"
 ## Estimate the number of differentially expressed genes
 res <- gsri(data, phenotype, geneSetName)
 }
-
+}
 \keyword{distribution}
 \keyword{htest}

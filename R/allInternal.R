@@ -167,3 +167,6 @@ function(x, y, q0)
   z[indUpper] <- 1 - q0*(1 - x[indUpper])
   return(z)
 }
+calcGsri <- function(...) {
+  ## dummy
+}

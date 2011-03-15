@@ -1,11 +1,11 @@
 \name{GSRI-package}
 
+\docType{package}
+
 \alias{GSRI-package}
 \alias{GSRI}
 
-\docType{package}
-
-\title{Gene Set Regulation Index (GSRI)}
+\title{Gene Set Regulation Index (GSRI) package}
 
 \description{
   This package estimates the number of differentially
@@ -14,15 +14,6 @@
 }
 
 \details{
-  
-  \tabular{ll}{
-    Package: \tab GSRI\cr
-    Type: \tab Package\cr
-    Version: \tab 1.1.4\cr
-    Date: \tab 2010-05-20\cr
-    License: \tab GPL-2\cr
-    LazyLoad: \tab yes\cr
-  }
   This method calculates the number of differentially expressed genes in
   a gene set. It does not require a cut-off value for the distinction
   between regulated and unregulated genes. The approach is based on the
@@ -38,6 +29,8 @@
   hypothesis whether at least one gene in a set is regulated and to
   compare and rank the regulation of different gene sets, see Bartholome
   et al. 2009.
+
+  The package is published under the GPL-3 license.
 }
 
 \author{
@@ -57,23 +50,20 @@
 
   Korbinian Strimmer (2009).
   fdrtool: Estimation and Control of (Local) False Discovery Rates.
-  R package version 1.2.6.
   \url{http://CRAN.R-project.org/package=fdrtool}
 
   R. Gentleman, V. Carey, W. Huber and F. Hahne.
   genefilter: methods for filtering genes from microarray experiments.
-  R package version 1.28.2.
 }
 
 \keyword{package}
 
 \seealso{
   \code{\link{gsri}}
-
-  \code{\link{gsriFromFile}}
 }
 
 \examples{
+\dontrun{
 ## Simulate expression data for a gene set of:
 ## 100 genes, 40 samples (20 treatment, 20 control)
 ## and 30 regulated genes
@@ -94,4 +84,5 @@ phenotypeFileName <- system.file("extdata", "phenotype.cls", package="GSRI")
 geneSetFileName <- system.file("extdata", "geneSets.gmt", package="GSRI")
 
 res2 <- gsriFromFile(dataFileName, phenotypeFileName, geneSetFileName)
+}
 }
