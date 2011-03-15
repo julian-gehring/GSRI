@@ -36,7 +36,9 @@ setMethod("gsri",
           signature("matrix", "factor", "GeneSet"),
           function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
                    test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
-            
+
+            if(is.null(names))
+              names <- setName(geneSet)
             id <- geneIds(geneSet)
             id <- intersect(id, rownames(exprs))
             object <- gsri(exprs[id, ], phenotype, names=names, weight=weight,
@@ -168,28 +170,59 @@ setMethod("summary",
 
 ## plot ##
 setMethod("plot",
-          signature("Gsri", "ANY"),
+          signature("Gsri", "integer"),
           function(x, y, digits=2, ...) {
             ##ind <- which(getGsr(x)  getGsri(x)[y, ])
-            ind <- y
-            if(length(ind) != 1)
+            if(length(y) != 1 || y > nrow(getGsri(x)))
               stop("'y' must have exactly one match in 'x'.")
-            result <- getGsri(x)[ind, ]
-            p <- as.numeric(result[1])
-            g <- as.numeric(result[3])
+            result <- getGsri(x)[y, ]
+            p <- as.numeric(result[ ,1])  ## do with names
+            g <- as.numeric(result[ ,4])  ## do with names
             
             graphics::plot(c(0, 1), c(p, p), col="red", type="l", 
                            lty=2, xlab="p-values", ylab="CDF(p)", main=rownames(result), 
                            xlim=c(0, 1), ylim=c(0, 1), ...)
             graphics::lines(c(0, 1), c(g, g), col="blue", lty=2)
             graphics::lines(c(0,1), p+(1-p)*c(0,1), col="gray")
-            graphics::points(x@pval[[ind]], x@cdf[[ind]], pch=20)
+            graphics::points(x@pval[[y]], x@cdf[[y]], pch=20)
             format <- paste("%s=%.", digits, "f", sep="")
             graphics::text(1, p+0.01, sprintf(format, "%RegGene", p),
                            cex=0.8, adj=c(1, 0))
             graphics::text(1, g-0.01, sprintf(format, "GSRI", g),
                            cex=0.8, adj=c(1,1))
             
+          })
+
+setMethod("plot",
+          signature("Gsri", "missing"),
+          function(x, y, ...) {
+
+            if(nrow(getGsri(x)) != 1)
+              stop("'x' contains more than one gene set.")
+            plot(x, 1L, ...)
+
+          })
+
+setMethod("plot",
+          signature("Gsri", "character"),
+          function(x, y, ...) {
+
+            if(length(y) != 1)
+              stop("'y' refers to more than one gene set.")
+            names <- rownames(getGsri(x))
+            ind <- match(y, names)
+            if(is.na(ind))
+              stop("'y' refers to no gene set.")
+            plot(x, ind, ...)
+            
+          })
+
+setMethod("plot",
+          signature("Gsri", "numeric"),
+          function(x, y, ...) {
+
+            plot(x, as.integer(y), ...)
+
           })
 
 

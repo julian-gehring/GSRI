@@ -6,7 +6,7 @@ importFrom(utils, read.table, write.table)
 importFrom(genefilter, rowttests, rowFtests)
 importFrom(Biobase, exprs)
 importClassesFrom(GSEABase, GeneSet, GeneSetCollection)
-importMethodsFrom(GSEABase, geneIds)
+importMethodsFrom(GSEABase, geneIds, setName)  ## also name?
 export(rowt, rowF)
 exportClasses(Gsri)
 exportMethods(gsri, getGsri, getPval, getCdf, getParms, export, show, summary, plot, readCls, readGct)
