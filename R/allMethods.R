@@ -1,3 +1,83 @@
+setGeneric("gsri",
+           function(exprs, phenotype, geneSet, ...)
+           standardGeneric("gsri"))
+
+setMethod("gsri",
+          signature("matrix", "factor", "missing"),
+          function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
+            
+            res <- calcGsri(exprs, phenotype, names, weight,
+                            grenander, nBoot, test, testArgs, alpha)
+            ##object <- new("Gsri", result=res$result, pval=list(res$pval))
+            parms <- list(weight=weight, nBoot=nBoot, test=test, alpha=alpha,
+                          grenander=grenander, testArgs=testArgs)
+            object <- new("Gsri", result=res, parms=parms)
+            
+            return(object)
+          })
+
+setMethod("gsri",
+          signature("ExpressionSet", "factor", "missing"),
+          function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
+
+            res <- calcGsri(exprs(exprs), phenotype, names, weight,
+                            grenander, nBoot, test, testArgs, alpha)
+            object <- new("Gsri", result=res)
+            
+            return(object)
+          })
+
+setMethod("gsri",
+          signature("matrix", "factor", "GeneSet"),
+          function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
+            
+            id <- geneIds(geneSet)
+            id <- intersect(id, rownames(exprs))
+            res <- calcGsri(exprs[id, ], phenotype, names, weight,
+                            grenander, nBoot, test, testArgs, alpha)            
+            object <- new("Gsri", result=res)
+            return(object)
+          })
+
+setMethod("gsri",
+          signature("ExpressionSet", "factor", "GeneSet"),
+          function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
+            
+            id <- geneIds(geneSet)
+            res <- calcGsri(exprs(exprs[id, ]), phenotype, names, weight,
+                            grenander, nBoot, test, testArgs, alpha)            
+            object <- new("Gsri", result=res)
+            return(object)
+          })
+
+setMethod("gsri",
+          signature("ANY", "factor", "GeneSetCollection"),
+          function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
+            
+            extract <- function(geneSet, data, phenotype, name, weight, grenander,
+                                nBoot, test, testArgs, alpha) {
+              id <- geneIds(geneSet)
+              res <- calcGsri(exprs[id, ], phenotype, names, weight,
+                              grenander, nBoot, test, testArgs, alpha)
+            }
+            res <- sapply(geneSet, extract, data=exprs, phenotype=phenotype, name=names,
+                          weight=weight, nBoot=nBoot, grenander=grenander, test=test,
+                          testArgs=testArgs, alpha=alpha)
+            res <- as.data.frame(t(res))
+            if(is.null(names))
+              names <- names(gsc)
+            rownames(res) <- names
+            object <- new("Gsri", result=res)
+            
+            return(object)
+          })
+
+
 setMethod("show",
           signature("Gsri"),
           function(object) {
