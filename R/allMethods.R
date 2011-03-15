@@ -283,7 +283,7 @@ setMethod("plot",
             format <- paste("%s=%.", digits, "f", sep="")
             ## regText
             regText1 <- list(x=1, y=p+0.01)
-            regText3 <- list(labels=sprintf(format, "%RegGene", p), cex=0.8, adj=c(1, 0))
+            regText3 <- list(labels=sprintf(format, "%RegGenes", p), cex=0.8, adj=c(1, 0))
             regTextArgs <- getArgs("regText", regText1, regText3, args)
             ## gsriText
             gsriText1 <- list(x=1, y=g-0.01)
