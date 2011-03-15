@@ -9,4 +9,4 @@ importClassesFrom(GSEABase, GeneSet, GeneSetCollection)
 importMethodsFrom(GSEABase, geneIds, setName)  ## also name?
 export(rowt, rowF)
 exportClasses(Gsri)
-exportMethods(gsri, getGsri, getPval, getCdf, getParms, export, show, summary, plot, readCls, readGct)
+exportMethods(gsri, getGsri, getPval, getCdf, getParms, export, show, summary, plot, readCls, readGct, sortGsri)

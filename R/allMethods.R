@@ -168,6 +168,26 @@ setMethod("summary",
           })
 
 
+## sort ##
+setGeneric("sortGsri",
+           function(x, names, decreasing=FALSE, na.last=NA)
+           standardGeneric("sortGsri"))
+
+setMethod("sortGsri",
+          signature("Gsri"),
+          function(x, names, decreasing=FALSE, na.last=NA) {
+
+            res <- getGsri(x)
+            sub <- subset(res, select=names)
+            ord <- do.call(order, c(sub, list(decreasing=decreasing, na.last=na.last)))
+            x@result <- res[ord, ]
+            x@pval <- x@pval[ord]
+            x@cdf <- x@cdf[ord]
+
+            return(x)
+          })
+
+
 ## plot ##
 setMethod("plot",
           signature("Gsri", "integer"),

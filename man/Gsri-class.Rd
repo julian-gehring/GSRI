@@ -6,7 +6,6 @@
 \alias{Gsri-class}
 \alias{show,Gsri-method}
 \alias{summary,Gsri-method}
-
 \title{
   Class 'Gsri'
 }
