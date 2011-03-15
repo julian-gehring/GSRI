@@ -15,25 +15,29 @@
 
 \details{
   The GSRI approach estimates the number of differentially expressed
-  genes in gene sets. It does not require a cut-off value for the
-  distinction between regulated and unregulated genes. The approach is
-  based on the fact that p-values obtained from a statistical test are
-  uniformly distributed under the null hypothesis and shifted towards
-  zero in case of the alternative hypothesis.
+  genes in gene sets. It is independent of the underlying statistical
+  test used for assessing the differential effect of genes and does not
+  require any cut-off values for the distinction between regulated and
+  unregulated genes. The approach is based on the fact that p-values
+  obtained from a statistical test are uniformly distributed under the
+  null hypothesis and are shifted towards zero in case of the
+  alternative hypothesis.
 
-  The Gene Set Regulation Index (GSRI) is the
-  \eqn{alpha*100\%}{\alpha*100\%}\% quantile of the distribution of the
-  estimated number of differentially expressed genes, obtained from
-  bootstrapping the arrays within the groups. It indicates that with a
-  probability of \eqn{(1-alpha)*100\%}{(1-\alpha)*100\%} more than
-  \eqn{eta}{\eta} genes in the gene set are differentially
-  expressed. This index can be employed to rank and compare the
-  regulation of gene sets as well as to test the hypothesis whether at
-  least one gene in the gene set is regulated.
+  Through non-parametric fitting of the uniform component of the p-value
+  distribution, the fraction of regulated genes \eqn{r}{'r'} in a gene
+  set is estimated. The GSRI \eqn{\eta}{'eta'} is then defined as the
+  \eqn{\alpha*100}{'alpha*100'}\%-quantile of the distribution of
+  \eqn{r}{'r'}, obtained from bootstrapping the samples within the
+  groups. The index indicates that with a probability of
+  \eqn{(1-\alpha)}{(1-'alpha')}\% more than a fraction of
+  \eqn{\eta}{'eta'} genes in the gene set is differentially
+  expressed. It can also be employed to test the hypothesis whether at
+  least one gene in a gene set is regulated. Further, different gene
+  sets can be compared or ranked according to the estimated amount of
+  regulation.
   
   For details of the method, an application to experimental data, and a
-  comparison with related approaches, please see Bartholomé et al.,
-  2009.
+  comparison with related approaches, see Bartholomé et al., 2009.
 
   The package is published under the GPL-3 license.
 }

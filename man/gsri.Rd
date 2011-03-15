@@ -135,15 +135,18 @@ test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...)
   consistent with the null hypothesis the number of differentially
   expressed genes is calculated.
 
-  Through bootstrapping the expression values within in the groups the
-  \eqn{alpha*100\%}{\alpha*100\%} quantile of the distribution
-  of the estimated regulation in the gene set is obtained. This quantile
-  is then defined as the Gene Set Regulation Index (GSRI) and indicates
-  that with a probability of \eqn{(1-alpha)*100\%}{(1-\alpha)*100\%}
-  more than \eqn{eta}{\eta} genes in the gene set show a differential
-  effect. This index can be employed to rank and compare the regulation
-  of gene sets as well as to test the hypothesis whether at least one
-  gene in the gene set is regulated.
+  Through non-parametric fitting of the uniform component of the p-value
+  distribution, the fraction of regulated genes \eqn{r}{'r'} in a gene
+  set is estimated. The GSRI \eqn{\eta}{'eta'} is then defined as the
+  \eqn{\alpha*100}{'alpha*100'}\%-quantile of the distribution of
+  \eqn{r}{'r'}, obtained from bootstrapping the samples within the
+  groups. The index indicates that with a probability of
+  \eqn{(1-\alpha)}{(1-'alpha')}\% more than a fraction of
+  \eqn{\eta}{'eta'} genes in the gene set is differentially
+  expressed. It can also be employed to test the hypothesis whether at
+  least one gene in a gene set is regulated. Further, different gene
+  sets can be compared or ranked according to the estimated amount of
+  regulation.
 
   Assessing the differential effect is based on p-values obtained from
   statistical testing at the level of individual genes between the
