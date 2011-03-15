@@ -12,11 +12,14 @@ setMethod("gsri",
             
             res <- calcGsri(exprs, groups, names, id, weight,
                             grenander, nBoot, test, testArgs, alpha)
+            cdf <- list(res$cdf)
+            names(cdf) <- names
             parms <- list(weight=weight, nBoot=nBoot, test=test, alpha=alpha,
                           grenander=grenander, testArgs=testArgs)
+            
+            
             object <- new("Gsri",
-                          result=res$result, pval=list(res$pval), cdf=list(res$pval),
-                          parms=parms)
+                          result=res$result, cdf=cdf, parms=parms)
             
             return(object)
           })
@@ -73,7 +76,6 @@ setMethod("gsri",
 
             object <- new("Gsri",
                           result=as.data.frame(do.call(rbind, lapply(res, getGsri)), row.names=names),
-                          pval=sapply(res, getPval),
                           cdf=sapply(res, getCdf),
                           parms=getParms(res[[1]])
                           )
@@ -96,36 +98,42 @@ setMethod("gsri",
 
 ## getGsri ##
 setGeneric("getGsri",
-           function(object, ...)
+           function(object, index, ...)
            standardGeneric("getGsri"))
 
 setMethod("getGsri",
-          signature("Gsri"),
-          function(object) {
+          signature("Gsri", "missing"),
+          function(object, index) {
             return(object@result)
           })
 
-## getPval ##
-setGeneric("getPval",
-           function(object, ...)
-           standardGeneric("getPval"))
-
-setMethod("getPval",
-          signature("Gsri"),
-          function(object) {
-            return(object@pval)
+setMethod("getGsri",
+          signature("Gsri", "ANY"),
+          function(object, index) {
+            return(object@result[index, ])
           })
+
 
 ## getCdf ##
 setGeneric("getCdf",
-           function(object, ...)
+           function(object, index, ...)
            standardGeneric("getCdf"))
 
 setMethod("getCdf",
-          signature("Gsri"),
-          function(object) {
-            return(object@cdf)
+          signature("Gsri", "missing"),
+          function(object, index) {
+            res <- object@cdf
+#            if(length(res) == 1)
+#              res <- res[[1]]
+            return(res)
           })
+
+setMethod("getCdf",
+          signature("Gsri", "ANY"),
+          function(object, index) {
+            return(object@cdf[[index]])
+          })
+
 
 ## getParms ##
 setGeneric("getParms",
@@ -185,7 +193,6 @@ setMethod("sortGsri",
             sub <- subset(res, select=names)
             ord <- do.call(order, c(sub, list(decreasing=decreasing, na.last=na.last)))
             x@result <- res[ord, ]
-            x@pval <- x@pval[ord]
             x@cdf <- x@cdf[ord]
 
             return(x)

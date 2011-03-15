@@ -2,12 +2,12 @@
 \docType{methods}
 
 \alias{getGsri}
-\alias{getPval}
 \alias{getCdf}
 \alias{getParms}
-\alias{getGsri,Gsri-method}
-\alias{getPval,Gsri-method}
-\alias{getCdf,Gsri-method}
+\alias{getGsri,Gsri,ANY-method}
+\alias{getGsri,Gsri,missing-method}
+\alias{getCdf,Gsri,ANY-method}
+\alias{getCdf,Gsri,missing-method}
 \alias{getParms,Gsri-method}
 
 \title{
@@ -19,14 +19,14 @@
 }
 
 \usage{
-getGsri(object, ...)
-getPval(object, ...)
-getCdf(object, ...)
+getGsri(object, index, ...)
+getCdf(object, index, ...)
 getParms(object, ...)
 }
 
 \arguments{
   \item{object}{An object of class 'Gsri' which results are exported.}
+  \item{index}{Optional argument used to subset the results.}
   \item{...}{Additional arguments, currently not used.}
 }
 
@@ -48,6 +48,7 @@ getParms(object, ...)
 \examples{
 \dontrun{
 getGsri(object)
+getCdf(object)
 getParms(object)
 }
 }

@@ -25,9 +25,8 @@
       estimation, including the ratio and number of regulated genes, the
       total number of genes in the gene set, and the Gene Set Regulation
       Index.}
-    \item{\code{pval}:}{List containing the p-values for each gene set.}
-    \item{\code{cdf}:}{List containing the empirical cumulative density
-      for each gene set.}
+    \item{\code{cdf}:}{Data frame containing the empirical cumulative
+      density for each gene set.}
     \item{\code{parms}:}{List containing the parameter values used in
       the analysis.}
   }
@@ -78,6 +77,10 @@
   Slot access:
   \describe{
     \item{getGsri:}{
+      \code{signature(object="Gsri")}
+    }
+
+    \item{getCdf:}{
       \code{signature(object="Gsri")}
     }
 

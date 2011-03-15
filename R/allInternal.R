@@ -24,7 +24,8 @@ calcGsri <- function(exprs, groups, name, id, weights,
     weights <- rep(1/nGenesGs, nGenesGs)
   if((length(weights) != nGenesGs) || (length(weights) != nPval))
     stop("Argument 'weight' must contain exactly one value for each gene in the gene set.")
-  l0 <- les:::fitGsri(pval, NULL, weights, nPval, grenander, se=FALSE, custom=FALSE)[1]
+  cdf <- les:::wcdfGrenander(pval, weights, nPval, grenander, FALSE)
+  l0 <- les:::itLinReg(cdf$pval, cdf$cdf, weights, nPval, FALSE, FALSE, FALSE)
 
   ## bootstrapping
   lb <- replicate(nBoot,
@@ -32,12 +33,18 @@ calcGsri <- function(exprs, groups, name, id, weights,
   lb <- lb - mean(lb) + l0
   lsd <- stats::sd(lb)
   gsri <- max(stats::quantile(lb, alpha, na.rm=TRUE), 0)
-
   nRegGenes <- as.integer(floor(l0*nGenesGs))
+
+  ## gsri results
   result <- data.frame(pRegGenes=l0, pRegGenesSd=lsd, nRegGenes=nRegGenes,
                        gsri=gsri, nGenes=nGenesGs, row.names=name)
   names(result)[4] <- sprintf("%s(%g%%)", "GSRI", alpha*100)
-  res <- list(result=result, pval=pval)
+
+  ## cdf results
+  geneNames <- rownames(exprs[id, ])[order(pval)]
+  wcdf <- data.frame(pval=cdf$pval, cdf=cdf$cdf, row.names=geneNames)
+  
+  res <- list(result=result, cdf=wcdf)
 
   return(res)
 }
