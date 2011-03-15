@@ -2,6 +2,8 @@
 
 \alias{rowt}
 \alias{rowF}
+\alias{limmat}
+\alias{limmatGsri}
 
 \title{
   Statistical test functions
@@ -15,6 +17,8 @@
 \usage{
 rowt(exprs, groups, id, testArgs)
 rowF(exprs, groups, id, testArgs)
+limmat(exprs, groups, id, testArgs)
+limmatGsri(exprs, groups, id, testArgs)
 }
 
 \arguments{
