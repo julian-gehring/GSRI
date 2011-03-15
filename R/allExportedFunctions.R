@@ -4,7 +4,7 @@ rowt <- function(exprs, groups, id, index, testArgs) {
 
 
 rowF <- function(exprs, groups, id, index, testArgs=list(var.equal=TRUE)) {
-  genefilter::rowFtests(exprs[id,index,drop=FALSE], groups)$p.value
+  genefilter::rowFtests(exprs[id,index,drop=FALSE], groups, testArgs$var.equal)$p.value
 }
 
 
