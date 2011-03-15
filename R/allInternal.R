@@ -1,7 +1,8 @@
 calcGsri <- function(exprs, groups, name, id, weights,
                      grenander=TRUE, nBoot=100,
-                     test=NULL, testArgs=NULL, alpha=0.05, ...) {
-  
+                     test=NULL, testArgs=NULL, alpha=0.05, verbose=FALSE, ...) {
+
+  ## check input args
   if(length(id) == 0 || !is.logical(id))
     stop("Gene set has no matches in the expression data.")
   if(ncol(exprs) != length(groups))
@@ -14,12 +15,23 @@ calcGsri <- function(exprs, groups, name, id, weights,
   }
   nGenesGs <- sum(id)
   gsriName <- sprintf("%s(%g%%)", "GSRI", alpha*100)
+
+  ## check for empty gene set
   if(nGenesGs == 0) {
     result <- data.frame(pRegGenes=NA, pRegGenesSd=NA, nRegGenes=NA,
                          gsri=NA, nGenes=nGenesGs, row.names=name)
     names(result)[4] <- gsriName
     res <- list(result=result, cdf=NULL)
     return(res)
+  }
+
+  ## show progress
+  if(verbose == TRUE) {
+    if(is.null(name))
+      msg <- sprintf("%s %d %s.", "Calculate GSRI for gene set with", nGenesGs, "genes")
+    else
+      msg <- sprintf("%s '%s' (%d %s).", "Calculate GSRI for gene set", name, nGenesGs, "genes.")
+    message(msg)
   }
 
   ## reorder data for bootstrapping

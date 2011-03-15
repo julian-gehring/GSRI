@@ -21,7 +21,8 @@
 
 \usage{
 gsri(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100,
-test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...)
+test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, verbose=FALSE,
+...)
 }
 
 \arguments{
@@ -67,16 +68,22 @@ test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...)
   \item{grenander}{Logical about whether the modified Grenander
     estimator for the cumulative density should be used instead of a
     centered ECDF. By default the modified Grenander estimator is
-    used. For more information, please see the \sQuote{details} section.}
+    used. For more information, please see the \sQuote{details}
+    section.}
+  \item{verbose}{Logical indicating whether the progress of the
+    computation should be printed to the screen (default: FALSE). Most
+    useful if \code{geneSet} is an object of class
+    \code{GeneSetCollection}.}
   \item{...}{Additional arguments, including:
     \describe{
+      \item{minSize:}{Integer specifying the minimal number of genes in
+	a gene set in order to perform an analysis. If the gene set has
+	less than \code{minSize} in \code{exprs}, the gene set is
+	ignored in the analysis.}
       \item{nCores:}{Integer setting the number of cores used for the
 	computation in combination with the \pkg{multicore} package for
 	a \code{GeneSetCollection}. For details, please see the \sQuote{details}
 	section.}
-      \item{verbose:}{Logical indicating whether the progress of the
-	computation for a \code{GeneSetCollection} should be printed to
-	screen (default: FALSE).}
     }
   }
 }
@@ -237,10 +244,23 @@ test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...)
 set.seed(1)
 exprs <- matrix(rnorm(100*20), 100)
 exprs[1:30,1:10] <- rnorm(30*10, mean=2)
+rownames(exprs) <- paste("g", 1:nrow(exprs), sep="")
 groups <- factor(rep(1:2, each=10))
 
 ## Estimate the number of differentially expressed genes
 res <- gsri(exprs, groups)
+res
+
+## Perform the analysis for different gene set
+library(GSEABase)
+gs1 <- GeneSet(paste("g", 25:40, sep=""), setName="set1")
+gs2 <- GeneSet(paste("g", seq(1, nrow(exprs), by=5), sep=""), setName="set2")
+gsc <- GeneSetCollection(gs1, gs2)
+
+res2 <- gsri(exprs, groups, gs1)
+res3 <- gsri(exprs, groups, gsc, verbose=TRUE)
+
+summary(res2)
 }
 
 \keyword{distribution}

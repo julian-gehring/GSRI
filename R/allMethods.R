@@ -1,21 +1,21 @@
 ## gsri ##
 setGeneric("gsri",
            function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
-                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...)
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, verbose=FALSE, ...)
            standardGeneric("gsri"))
 
 setMethod("gsri",
           signature("matrix", "factor", "missing"),
           function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
                    test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE,
-                   id=!logical(nrow(exprs)), ...) {
+                   verbose=FALSE, id=!logical(nrow(exprs)), ...) {
             
             res <- calcGsri(exprs, groups, names, id, weight,
-                            grenander, nBoot, test, testArgs, alpha)
+                            grenander, nBoot, test, testArgs, alpha, verbose)
             cdf <- list(res$cdf)
             names(cdf) <- names
             parms <- list(weight=weight, nBoot=nBoot, test=test, alpha=alpha,
-                          grenander=grenander, testArgs=testArgs)
+                          grenander=grenander, testArgs=testArgs, verbose=verbose)
             
             object <- new("Gsri",
                           result=res$result, cdf=cdf, parms=parms)
@@ -26,11 +26,11 @@ setMethod("gsri",
 setMethod("gsri",
           signature("ExpressionSet", "factor", "missing"),
           function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
-                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...) {
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, verbose=FALSE, ...) {
 
             object <- gsri(exprs(exprs), groups, names=names, weight=weight,
                            nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
-                           grenander=grenander)
+                           grenander=grenander, verbose=verbose)
             
             return(object)
           })
@@ -38,7 +38,7 @@ setMethod("gsri",
 setMethod("gsri",
           signature("matrix", "factor", "GeneSet"),
           function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
-                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...) {
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, verbose=FALSE, ...) {
 
             if(is.null(names))
               names <- setName(geneSet)
@@ -47,7 +47,7 @@ setMethod("gsri",
             id <-  rownames(exprs) %in% geneIds(geneSet)
             object <- gsri(exprs, groups, names=names, weight=weight,
                            nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
-                           grenander=grenander, id=id)
+                           grenander=grenander, id=id, verbose=verbose)
 
             return(object)
           })
@@ -55,11 +55,11 @@ setMethod("gsri",
 setMethod("gsri",
           signature("ExpressionSet", "factor", "GeneSet"),
           function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
-                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...) {
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, verbose=FALSE, ...) {
 
             object <- gsri(exprs(exprs), groups, geneSet, names=names, weight=weight,
                            nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
-                           grenander=grenander)
+                           grenander=grenander, verbose=verbose)
             
             return(object)
           })
@@ -67,8 +67,8 @@ setMethod("gsri",
 setMethod("gsri",
           signature("matrix", "factor", "GeneSetCollection"),
           function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
-                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, nCores=NULL,
-                   minSize=0, ...) {
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, verbose=FALSE,
+                   minSize=0, nCores=NULL, ...) {
 
             if(is.null(names))
               names <- names(geneSet)
@@ -80,7 +80,7 @@ setMethod("gsri",
               stop("No gene set with the minimal number of genes.")
             res <- les:::mcsapply(geneSet, gsri, exprs=exprs, groups=groups, name=NULL,
                                   weight=weight, nBoot=nBoot, grenander=grenander, test=test,
-                                  testArgs=testArgs, alpha=alpha, mc.cores=nCores)
+                                  testArgs=testArgs, alpha=alpha, mc.cores=nCores, verbose=verbose)
 
             object <- new("Gsri",
                           result=as.data.frame(do.call(rbind, lapply(res, getGsri)), row.names=names[ind]),
@@ -94,12 +94,12 @@ setMethod("gsri",
 setMethod("gsri",
           signature("ExpressionSet", "factor", "GeneSetCollection"),
           function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
-                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, nCores=NULL,
-                   minSize=0, ...) {
+                   test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, verbose=FALSE,
+                   minSize=0, nCores=NULL, ...) {
 
             object <- gsri(exprs(exprs), groups, geneSet, names=names, weight=weight,
                          nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
-                         grenander=grenander, nCores=nCores, minSize=minSize)
+                         grenander=grenander, nCores=nCores, minSize=minSize, verbose=verbose)
             
             return(object)
           })

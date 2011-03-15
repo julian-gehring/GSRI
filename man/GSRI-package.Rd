@@ -96,10 +96,23 @@
 set.seed(1)
 exprs <- matrix(rnorm(100*20), 100)
 exprs[1:30,1:10] <- rnorm(30*10, mean=2)
+rownames(exprs) <- paste("g", 1:nrow(exprs), sep="")
 groups <- factor(rep(1:2, each=10))
 
 ## Estimate the number of differentially expressed genes
 res <- gsri(exprs, groups)
+res
+
+## Perform the analysis for different gene set
+library(GSEABase)
+gs1 <- GeneSet(paste("g", 25:40, sep=""), setName="set1")
+gs2 <- GeneSet(paste("g", seq(1, nrow(exprs), by=5), sep=""), setName="set2")
+gsc <- GeneSetCollection(gs1, gs2)
+
+res2 <- gsri(exprs, groups, gs1)
+res3 <- gsri(exprs, groups, gsc, verbose=TRUE)
+
+summary(res2)
 }
 
 \keyword{package}

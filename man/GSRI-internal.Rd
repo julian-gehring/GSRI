@@ -13,7 +13,7 @@
 
 \usage{
 calcGsri(exprs, groups, name, id, weights, grenander=TRUE, nBoot=100,
-test=NULL, testArgs=NULL, alpha=0.05, ...)
+test=NULL, testArgs=NULL, alpha=0.05, verbose=FALSE, ...)
 multiStat(exprs, groups, id, index, test, testArgs)
 gsriBoot(exprs, groups, weights, id, grenander, test, testArgs, nSamples)
 bootInGroups(nSamples)

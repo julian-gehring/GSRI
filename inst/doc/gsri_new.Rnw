@@ -149,6 +149,9 @@ plot(gCol5, 5, ecdf=list(type="s"))
 \caption{GSRI plot}
 \end{figure}
 
+
+\section{Weighting of genes in gene sets}
+
 <<weights>>=
 library(hgu95av2.db)
 gNames <- rownames(exprs(eset))
@@ -169,7 +172,6 @@ gCol5go2
 
 \section{Todo}
 \begin{itemize}
-\item Beispiel mit weights
 \item plot args
 \item args for gsri()
 \item equation for fit in doc

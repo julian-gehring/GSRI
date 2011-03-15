@@ -104,7 +104,7 @@ plot(gCol5, 5, ecdf=list(type="s"))
 ###################################################
 ### chunk number 12: weights
 ###################################################
-#line 155 "gsri_new.Rnw"
+#line 158 "gsri_new.Rnw"
 library(hgu95av2.db)
 gNames <- rownames(exprs(eset))
 ind <- Lkeys(hgu95av2GO) %in% gNames
@@ -123,7 +123,7 @@ gCol5go2
 ###################################################
 ### chunk number 13: sessionInfo
 ###################################################
-#line 190 "gsri_new.Rnw"
+#line 192 "gsri_new.Rnw"
 toLatex(sessionInfo(), locale=FALSE)
 
 

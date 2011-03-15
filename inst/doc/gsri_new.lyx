@@ -505,6 +505,10 @@ end{figure}
 
 \end_layout
 
+\begin_layout Section
+Weighting of genes in gene sets
+\end_layout
+
 \begin_layout Scrap
 <<weights>>=
 \begin_inset Newline newline
@@ -572,10 +576,6 @@ gCol5go2
 
 \begin_layout Section
 Todo
-\end_layout
-
-\begin_layout Itemize
-Beispiel mit weights
 \end_layout
 
 \begin_layout Itemize
