@@ -5,11 +5,11 @@
 \alias{export,Gsri,character-method}
 
 \title{
-  Export of results to file
+  Export results to file
 }
 
 \description{
-  Export the results of a Gsri object to a file.
+  Export the results of a 'Gsri' object to a file.
 }
 
 \usage{
@@ -17,25 +17,44 @@ export(object, file, ...)
 }
 
 \arguments{
-  \item{object}{An object of class 'Gsri' which results are exported.}
+  \item{object}{An object of class 'Gsri' whose results to export.}
   \item{file}{Character vector specifying the path of the file to be
     written.}
-  \item{...}{Optinal arguments}
+  \item{...}{Optional arguments}
 }
 
 \details{
-  The method writes a table with results to a text file. The output is
-  formatted as given by the standard parameters of 'write.table' and can
-  be read in directly by 'read.table' without further specification
-  about the format.
+  The 'export' method writes the results of the GSRI analysis, as
+  obtained with 'getGsri', to a text file. The file is formatted with
+  the standard parameters of the 'write.table' function, while '\\t' is
+  used as field seperator.
 }
 
 \author{
-  Kilian Bartholome, Julian Gehring
+  Julian Gehring
+
+  Maintainer: Julian Gehring <julian.gehring@fdm.uni-freiburg.de>
 }
 
 \seealso{
-  \code{\link{gsri}}
+  Package:
+  \code{\link[GSRI]{GSRI-package}}
+  
+  Class:
+  \code{\linkS4class{Gsri}}
+  
+  Methods:
+  \code{\link[GSRI]{gsri}}  
+  \code{\link[GSRI]{getGsri}}
+  \code{\link[GSRI]{getCdf}}
+  \code{\link[GSRI]{getParms}}
+  \code{\link[GSRI]{export}}
+  \code{\link[GSRI]{sortGsri}}
+  \code{\link[GSRI]{plot}}
+  \code{\link[GSRI]{show}}
+  \code{\link[GSRI]{summary}}
+  \code{\link[GSRI]{readCls}}
+  \code{\link[GSRI]{readGct}}
 }
 
 \examples{

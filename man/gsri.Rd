@@ -1,4 +1,5 @@
 \name{gsri}
+
 \docType{methods}
 
 \alias{gsri}
@@ -15,7 +16,7 @@
 }
 
 \description{
-  Estimates the number of differentially expressed genes in gene sets.
+  Estimate the number of differentially expressed genes in gene sets.
 }
 
 \usage{
@@ -24,137 +25,230 @@ test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...)
 }
 
 \arguments{
-  \item{exprs}{A matrix or an expression set of size n x m, containing
-    the expression values for the genes, with rows representing the
-    genes and columns representing the arrays.}
-  \item{groups}{A factor of length m representing the groupss of
-    the samples.}
-  \item{geneSet}{missing, GeneSet, GeneSetClass}
-  \item{names}{Character vector with the names of the gene set(s).}
-  \item{weight}{Weights}
-  \item{nBoot}{An integer specifying the number of bootstrap samples to
-    be drawn (default: 100).}
-  \item{test}{A function specifying the statistical test used to assess
-    the effect between the groups in terms of p-values. The groups are
-    given by the 'groups' argument. Here, a t-test (rowt) and F-test
-    (rowF) are implemented (default: rowt). A user-defined function can
-    also be given, in order to specify a custom test statistics. For
-    details see the 'Notes' section.}
-  \item{testArgs}{Optional arguments passed to the function 'test' if
-    specified (default: NULL)}
-  \item{alpha}{A numeric specifying the significance level for
-    bootstrapping. The resulting GSRI is the lower bound of the
-    (1-\eqn{alpha}{alpha})*100\% confidence interval.}
-  \item{grenander}{A logical indicating whether the modified Grenander
-    estimator for the cumulative density should be used, instead of a
-    classical ECDF (default: TRUE).}
-  \item{...}{Additional arguments}
+  \item{exprs}{Matrix or object of class 'ExpressionSet' containing
+    the expression intensities of the microarray. If a matrix the rows
+    represent the genes and the columns the samples, respectively.}
+
+  \item{groups}{Factor with the assignments of the microarray samples to
+    the groups, along which the differential effect should be
+    estimated. Must have as many elements as 'exprs' has samples.}
+
+  \item{geneSet}{Optional object of class 'GeneSet' or
+    'GeneSetCollection' defining the gene set(s) used for the
+    analysis. If missing all genes of 'exprs' are considered to be part
+    of the gene set. If an object of class 'GeneSet' only these genes
+    are considered to be part of the gene set. If an object of class
+    'GeneSetCollecton' the analysis is performed for each gene set of
+    the collection individually.}
+  
+  \item{names}{Optional character vector with the names of the gene
+    set(s). If missing the names are taken from the 'geneSet'
+    argument. Has to have as many unique elements as gene sets in the
+    analysis.}
+
+  \item{weight}{Optional numerical vector of weights specifying the
+    certainty a gene is part of the gene set. If missing all genes are
+    assumed to have the same certainty. Please note that the weights are
+    defined in a relative way and thus any kind of positive
+    scores/weights are feasable. Must have as many elements as eighter
+    the genes defined in 'geneSet' or in 'exprs'.}
+
+  \item{nBoot}{Integer with the number of bootstrap samples to be drawn
+    in the calculation of the GSRI (default: 100).}
+
+  \item{test}{A function defining the statistical test used to assess
+    the differential effect between the groups which are given by the
+    'groups' argument. In this package, a t-test (rowt) and an F-test
+    (rowF) are already supplied, with 'rowt' being the
+    default. Additionally, a custom test function can be used in order
+    to be able to include any feasible statistical test in the
+    analysis. For details, please see the 'details' section.}
+  
+  \item{testArgs}{List of optional arguments used by the 'test'
+    function. For details, please see the 'details' section and the help
+    for 'test-functions'.}
+
+  \item{alpha}{Single numeric specifying the confidence level for the
+    GSRI. The estimated GSRI is the lower bound of the
+    (1-\eqn{alpha}{alpha})*100\% confidence interval obtained from
+    bootstrapping.}
+
+  \item{grenander}{Logical about whether the modified Grenander
+    estimator for the cumulative density should be used instead of a
+    centered ECDF. By default the modified Grenander estimator is
+    used. For more information, please see the 'details' section.}
+  
+  \item{...}{Additional arguments, including:
+    \describe{
+      \item{nCores:}{Integer setting the number of cores used for the
+	computation in combination with the \pkg{multicore} package for
+	a 'GeneSetCollection'. For details, please see the 'details'
+	section.}
+      \item{verbose:}{Logical indicating whether the progress of the
+	computation for a 'GeneSetCollection' should be printed to
+	screen (default: FALSE).}
+    }
+  }
 }
 
 \section{Methods}{
+  Analysis for all genes of 'exprs' part of the gene set:
   \describe{
     \item{
       \code{signature(exprs="matrix", groups="factor", geneSet="missing")}
-    }{bla}
+    }{}
 
     \item{
       \code{signature(exprs="ExpressionSet", groups="factor", geneSet="missing")}
-    }{bla}
+    }{}
+  }
 
+  Analysis for one gene set, defined as an object of class 'GeneSet':
+  \describe{
     \item{
       \code{signature(exprs="matrix", groups="factor", geneSet="GeneSet")}
-    }{bla}
+    }{}
     
     \item{
       \code{signature(exprs="ExpressionSet", groups="factor", geneSet="GeneSet")}
-    }{bla}
-    
+    }{}
+  }
+
+  Analysis for several gene sets, defined as an object of class
+  'GeneSetCollection':
+  \describe{
     \item{
       \code{signature(exprs="matrix", groups="factor", geneSet="GeneSetCollection")}
-    }{bla}
+    }{}
     
     \item{
       \code{signature(exprs="ExpressionSet", groups="factor", geneSet="GeneSetCollection")}
-    }{bla}
-    }
+    }{}
+  }
+  In this case parallel computing capabilities provided by the 'multicore'
+  package may be available, depending on the platform.
 }
 
 \details{
-  This function calculates the number of differentially expressed genes
-  for a single gene set, with data and gene set taken from the
-  workspace.
-  
-  From bootstrapping the group samples the (1-alpha)*100\% quantile of
-  the distribution of the estimated number of differentially expressed
-  genes is obtained. The Gene Set Regulation Index (GSRI) is defined as
-  the 5\% quantile and indicates, that with a probability of 95\% more
-  than GSRI genes in the gene set are differentially expressed.
+  The 'gsri' method estimates the degree of differential expression in
+  gene sets. By assessing the part of the distribution of p-values
+  consistent with the null hypothesis the number of differentially
+  expressed genes is calculated.
 
-  This index can be employed to test the hypothesis whether at least one
-  gene in a set is regulated and to compare and rank the regulation of
-  different gene sets.
+  Through bootstrapping the expression values within in the groups the
+  \eqn{alpha*100\%}{\alpha*100\%} quantile of the distribution
+  of the estimated regulation in the gene set is obtained. This quantile
+  is then defined as the Gene Set Regulation Index (GSRI) and indicates
+  that with a probability of \eqn{(1-alpha)*100\%}{(1-\alpha)*100\%}
+  more than \eqn{eta}{\eta} genes in the gene set show a differential
+  effect. This index can be employed to rank and compare the regulation
+  of gene sets as well as to test the hypothesis whether at least one
+  gene in the gene set is regulated.
+
+  Assessing the differential effect is based on p-values obtained from
+  statistical testing at the level of individual genes between the
+  groups. The GSRI approach is independent of the underlying test and
+  can be chosen according to the experimental design. With the t-test
+  ('rowt') and F-test ('rowF') two widely used statistical test are
+  already part of the package. Additional tests can easily used which
+  are passed with the 'test' argument to the 'gsri' method. For details
+  on how to implement custom test functions, please refer to the help of
+  'rowt' and 'rowF' or the vignette of this package.
+
+  The GSRI approach further allows weighting the influence of individual
+  genes in the estimation. This can be beneficial including for example
+  the certainty that genes are part of a certain gene set derived from
+  experimental findings or annotations.
+
+  Defining gene sets is available through the 'GSEABase' package which
+  provides the 'GeneSet' and 'GeneSetCollection' classes a single or
+  multiple gene sets, respectively. This ensures a powerful approach for
+  obtaining gene sets from data objects, data bases, and other
+  bioconductor packages. For details on how to define or retrieve gene
+  sets, please refer to the documentation of the 'GSEABase' package,
+  with a special focus on the 'GeneSet' and 'GeneSetCollection' classes.
+
+  The distribution of the p-values of a gene set is assessed in the
+  cumulative density. In addition to a symmetrical empirical cumulative
+  density function (ECDF), the modified Grenander estimator based on the
+  assumption about the concave shape of the cumulative density is
+  implemented and used by default. While the modified Grenander
+  estimator reduces the variance and makes the approach more stable
+  especially for small gene set, it underestimates the number of
+  regulated genes and thus leads to conservative estimates.
+
+  In the case that the computation is performed for several gene sets in
+  the form of a 'GeneSetCollection', it can be parallelized with the
+  'multicore' package. Please note that this package is not available
+  on all platforms. Using its capabilities requires attaching the
+  'multicore' prior to the calculation and specification of the 'nCores'
+  argument. For further details, please refer to the documentation of
+  the 'multicore' package. This may be especially relevant in the case
+  that specific seed values for the bootstrapping are of interest.
 }
 
 \value{
   An object of class 'Gsri' with the slots:
-
-  \item{result}{Result of the estimation.}
-  \item{pval}{List with the p-values for each gene set.}
-  \item{cdf}{List with the cumulative denstiy for each gene set.}
-  \item{parms}{Parameter values used in the analysis.}
-}
-
-\author{
-  Kilian Bartholome, Julian Gehring
+  \describe{
+    \item{\code{result}:}{Data frame containing the results of the GSRI
+      estimation, with one row for each gene set.}
+    \item{\code{cdf}:}{List of data frames containing the ECDF of the
+      p-values. Each data frame covers one gene set.}
+    \item{\code{parms}:}{List containing the parameter values used in
+      the analysis, with the elements.}
+  }
+  For details, please see the help for the \code{\linkS4class{Gsri}}
+  class.
 }
 
 \note{
-  Usage of the Grenander estimate is based on the assumption about the
-  concave shape of the cumulative density distribution. It reduces the
-  variance, i.e.  makes the approach more stable especially for small
-  gene sets. On the downside the number of significant genes is
-  overestimated for few regulated genes. A conservative solution of this
-  trade-off would be to rank the gene-sets with and without Grenander
-  estimate and to choose the lowest rank for each gene-set.  Please note
-  that the Grenander estimate does not allow duplicates in the p-values.
-  If this occurs in a data set, an error message will be printed and the
-  analysis should be repeated without the Grenander estimate.
+  The standard deviation of the estimated number of regulated genes as
+  well as the GSRI are obtained through bootstrapping. Thus, the results
+  for these two parameters may differ slightly for several realizations,
+  especially for small numbers of bootstraps ('nBoot'). Setting the seed
+  of the random number generator avoids this problem and yields exactly
+  the same results for several realizations.
+}
 
-  With the t-test and the F-test, two widely used statistical tests are
-  available in this package. To allow fast computation this package uses
-  the implementations from the \pkg{genefilter} package.
+\author{
+  Julian Gehring
 
-  It is also possible to apply user-defined tests with this method. In
-  this case the function has to be called by function(exprs, groups,
-  testArgs). 'exprs' and 'groups' are of class 'matrix' and 'factor',
-  respectively. 'testArgs' will only be passed to the function if it is
-  defined. In general all methods that compute p-values are suitable. The
-  function has to return a vector with one p-value per gene. For details
-  on how to use your own test functions please refer to the vignette of
-  this package.
+  Maintainer: Julian Gehring <julian.gehring@fdm.uni-freiburg.de>
 }
 
 \seealso{
-  \code{\link{GSRI}}
+  Package:
+  \code{\link[GSRI]{GSRI-package}}
+  
+  Class:
+  \code{\linkS4class{Gsri}}
+  
+  Methods:
+  \code{\link[GSRI]{gsri}}  
+  \code{\link[GSRI]{getGsri}}
+  \code{\link[GSRI]{getCdf}}
+  \code{\link[GSRI]{getParms}}
+  \code{\link[GSRI]{export}}
+  \code{\link[GSRI]{sortGsri}}
+  \code{\link[GSRI]{plot}}
+  \code{\link[GSRI]{show}}
+  \code{\link[GSRI]{summary}}
+  \code{\link[GSRI]{readCls}}
+  \code{\link[GSRI]{readGct}}
 }
 
 \examples{
+## Simulate expression data for a gene set of
+## 100 genes, 20 samples (10 treatment, 10 control)
+## and 30 regulated genes
+set.seed(1)
 exprs <- matrix(rnorm(100*20), 100)
+exprs[1:30,1:10] <- rnorm(30*10, mean=2)
 groups <- factor(rep(1:2, each=10))
 
-\dontrun{
-## Simulate expression data for a gene set of:
-## 100 genes, 40 samples (20 treatment, 20 control)
-## and 30 regulated genes
-expdata <- matrix(rnorm(4000,mean=0),nrow=100,ncol=40)
-expdata[1:30,1:20] <- rnorm(600,mean=1)
-data <- data.frame(expdata)
-groups <- c(rep(0,20),rep(1,20))
-geneSetName <- "Test Gene Set"
-
 ## Estimate the number of differentially expressed genes
-res <- gsri(data, groups, geneSetName)
+res <- gsri(exprs, groups)
 }
-}
+
 \keyword{distribution}
 \keyword{htest}
