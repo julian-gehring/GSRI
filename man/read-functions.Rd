@@ -11,7 +11,7 @@
 }
 
 \description{
-  Import the phenotype from 'cls' files and the expression data from
+  Import the groups from 'cls' files and the expression data from
   'gct' files.
 }
 
@@ -33,7 +33,7 @@ readGct(file, ...)
 }
 
 \value{
-  For a cls file, a factor containing the phenotypes.
+  For a cls file, a factor containing the groups.
 
   For a gct file, a matrix containing the expression intensities.
 }
@@ -50,7 +50,7 @@ readGct(file, ...)
 \dontrun{
 exprs <- readGct(file)
 
-phenotype <- readCls(file)
+groups <- readCls(file)
 }
 }
 

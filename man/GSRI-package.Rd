@@ -70,19 +70,19 @@
 expdata <- matrix(rnorm(4000,mean=0),nrow=100,ncol=40)
 expdata[1:30,1:20] <- rnorm(600,mean=1)
 data <- data.frame(expdata)
-phenotype <- c(rep(0,20),rep(1,20))
+groups <- c(rep(0,20),rep(1,20))
 geneSetName <- "Test Gene Set"
 
 ## Estimate the number of differentially expressed genes
-res <- gsri(data, phenotype, geneSetName)
+res <- gsri(data, groups, geneSetName)
 
 
-## Read expression data, phenotypes and gene sets from files
+## Read expression data, groups and gene sets from files
 ## Input files can be found in the vignette directory of this package
 dataFileName <- system.file("extdata", "data.gct", package="GSRI")
-phenotypeFileName <- system.file("extdata", "phenotype.cls", package="GSRI")
+groupsFileName <- system.file("extdata", "phenotype.cls", package="GSRI")
 geneSetFileName <- system.file("extdata", "geneSets.gmt", package="GSRI")
 
-res2 <- gsriFromFile(dataFileName, phenotypeFileName, geneSetFileName)
+res2 <- gsriFromFile(dataFileName, groupsFileName, geneSetFileName)
 }
 }

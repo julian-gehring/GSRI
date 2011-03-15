@@ -19,7 +19,7 @@
 }
 
 \usage{
-gsri(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100,
+gsri(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100,
 test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...)
 }
 
@@ -27,7 +27,7 @@ test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...)
   \item{exprs}{A matrix or an expression set of size n x m, containing
     the expression values for the genes, with rows representing the
     genes and columns representing the arrays.}
-  \item{phenotype}{A factor of length m representing the phenotypes of
+  \item{groups}{A factor of length m representing the groupss of
     the samples.}
   \item{geneSet}{missing, GeneSet, GeneSetClass}
   \item{names}{Character vector with the names of the gene set(s).}
@@ -36,7 +36,7 @@ test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...)
     be drawn (default: 100).}
   \item{test}{A function specifying the statistical test used to assess
     the effect between the groups in terms of p-values. The groups are
-    given by the 'phenotype' argument. Here, a t-test (rowt) and F-test
+    given by the 'groups' argument. Here, a t-test (rowt) and F-test
     (rowF) are implemented (default: rowt). A user-defined function can
     also be given, in order to specify a custom test statistics. For
     details see the 'Notes' section.}
@@ -54,27 +54,27 @@ test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...)
 \section{Methods}{
   \describe{
     \item{
-      \code{signature(exprs="matrix", phenotype="factor", geneSet="missing")}
+      \code{signature(exprs="matrix", groups="factor", geneSet="missing")}
     }{bla}
 
     \item{
-      \code{signature(exprs="ExpressionSet", phenotype="factor", geneSet="missing")}
+      \code{signature(exprs="ExpressionSet", groups="factor", geneSet="missing")}
     }{bla}
 
     \item{
-      \code{signature(exprs="matrix", phenotype="factor", geneSet="GeneSet")}
+      \code{signature(exprs="matrix", groups="factor", geneSet="GeneSet")}
     }{bla}
     
     \item{
-      \code{signature(exprs="ExpressionSet", phenotype="factor", geneSet="GeneSet")}
+      \code{signature(exprs="ExpressionSet", groups="factor", geneSet="GeneSet")}
     }{bla}
     
     \item{
-      \code{signature(exprs="matrix", phenotype="factor", geneSet="GeneSetCollection")}
+      \code{signature(exprs="matrix", groups="factor", geneSet="GeneSetCollection")}
     }{bla}
     
     \item{
-      \code{signature(exprs="ExpressionSet", phenotype="factor", geneSet="GeneSetCollection")}
+      \code{signature(exprs="ExpressionSet", groups="factor", geneSet="GeneSetCollection")}
     }{bla}
     }
 }
@@ -125,8 +125,8 @@ test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...)
   the implementations from the \pkg{genefilter} package.
 
   It is also possible to apply user-defined tests with this method. In
-  this case the function has to be called by function(data, phenotype,
-  testArgs). 'data' and 'phenotype' are of class 'matrix' and 'factor',
+  this case the function has to be called by function(exprs, groups,
+  testArgs). 'exprs' and 'groups' are of class 'matrix' and 'factor',
   respectively. 'testArgs' will only be passed to the function if it is
   defined. In general all methods that compute p-values are suitable. The
   function has to return a vector with one p-value per gene. For details
@@ -139,8 +139,8 @@ test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...)
 }
 
 \examples{
-data <- matrix(rnorm(100*20), 100)
-phenotype <- factor(rep(1:2, each=10))
+exprs <- matrix(rnorm(100*20), 100)
+groups <- factor(rep(1:2, each=10))
 
 \dontrun{
 ## Simulate expression data for a gene set of:
@@ -149,11 +149,11 @@ phenotype <- factor(rep(1:2, each=10))
 expdata <- matrix(rnorm(4000,mean=0),nrow=100,ncol=40)
 expdata[1:30,1:20] <- rnorm(600,mean=1)
 data <- data.frame(expdata)
-phenotype <- c(rep(0,20),rep(1,20))
+groups <- c(rep(0,20),rep(1,20))
 geneSetName <- "Test Gene Set"
 
 ## Estimate the number of differentially expressed genes
-res <- gsri(data, phenotype, geneSetName)
+res <- gsri(data, groups, geneSetName)
 }
 }
 \keyword{distribution}

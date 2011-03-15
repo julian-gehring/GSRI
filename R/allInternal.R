@@ -1,23 +1,23 @@
-calcGsri <- function(data, phenotype, name,
+calcGsri <- function(exprs, groups, name,
                      weight, grenander=TRUE, nBoot=100,
                      test="ttest", testArgs=NULL, alpha=0.05, ...) {
 
-  nGenes <- nrow(data)
-  if(ncol(data) != length(phenotype))
-    stop("Number of columns of 'data' must match 'phenotype'.")
+  nGenes <- nrow(exprs)
+  if(ncol(exprs) != length(groups))
+    stop("Number of columns of 'exprs' must match 'groups'.")
   if(!(is.function(test) && length(formals(test)) > 1))
     stop("'test' must be a function with at least two input arguments.")
   if(is.null(weight))
     weight <- rep(1, nGenes)
 
-  pval <- multiStat(data, phenotype, weight, grenander, test, ...)
+  pval <- multiStat(exprs, groups, weight, grenander, test, ...)
   les <- les:::fitGsri(pval, NULL, weight, nGenes, grenander, se=TRUE, custom=FALSE)
   p0 <- les[1]
   psd0 <- les[2]
   
-  ## pval <- multiStat(data, 1:ncol(data), phenotype, test, testArgs)
-  b <- boot::boot(t(data), gsriBoot, nBoot,
-                  phenotype=phenotype, cweight=weight, grenander=grenander,
+  ## pval <- multiStat(exprs, 1:ncol(exprs), groups, test, testArgs)
+  b <- boot::boot(t(exprs), gsriBoot, nBoot,
+                  groups=groups, cweight=weight, grenander=grenander,
                   test=test, testArgs=testArgs)
   p1 <- max(b$t0[[1]], 0)
   bias <- apply(b$t, 2, mean) - b$t0
@@ -26,7 +26,7 @@ calcGsri <- function(data, phenotype, name,
   
   p <- p1
   #pb <- replicate(nBoot,
-  #                gsriBoot(data, phenotype, weight, grenander, test, ...))
+  #                gsriBoot(exprs, groups, weight, grenander, test, ...))
   #p <- max(b$t0, 0)
   #psd <- stats::sd(pb)
   #gsri <- max(stats::quantile(pb, alpha, na.rm=TRUE), 0)
@@ -41,28 +41,28 @@ calcGsri <- function(data, phenotype, name,
 }
 
 
-multiStat <- function(data, label, weight, grenander, test, ...) {
+multiStat <- function(exprs, label, weight, grenander, test, ...) {
 
-  pval <- test(data, label, ...)
+  pval <- test(exprs, label, ...)
   pval <- pval[!is.na(pval)] ## needed?
 
   return(pval)
 }
 
 
-gsriBoot <- function(data, index, phenotype, cweight, grenander, test, testArgs, ...) {
+gsriBoot <- function(exprs, index, groups, cweight, grenander, test, testArgs, ...) {
 
-  pval <- multiStat(t(data), phenotype[index], cweight, grenander, test, ...)
+  pval <- multiStat(t(exprs), groups[index], cweight, grenander, test, ...)
   p <- les:::fitGsri(pval, NULL, cweight, length(pval), grenander, FALSE, FALSE)[1]
 
   return(p)
 }
 
 
-#gsriBoot <- function(data, phenotype, weight, grenander, test, ...) {
+#gsriBoot <- function(exprs, groups, weight, grenander, test, ...) {
 #
-#  boot <- bootWithinGroup(data, phenotype)
-#  res <- multiStat(boot$data, boot$label, weight, grenander, test, ...) ## weight[ord] !!!
+#  boot <- bootWithinGroup(exprs, groups)
+#  res <- multiStat(boot$exprs, boot$label, weight, grenander, test, ...) ## weight[ord] !!!
 #
 #  return(res)
 #}
@@ -84,16 +84,16 @@ bootWithinGroup <- function(exprs, label) {
   exprs <- exprs[ ,ordBoot, drop=FALSE]
   labelOrd <- label[ordBoot]
   if(!identical(label, labelOrd))
-    warning("Bootstrapping lead to changes in the phenotype.")
+    warning("Bootstrapping lead to changes in the groups.")
 
-  return(list(data=exprs, label=labelOrd))
+  return(list(exprs=exprs, label=labelOrd))
 }
 
 
 getPvalues <-
-function (data, d, phenotype, test, testArgs) 
+function (exprs, d, groups, test, testArgs) 
 {
-    pvals <- GSRI:::multiStat(as.matrix(data), phenotype[d], test, 
+    pvals <- GSRI:::multiStat(as.matrix(exprs), groups[d], test, 
         testArgs)
     pvals <- pvals[!is.na(pvals)]
     return(pvals)

@@ -21,7 +21,7 @@ sortGsri(x, names, decreasing=FALSE, na.last=NA, ...)
   \item{x}{A matrix or an expression set of size n x m, containing
     the expression values for the genes, with rows representing the
     genes and columns representing the arrays.}
-  \item{names}{A factor of length m representing the phenotypes of
+  \item{names}{A factor of length m representing the groupss of
     the samples.}
   \item{decreasing}{missing, GeneSet, GeneSetClass}
   \item{na.last}{Character vector with the names of the gene set(s).}
@@ -38,7 +38,7 @@ sortGsri(x, names, decreasing=FALSE, na.last=NA, ...)
 
 \details{
   This function calculates the number of differentially expressed genes
-  for a single gene set, with data and gene set taken from the
+  for a single gene set, with exprs and gene set taken from the
   workspace.
   
   From bootstrapping the group samples the (1-alpha)*100\% quantile of
@@ -82,8 +82,8 @@ sortGsri(x, names, decreasing=FALSE, na.last=NA, ...)
   the implementations from the \pkg{genefilter} package.
 
   It is also possible to apply user-defined tests with this method. In
-  this case the function has to be called by function(data, phenotype,
-  testArgs). 'data' and 'phenotype' are of class 'matrix' and 'factor',
+  this case the function has to be called by function(exprs, groups,
+  testArgs). 'exprs' and 'groups' are of class 'matrix' and 'factor',
   respectively. 'testArgs' will only be passed to the function if it is
   defined. In general all methods that compute p-values are suitable. The
   function has to return a vector with one p-value per gene. For details
@@ -97,7 +97,7 @@ sortGsri(x, names, decreasing=FALSE, na.last=NA, ...)
 
 \examples{
 data <- matrix(rnorm(100*20), 100)
-phenotype <- factor(rep(1:2, each=10))
+groups <- factor(rep(1:2, each=10))
 
 \dontrun{
 ## Simulate expression data for a gene set of:
@@ -106,11 +106,11 @@ phenotype <- factor(rep(1:2, each=10))
 expdata <- matrix(rnorm(4000,mean=0),nrow=100,ncol=40)
 expdata[1:30,1:20] <- rnorm(600,mean=1)
 data <- data.frame(expdata)
-phenotype <- c(rep(0,20),rep(1,20))
+groups <- c(rep(0,20),rep(1,20))
 geneSetName <- "Test Gene Set"
 
 ## Estimate the number of differentially expressed genes
-res <- gsri(data, phenotype, geneSetName)
+res <- gsri(data, groups, geneSetName)
 }
 }
 \keyword{distribution}

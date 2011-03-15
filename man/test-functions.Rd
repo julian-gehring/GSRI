@@ -13,15 +13,15 @@
 }
 
 \usage{
-rowt(data, phenotype, ...)
-rowF(data, phenotype, ...)
+rowt(exprs, groups, ...)
+rowF(exprs, groups, ...)
 }
 
 \arguments{
-  \item{data}{A matrix of expression values of size n x m, with rows
+  \item{exprs}{A matrix of expression values of size n x m, with rows
     representing the genes and columns representing the arrays.}
-  \item{phenotype}{A factor with the length m, specifying the phenotype
-    of the corresponding arrays in 'data'.}
+  \item{groups}{A factor with the length m, specifying the groups
+    of the corresponding arrays in 'exprs'.}
   \item{...}{Optinal arguments, not used in the default functions.}
 }
 
@@ -31,8 +31,8 @@ rowF(data, phenotype, ...)
   the implementations from the \pkg{genefilter} package.
 
   It is also possible to apply user-defined tests with this method. In
-  this case the function has to be called by function(data, phenotype,
-  testArgs). 'data' and 'phenotype' are of class 'matrix' and 'factor',
+  this case the function has to be called by function(exprs, groups,
+  testArgs). 'exprs' and 'groups' are of class 'matrix' and 'factor',
   respectively. 'testArgs' will only be passed to the function if it is
   defined. In general all methods that compute p-values are suitable. The
   function has to return a vector with one p-value per gene. For details
@@ -59,8 +59,8 @@ statFcn <- function(d, p) {
     pval <- summary(m)$coefficients[2,4]
 }
 
-testFcn <- function(data, phenotype, ...) {
-    pvals <- apply(data, 1, statFcn, phenotype)
+testFcn <- function(exprs, groups, ...) {
+    pvals <- apply(exprs, 1, statFcn, groups)
     return(pvals)
 }
 }

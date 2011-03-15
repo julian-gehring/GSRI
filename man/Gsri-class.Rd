@@ -37,22 +37,22 @@
   Analysis:
   \describe{
     \item{gsri:}{
-      \code{signature(exprs="matrix", phenotype="factor",
+      \code{signature(exprs="matrix", groups="factor",
 	geneSet="missing")}
       
-      \code{signature(exprs="ExpressionSet", phenotype="factor",
+      \code{signature(exprs="ExpressionSet", groups="factor",
 	geneSet="missing")}
       
-      \code{signature(exprs="matrix", phenotype="factor",
+      \code{signature(exprs="matrix", groups="factor",
 	geneSet="GeneSet")}
       
-      \code{signature(exprs="ExpressionSet", phenotype="factor",
+      \code{signature(exprs="ExpressionSet", groups="factor",
 	geneSet="GeneSet")}
       
-      \code{signature(exprs="matrix", phenotype="factor",
+      \code{signature(exprs="matrix", groups="factor",
 	geneSet="GeneSetCollection")}
       
-      \code{signature(exprs="ExpressionSet", phenotype="factor",
+      \code{signature(exprs="ExpressionSet", groups="factor",
 	geneSet="GeneSetCollection")}
       
       do the analysis}

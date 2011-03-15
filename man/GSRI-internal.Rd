@@ -12,11 +12,11 @@
 \description{Internal GSRI functions}
 
 \usage{
-getPvalues(data, d, phenotype, test, testArgs)
-gsriBoot(data, index, phenotype, cweight, grenander, test, testArgs, ...)
-multiStat(data, label, weight, grenander, test, ...)
+getPvalues(exprs, d, groups, test, testArgs)
+gsriBoot(exprs, index, groups, cweight, grenander, test, testArgs, ...)
+multiStat(exprs, label, weight, grenander, test, ...)
 bootWithinGroup(exprs, label)
-calcGsri(data, phenotype, name, weight, grenander=TRUE, nBoot=100, test="ttest", testArgs=NULL, alpha=0.05, ...)
+calcGsri(exprs, groups, name, weight, grenander=TRUE, nBoot=100, test="ttest", testArgs=NULL, alpha=0.05, ...)
 }
 
 \author{

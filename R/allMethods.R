@@ -1,15 +1,15 @@
 ## gsri ##
 setGeneric("gsri",
-           function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
+           function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
                    test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, ...)
            standardGeneric("gsri"))
 
 setMethod("gsri",
           signature("matrix", "factor", "missing"),
-          function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
+          function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
                    test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
             
-            res <- calcGsri(exprs, phenotype, names, weight,
+            res <- calcGsri(exprs, groups, names, weight,
                             grenander, nBoot, test, testArgs, alpha)
             parms <- list(weight=weight, nBoot=nBoot, test=test, alpha=alpha,
                           grenander=grenander, testArgs=testArgs)
@@ -22,10 +22,10 @@ setMethod("gsri",
 
 setMethod("gsri",
           signature("ExpressionSet", "factor", "missing"),
-          function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
+          function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
                    test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
 
-            object <- gsri(exprs(exprs), phenotype, names=names, weight=weight,
+            object <- gsri(exprs(exprs), groups, names=names, weight=weight,
                            nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
                            grenander=grenander)
             
@@ -34,14 +34,14 @@ setMethod("gsri",
 
 setMethod("gsri",
           signature("matrix", "factor", "GeneSet"),
-          function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
+          function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
                    test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
 
             if(is.null(names))
               names <- setName(geneSet)
             id <- geneIds(geneSet)
             id <- intersect(id, rownames(exprs))
-            object <- gsri(exprs[id, ], phenotype, names=names, weight=weight,
+            object <- gsri(exprs[id, ], groups, names=names, weight=weight,
                            nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
                            grenander=grenander)
 
@@ -50,10 +50,10 @@ setMethod("gsri",
 
 setMethod("gsri",
           signature("ExpressionSet", "factor", "GeneSet"),
-          function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
+          function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
                    test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE) {
 
-            object <- gsri(exprs(exprs), phenotype, geneSet, names=names, weight=weight,
+            object <- gsri(exprs(exprs), groups, geneSet, names=names, weight=weight,
                            nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
                            grenander=grenander)
             
@@ -62,12 +62,12 @@ setMethod("gsri",
 
 setMethod("gsri",
           signature("matrix", "factor", "GeneSetCollection"),
-          function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
+          function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
                    test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, nCores=NULL) {
 
             if(is.null(names))
               names <- names(geneSet)
-            res <- les:::mcsapply(geneSet, gsri, exprs=exprs, phenotype=phenotype, name=NULL,
+            res <- les:::mcsapply(geneSet, gsri, exprs=exprs, groups=groups, name=NULL,
                                   weight=weight, nBoot=nBoot, grenander=grenander, test=test,
                                   testArgs=testArgs, alpha=alpha, mc.cores=nCores)
 
@@ -83,10 +83,10 @@ setMethod("gsri",
 
 setMethod("gsri",
           signature("ExpressionSet", "factor", "GeneSetCollection"),
-          function(exprs, phenotype, geneSet, names=NULL, weight=NULL, nBoot=100, 
+          function(exprs, groups, geneSet, names=NULL, weight=NULL, nBoot=100, 
                    test=rowt, testArgs=NULL, alpha=0.05, grenander=TRUE, nCores=NULL) {
 
-            object <- gsri(exprs(exprs), phenotype, geneSet, names=names, weight=weight,
+            object <- gsri(exprs(exprs), groups, geneSet, names=names, weight=weight,
                          nBoot=nBoot, test=test, testArgs=testArgs, alpha=alpha,
                          grenander=grenander, nCores=nCores)
             
@@ -262,12 +262,12 @@ setMethod("readCls",
               stop(sprintf("%s '%s' %s", "File", file, "does not exist."))
             clsCont <- readLines(file)
             header <- as.integer(unlist(strsplit(clsCont[[1]], " ")))
-            phenotype <- factor(unlist(strsplit(clsCont[[3]], " ")))
-            if(length(phenotype) != header[1] || nlevels(phenotype) != header[2])
+            groups <- factor(unlist(strsplit(clsCont[[3]], " ")))
+            if(length(groups) != header[1] || nlevels(groups) != header[2])
               warning(sprintf("%s '%s' %s", "Data in file", basename(file),
                               "is not consistent."))
             
-            return(phenotype)
+            return(groups)
           })
 
 
@@ -283,13 +283,13 @@ setMethod("readGct",
               stop(sprintf("%s '%s' %s", "File", file, "does not exist."))
             header <- readLines(file, n=3)
             extend <- as.integer(noquote(unlist(strsplit(header[2], "\t")))[c(1,2)])
-            data <- utils::read.table(file, header=TRUE, skip=2, as.is=TRUE,
+            exprs <- utils::read.table(file, header=TRUE, skip=2, as.is=TRUE,
                                       row.names=1, sep="\t", quote="",
                                       na.strings=c("na", ""))
-            data <- as.matrix(data[ ,-1])
-            if(any(dim(data) != extend))
+            exprs <- as.matrix(exprs[ ,-1])
+            if(any(dim(exprs) != extend))
               warning(sprintf("%s '%s' %s", "Data in file", basename(file),
                               "is not consistent."))
             
-            return(data)
+            return(exprs)
           })
