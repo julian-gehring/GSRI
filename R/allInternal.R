@@ -8,6 +8,10 @@ calcGsri <- function(exprs, groups, name, id, weights,
     stop("Number of columns of 'exprs' must match 'groups'.")
   if(!(is.function(test) && length(formals(test)) > 1))
     stop("'test' must be a function with at least two input arguments.")
+  if(length(alpha) > 1) {
+    alpha <- alpha[1]
+    warning("Taking only first value of 'alpha'.")
+  }
   nGenesGs <- sum(id)
   if(nGenesGs == 0) {
     result <- data.frame(pRegGenes=NA, pRegGenesSd=NA, nRegGenes=NA,
@@ -15,7 +19,7 @@ calcGsri <- function(exprs, groups, name, id, weights,
     res <- list(result=result, pval=NULL)
     return(res)
   }
-    
+
   ## reorder data for bootstrapping
   ord <- order(groups)
   exprs <- exprs[ ,ord]
