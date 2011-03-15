@@ -1,8 +1,8 @@
-\name{gsri-internal}
+\name{GSRI-internal}
 
 \title{Internal GSRI functions}
 
-\alias{gsri-internal}
+\alias{GSRI-internal}
 \alias{gsriBoot}
 \alias{multiStat}
 \alias{bootWithinGroups}
@@ -11,10 +11,10 @@
 \description{Internal GSRI functions}
 
 \usage{
-gsriBoot(exprs, index, groups, id, cweight, grenander, test, testArgs, ...)
+gsriBoot(exprs, groups, weights, id, grenander, test, testArgs)
 multiStat(exprs, groups, id, grenander, test, testArgs)
-bootWithinGroup(exprs, groups)
-calcGsri(exprs, groups, name, id, weight, grenander=TRUE, nBoot=100, test="ttest", testArgs=NULL, alpha=0.05, ...)
+bootWithinGroup(exprs, groups, weights)
+calcGsri(exprs, groups, name, id, weights, grenander=TRUE, nBoot=100, test="ttest", testArgs=NULL, alpha=0.05, ...)
 }
 
 \author{
