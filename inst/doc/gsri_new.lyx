@@ -1,0 +1,370 @@
+#LyX 1.6.9 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass literate-article
+\begin_preamble
+%\VignetteIndexEntry{Introduction on how to use the Gene Set Regulation Index (GSRI) package to estimate the number of regulated genes in a gene set}
+%\VignettePackage{GSRI}
+
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+\newcommand{\Rmethod}[1]{{\textit{#1}}}
+\newcommand{\Rfunarg}[1]{{\texttt{#1}}}
+\end_preamble
+\use_default_options false
+\language english
+\inputencoding utf8
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder true
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Introduction to the Gene Set Regulation Index (GSRI) package
+\end_layout
+
+\begin_layout Author
+Julian Gehring, Clemens Kreutz, Kilian Bartholomé, Jens Timmer
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Scrap
+<<echo=false>>=
+\begin_inset Newline newline
+\end_inset
+
+set.seed(1)
+\begin_inset Newline newline
+\end_inset
+
+options(width=65)
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Section
+Data set
+\end_layout
+
+\begin_layout Scrap
+<<packages>>=
+\begin_inset Newline newline
+\end_inset
+
+library(GSRI)
+\begin_inset Newline newline
+\end_inset
+
+library(GSEABase)
+\begin_inset Newline newline
+\end_inset
+
+library(Biobase)
+\begin_inset Newline newline
+\end_inset
+
+data(sample.ExpressionSet)
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Scrap
+<<extractData>>=
+\begin_inset Newline newline
+\end_inset
+
+eset <- sample.ExpressionSet
+\begin_inset Newline newline
+\end_inset
+
+eset
+\begin_inset Newline newline
+\end_inset
+
+exprs <- exprs(eset)
+\begin_inset Newline newline
+\end_inset
+
+phenotypes <- pData(phenoData(eset))
+\begin_inset Newline newline
+\end_inset
+
+summary(phenotypes)
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Section
+Estimation for a single gene set
+\end_layout
+
+\begin_layout Scrap
+<<n1>>=
+\begin_inset Newline newline
+\end_inset
+
+gAllProbes <- gsri(eset, phenotypes$type)
+\begin_inset Newline newline
+\end_inset
+
+gAllProbes
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Scrap
+<<n2>>=
+\begin_inset Newline newline
+\end_inset
+
+gs <- GeneSet(eset, setName="allGenes")
+\begin_inset Newline newline
+\end_inset
+
+ind <- grep("^AFFX", geneIds(gs), invert=TRUE)
+\begin_inset Newline newline
+\end_inset
+
+gsAllGenes <- gs[ind]
+\begin_inset Newline newline
+\end_inset
+
+gsAllGenes
+\begin_inset Newline newline
+\end_inset
+
+gAllGenesType <- gsri(eset, phenotypes$type, gsAllGenes)
+\begin_inset Newline newline
+\end_inset
+
+gAllGenesSex <- gsri(exprs, phenotypes$sex, gsAllGenes, name="allGenesSex")
+\begin_inset Newline newline
+\end_inset
+
+gAllGenesType
+\begin_inset Newline newline
+\end_inset
+
+gAllGenesSex
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Section
+Estimation for several gene sets
+\end_layout
+
+\begin_layout Scrap
+<<n1>>=
+\begin_inset Newline newline
+\end_inset
+
+gmt <- getGmt(system.file("extdata", "c1c10.gmt", package="GSRI"))
+\begin_inset Newline newline
+\end_inset
+
+gCol5 <- gsri(eset, phenotypes$type, gmt)
+\begin_inset Newline newline
+\end_inset
+
+gCol5
+\begin_inset Newline newline
+\end_inset
+
+gCol5Sort <- sortGsri(gCol5, c("nRegGenes", "pRegGenes"))
+\begin_inset Newline newline
+\end_inset
+
+exportFile <- tempfile()
+\begin_inset Newline newline
+\end_inset
+
+export(gCol5Sort, exportFile)
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Scrap
+<<n1>>=
+\begin_inset Newline newline
+\end_inset
+
+gsChr17 <- getBroadSets(system.file("extdata", "c1chr17.xml", package="GSRI"))
+\begin_inset Newline newline
+\end_inset
+
+gsChr17
+\begin_inset Newline newline
+\end_inset
+
+gChr17 <- gsri(eset, phenotypes$type, gsChr17)
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Scrap
+<<n1>>=
+\begin_inset Newline newline
+\end_inset
+
+phenotypes$class <- cut(phenotypes$score, seq(0, 1, length.out=4), label=c("low",
+ "medium", "high"))
+\begin_inset Newline newline
+\end_inset
+
+summary(phenotypes$class)
+\begin_inset Newline newline
+\end_inset
+
+g3 <- gsri(eset, phenotypes$class, gsChr17, test=rowF)
+\begin_inset Newline newline
+\end_inset
+
+g3
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Scrap
+<<plot1, fig=TRUE>>=
+\begin_inset Newline newline
+\end_inset
+
+plot(g3)
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Scrap
+<<plot2, fig=TRUE>>=
+\begin_inset Newline newline
+\end_inset
+
+plot(gCol5, 2)
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Section
+Todo
+\end_layout
+
+\begin_layout Itemize
+Beispiel mit weights
+\end_layout
+
+\begin_layout Itemize
+plot args
+\end_layout
+
+\begin_layout Itemize
+args for gsri()
+\end_layout
+
+\begin_layout Itemize
+equation for fit in doc
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintAll"
+bibfiles "references"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Session info
+\end_layout
+
+\begin_layout Scrap
+<<sessionInfo, results=tex, echo=FALSE>>=
+\begin_inset Newline newline
+\end_inset
+
+toLatex(sessionInfo(), locale=FALSE)
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\end_body
+\end_document

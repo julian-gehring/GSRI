@@ -1,0 +1,140 @@
+%% LyX 1.6.9 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[a4paper,english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=true,pdfborder={0 0 0},backref=false,colorlinks=false]
+ {hyperref}
+\usepackage{breakurl}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\special{papersize=\the\paperwidth,\the\paperheight}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+%\VignetteIndexEntry{Introduction on how to use the Gene Set Regulation Index (GSRI) package to estimate the number of regulated genes in a gene set}
+%\VignettePackage{GSRI}
+
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+\newcommand{\Rmethod}[1]{{\textit{#1}}}
+\newcommand{\Rfunarg}[1]{{\texttt{#1}}}
+
+\makeatother
+
+\begin{document}
+
+\title{Introduction to the Gene Set Regulation Index (GSRI) package}
+
+
+\author{Julian Gehring, Clemens Kreutz, Kilian Bartholomé, Jens Timmer}
+
+\maketitle
+
+\section{Introduction}
+
+<<echo=false>>=
+set.seed(1)
+options(width=65)
+@
+
+
+\section{Data set}
+
+<<packages>>=
+library(GSRI)
+library(GSEABase)
+library(Biobase)
+data(sample.ExpressionSet)
+@
+
+<<extractData>>=
+eset <- sample.ExpressionSet
+eset
+exprs <- exprs(eset)
+phenotypes <- pData(phenoData(eset))
+summary(phenotypes)
+@
+
+
+\section{Estimation for a single gene set}
+
+<<n1>>=
+gAllProbes <- gsri(eset, phenotypes$type)
+gAllProbes
+@
+
+<<n2>>=
+gs <- GeneSet(eset, setName="allGenes")
+ind <- grep("^AFFX", geneIds(gs), invert=TRUE)
+gsAllGenes <- gs[ind]
+gsAllGenes
+gAllGenesType <- gsri(eset, phenotypes$type, gsAllGenes)
+gAllGenesSex <- gsri(exprs, phenotypes$sex, gsAllGenes, name="allGenesSex")
+gAllGenesType
+gAllGenesSex
+@
+
+
+\section{Estimation for several gene sets}
+
+<<n1>>=
+gmt <- getGmt(system.file("extdata", "c1c10.gmt", package="GSRI"))
+gCol5 <- gsri(eset, phenotypes$type, gmt)
+gCol5
+gCol5Sort <- sortGsri(gCol5, c("nRegGenes", "pRegGenes"))
+exportFile <- tempfile()
+export(gCol5Sort, exportFile)
+@
+
+<<n1>>=
+gsChr17 <- getBroadSets(system.file("extdata", "c1chr17.xml", package="GSRI"))
+gsChr17
+gChr17 <- gsri(eset, phenotypes$type, gsChr17)
+@
+
+<<n1>>=
+phenotypes$class <- cut(phenotypes$score, seq(0, 1, length.out=4), label=c("low", "medium", "high"))
+summary(phenotypes$class)
+g3 <- gsri(eset, phenotypes$class, gsChr17, test=rowF)
+g3
+@
+
+<<plot1, fig=TRUE>>=
+plot(g3)
+@
+
+<<plot2, fig=TRUE>>=
+plot(gCol5, 2)
+@
+
+
+\section{Todo}
+\begin{itemize}
+\item Beispiel mit weights
+\item plot args
+\item args for gsri()
+\item equation for fit in doc
+\end{itemize}
+\newpage{}
+
+\bibliographystyle{plain}
+\nocite{*}
+\bibliography{references}
+
+
+
+\section*{Session info}
+
+<<sessionInfo, results=tex, echo=FALSE>>=
+toLatex(sessionInfo(), locale=FALSE)
+@
+\end{document}
