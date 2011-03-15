@@ -63,7 +63,7 @@
 \begin_body
 
 \begin_layout Title
-Introduction to the Gene Set Regulation Index (GSRI) package
+Gene Set Regulation Index (GSRI) package
 \end_layout
 
 \begin_layout Author
@@ -75,7 +75,7 @@ Introduction
 \end_layout
 
 \begin_layout Scrap
-<<echo=false>>=
+<<settings, echo=false>>=
 \begin_inset Newline newline
 \end_inset
 
@@ -94,8 +94,53 @@ options(width=65)
 Data set
 \end_layout
 
+\begin_layout Standard
+In this introduction we will use a sample data for expression data provided
+ by the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rpackage{Biobase}
+\end_layout
+
+\end_inset
+
+ package.
+ The data set contains 26 microarrays with a subset of 500 probe sets.
+ The phenotypes associated with the samples are stored in the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Robject{ExpressionSet}
+\end_layout
+
+\end_inset
+
+, including the categorial variables 
+\emph on
+sex
+\emph default
+ and 
+\emph on
+type
+\emph default
+ of disease, as well as the continous 
+\emph on
+score
+\emph default
+ indicating the progress of the disease.
+\end_layout
+
 \begin_layout Scrap
-<<packages>>=
+<<attachPackages>>=
 \begin_inset Newline newline
 \end_inset
 
@@ -150,6 +195,11 @@ summary(phenotypes)
 Estimation for a single gene set
 \end_layout
 
+\begin_layout Standard
+An differential effect of features has to be defined in respect to a categorial
+ variable, in our case we will use the phenotypes.
+\end_layout
+
 \begin_layout Scrap
 <<n1>>=
 \begin_inset Newline newline
@@ -187,7 +237,7 @@ gsAllGenes
 \begin_inset Newline newline
 \end_inset
 
-gAllGenesType <- gsri(eset, phenotypes$type, gsAllGenes)
+gAllGenesType <- gsri(eset, phenotypes$type, gsAllGenes, name="allGenesType")
 \begin_inset Newline newline
 \end_inset
 
@@ -204,6 +254,62 @@ gAllGenesSex
 \end_inset
 
 @
+\end_layout
+
+\begin_layout Scrap
+<<plot0, fig=TRUE, include=FALSE>>=
+\begin_inset Newline newline
+\end_inset
+
+plot(gAllGenesType)
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}[t]
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics{gsri_new-plot0}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{GSRI plot}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -288,7 +394,7 @@ g3
 \end_layout
 
 \begin_layout Scrap
-<<plot1, fig=TRUE>>=
+<<plot1, fig=TRUE, include=FALSE>>=
 \begin_inset Newline newline
 \end_inset
 
@@ -299,16 +405,104 @@ plot(g3)
 @
 \end_layout
 
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics{gsri_new-plot1}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{GSRI plot}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Scrap
-<<plot2, fig=TRUE>>=
+<<plot2, fig=TRUE, include=FALSE>>=
 \begin_inset Newline newline
 \end_inset
 
-plot(gCol5, 2)
+plot(gCol5, 5, ecdf=list(type="s"))
 \begin_inset Newline newline
 \end_inset
 
 @
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics{gsri_new-plot2}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{GSRI plot}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section

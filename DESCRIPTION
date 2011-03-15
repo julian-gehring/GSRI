@@ -14,4 +14,4 @@ License: GPL-3
 LazyLoad: yes
 Encoding: UTF-8
 URL: http://www.fdmold.uni-freiburg.de/~jgehring/
-biocViews: Microarray, Transcription, DifferentialExpression, Genetics
+biocViews: Microarray, Transcription, DifferentialExpression, Genetics, Bioinformatics

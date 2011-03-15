@@ -208,7 +208,7 @@ setGeneric("plot",
 
 setMethod("plot",
           signature("Gsri", "ANY"),
-          function(x, y, ...) {
+          function(x, y, digits=2, ...) {
             
             result <- getGsri(x)
             sel <- result[y, ]
@@ -219,7 +219,7 @@ setMethod("plot",
             ind <- which(rownames(result) %in% rownames(sel))
             if(all(is.na(sel)) || length(ind) == 0)
               stop("No valid index for selecting a gene set.")
-            plot(x, ind)
+            plot(x, ind, digits, ...)
           })
 
 setMethod("plot",

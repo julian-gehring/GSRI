@@ -32,7 +32,7 @@
 
 \begin{document}
 
-\title{Introduction to the Gene Set Regulation Index (GSRI) package}
+\title{Gene Set Regulation Index (GSRI) package}
 
 
 \author{Julian Gehring, Clemens Kreutz, Kilian Bartholomé, Jens Timmer}
@@ -41,7 +41,7 @@
 
 \section{Introduction}
 
-<<echo=false>>=
+<<settings, echo=false>>=
 set.seed(1)
 options(width=65)
 @
@@ -49,7 +49,15 @@ options(width=65)
 
 \section{Data set}
 
-<<packages>>=
+In this introduction we will use a sample data for expression data
+provided by the \Rpackage{Biobase} package. The data set contains
+26 microarrays with a subset of 500 probe sets. The phenotypes associated
+with the samples are stored in the \Robject{ExpressionSet}, including
+the categorial variables \emph{sex} and \emph{type} of disease, as
+well as the continous \emph{score} indicating the progress of the
+disease.
+
+<<attachPackages>>=
 library(GSRI)
 library(GSEABase)
 library(Biobase)
@@ -67,6 +75,9 @@ summary(phenotypes)
 
 \section{Estimation for a single gene set}
 
+An differential effect of features has to be defined in respect to
+a categorial variable, in our case we will use the phenotypes.
+
 <<n1>>=
 gAllProbes <- gsri(eset, phenotypes$type)
 gAllProbes
@@ -77,11 +88,21 @@ gs <- GeneSet(eset, setName="allGenes")
 ind <- grep("^AFFX", geneIds(gs), invert=TRUE)
 gsAllGenes <- gs[ind]
 gsAllGenes
-gAllGenesType <- gsri(eset, phenotypes$type, gsAllGenes)
+gAllGenesType <- gsri(eset, phenotypes$type, gsAllGenes, name="allGenesType")
 gAllGenesSex <- gsri(exprs, phenotypes$sex, gsAllGenes, name="allGenesSex")
 gAllGenesType
 gAllGenesSex
 @
+
+<<plot0, fig=TRUE, include=FALSE>>=
+plot(gAllGenesType)
+@
+
+\begin{figure}[t]
+\centering
+\includegraphics{gsri_new-plot0}
+\caption{GSRI plot}
+\end{figure}
 
 
 \section{Estimation for several gene sets}
@@ -108,13 +129,25 @@ g3 <- gsri(eset, phenotypes$class, gsChr17, test=rowF)
 g3
 @
 
-<<plot1, fig=TRUE>>=
+<<plot1, fig=TRUE, include=FALSE>>=
 plot(g3)
 @
 
-<<plot2, fig=TRUE>>=
-plot(gCol5, 2)
+\begin{figure}
+\centering
+\includegraphics{gsri_new-plot1}
+\caption{GSRI plot}
+\end{figure}
+
+<<plot2, fig=TRUE, include=FALSE>>=
+plot(gCol5, 5, ecdf=list(type="s"))
 @
+
+\begin{figure}
+\centering
+\includegraphics{gsri_new-plot2}
+\caption{GSRI plot}
+\end{figure}
 
 
 \section{Todo}

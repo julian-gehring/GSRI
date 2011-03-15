@@ -90,12 +90,11 @@ bootInGroups <- function(nSamples) {
 
 getArgs <- function(name, first=NULL, last=NULL, ...) {
 
-  ind <- which(names(...) %in% name)[1]
+  ind <- which(names(...) %in% name)[1] ## [[]] allows only one element for indexing
   middle <- if(length(ind) != 0) ...[[ind]] else NULL
   args <- c(first, middle, last)
   args <- args[!duplicated(names(args))]
   
   return(args)
 }
-
 
