@@ -47,18 +47,23 @@ Gene Set Regulation Index}
 \author{Julian Gehring, Clemens Kreutz, Kilian Bartholomé, Jens Timmer}
 
 \maketitle
+<<settings, echo=FALSE>>=
+set.seed(1)
+options(width=65, SweaveHooks=list(fig=function() par(mar=c(5.1, 5.1, 4.1, 1.1))))
+@
+
 
 \section{Introduction}
 
-The GSRI package estimates the number of significantly regulated genes
-in gene sets, assessing their differential effects between groups
-through statistical testing. The approach is based on the fact that
-p-values of a statistical test are uniformly distributed under the
-null hypothesis and shifted towards small values in the case of its
-violation. The resulting density distribution $\rho(p)$ is then given
-as\[
+The \Rpackage{GSRI} package estimates the number of significantly
+regulated genes in gene sets, assessing their differential effects
+between groups through statistical testing. The approach is based
+on the fact that p-values of a statistical test are uniformly distributed
+under the null hypothesis and shifted towards small values in the
+case of its violation. The resulting density distribution $\rho(p)$
+of the p-values $p$ is then given as\[
 \rho(p)=(1-r)\rho_{0}(p)+r\rho_{A}(p),\]
-with the fraction $r$ of significant p-values $p$, the uniform distribution
+with the fraction $r$ of significant p-values, the uniform distribution
 $\rho_{0}(p)$ of the p-values under the null hypothesis, and the
 alternative distribution $\rho_{A}(p)$ of the p-values with a significant
 effect. In the cumulative density function (CDF) $F(p)$ this is equivalent
@@ -70,17 +75,52 @@ of this linear component, $r$ and thus the number of regulated genes
 can be estimated. An example for the probability and cumulative density
 distribution is shown in Figure \ref{fig:pval_cdf_dist}.
 
+<<preparePdfCdfFig, echo=FALSE>>=
+x <- seq(0, 1, len=50)
+r <- 0.2
+rate <- 10
+d0 <- dunif(x)
+d1 <- dexp(x, rate)
+d <- (1-r)*d0 + r*d1
+c0 <- punif(x)
+c1 <- pexp(x, rate)
+c <- (1-r)*c0 + r*c1
+x <- seq(0, 1, len=50)
+cex <- 1.5
+@
+
+<<pdfFig, fig=TRUE, include=FALSE, echo=FALSE, width=7, height=7>>=
+plot(x, d, type="n", xaxt="n", yaxt="n", ylim=c(0, max(d)), xlab=expression(paste("p-value ", italic(p))), ylab=expression(paste("probability density ", rho(p))), cex.lab=cex)
+lines(c(0, 1), rep(1-r, 2), lwd=2, col="darkgray")
+lines(x, d, lwd=2)
+axis(1, at=seq(0, 1, len=5), labels=c(0, NA, 0.5, NA, 1), cex.axis=cex)
+axis(2, at=seq(0, max(d), by=0.5), labels=c(0, NA, 1, NA, 2, NA), cex.axis=cex)
+axis(2, at=1-r, labels=expression(paste(1-italic(r))), cex.axis=cex)
+text(0.5, (1-r)/2, labels=expression(1-italic(r)), cex=cex, offset=NULL, adj=c(0.5, 0.5))
+text(0.09, 1.05, labels=expression(italic(r)), cex=cex, offset=NULL, adj=c(0, 0))
+@
+
+<<cdfFig, fig=TRUE, include=FALSE, echo=FALSE, width=7, height=7>>=
+plot(x, c, type="n", xaxt="n", yaxt="n", xlim=c(0, 1), ylim=c(0, 1), xlab=expression(paste("p-value ", italic(p))), ylab=expression(paste("cumulative density ", F(p))), cex.lab=cex)
+lines(c(0, 1), c(r, 1), lwd=2, col="darkgray")
+lines(x, c, lwd=2)
+axis(1, at=seq(0, 1, len=5), labels=c(0, NA, 0.5, NA, 1), cex.axis=cex)
+axis(2, at=seq(0, 1, len=5), labels=c(0, NA, 0.5, NA, 1), cex.axis=cex)
+axis(2, at=r, labels=expression(paste(italic(r))), cex.axis=cex)
+text(0.75, 0.75, labels=expression(1-italic(r)), cex=cex, offset=NULL, adj=c(0, 0))
+@
+
 \begin{figure}
 \centering
-\includegraphics[width=0.5\columnwidth]{fig_gsri_pdf}\includegraphics[width=0.5\columnwidth]{fig_gsri_cdf}
-\caption{\label{fig:pval_cdf_dist}Distributions of p-values  in the probability and cumulative density, as shown in the left and right panel, respectively. The ratio $r$ of significant tests have an unknown distribution shifted towards zero, while the remaining fraction of $1-r$ tests exhibit a uniform distribution. This translates to a linear CDF with slope $1-r$ and intercept $r$. By fitting the linear component of the CDF, as indicated by the dashed line, the ratio of significant tests can be estimated.}
+\includegraphics[width=0.5\columnwidth]{gsri-pdfFig}\includegraphics[width=0.5\columnwidth]{gsri-cdfFig}
+\caption{\label{fig:pval_cdf_dist}Distributions of p-values in the probability and cumulative density, as shown in the left and right panel, respectively. The ratio $r$ of significant tests have an unknown distribution shifted towards zero, while the remaining fraction of $1-r$ tests exhibits a uniform distribution. This translates to a linear CDF with slope $1-r$ and intercept $r$. By fitting the linear component of the CDF, as indicated by the dashed line, the ratio of significant tests can be estimated.}
 \end{figure}
 
-This approach does not require a cut-off value for the distinction
-between regulated and unregulated genes nor any assumptions about
-the alternative distribution $\rho_{A}(p)$ of the p-values. Further,
-the method is independent of the statistical test used to assess the
-differential effect of genes in terms of p-values.
+The approach applied here does not require a cut-off value for the
+distinction between regulated and unregulated genes, nor any assumptions
+about the alternative distribution $\rho_{A}(p)$ of the p-values.
+Further, the method is independent of the statistical test used to
+assess the differential effect of genes in terms of p-values.
 
 Estimates of the method include the number and fraction of regulated
 genes as well as the Gene Set Regulation Index $\eta$ (GSRI) for
@@ -90,23 +130,17 @@ from bootstrapping the group samples. It indicates that with a probability
 of 95\% more than $\eta$ genes in the gene set are differentially
 expressed. Utilizing the 5\% quantile instead of the expectation $\hat{r}$
 introduces a bias, but reduces the variability of the estimates and
-thereby improves the performance for a ranking of gene sets.
-
-This index can also be employed to test the hypothesis whether at
-least one gene in a gene set is regulated. Further, different gene
-sets can be compared or ranked according to the estimated amount of
-regulation. For details of the method, an application to experimental
-data, and a comparison with related approaches, see \cite{bartholom_estimation_2009}.
-
-<<settings, echo=FALSE>>=
-set.seed(1)
-options(width=65)
-@
+thereby improves the performance for a ranking of gene sets. The index
+can also be employed to test the hypothesis whether at least one gene
+in a gene set is regulated. Further, different gene sets can be compared
+or ranked according to the estimated amount of regulation. For details
+of the method, an application to experimental data, and a comparison
+with related approaches, see \cite{bartholom_estimation_2009}.
 
 
 \section{Data set}
 
-For the introduction we use the expression data set provided with
+In this introduction we use the expression data set provided with
 the \Rpackage{Biobase} package. It contains the expression intensities
 of 26 microarray samples with a subset of 500 probe sets. The phenotypes
 associated with the samples are stored in the pheno data of the \Robject{ExpressionSet},
@@ -126,8 +160,8 @@ summary(phenotypes)
 
 Please note that we are using this sample data to illustrate general
 workflows for the analysis of gene sets with the \Rpackage{GSRI}
-package. The results obtained here are far away from any biological
-meaning and should not be interpreted in such a context.
+package. Therefore, the results obtained here should not be interpreted
+in the context of their biological meaning.
 
 
 \section{Analysis for a single gene set}
@@ -158,7 +192,7 @@ with the subset of genes of interest. Note that in this case we could
 also use a subset of \Rvar{eset} or \Rvar{exprs} without an additional
 \Rclass{GeneSet} object. For more details on how to define, import,
 and manipulate gene sets, please refer to the documentation of the
-\Rpackage{GSEABase} package.
+\Rpackage{GSEABase} package{ }\cite{morgan_gseabase}.
 
 <<gsriAllGenesSet>>=
 library(GSEABase)
@@ -197,12 +231,12 @@ gChr17
 It is often desirable to perform the GSRI analysis for an experimental
 data set, comparing several gene sets. This task can be approached
 with an object of the class \Rclass{GeneSetCollection} combining
-several \Rclass{GeneSet} objects.
+multiple \Rclass{GeneSet} objects.
 
 We import five gene sets from a .gmt file and perform the analysis
 for those with respect to the \Rvar{type} variable. Afterwards, we
-sort the gene sets along the estimated number and fraction of genes,
-and export the results as a table to disk. The \Rmethod{summary}
+sort the gene sets according to the estimated number and fraction
+of genes, and export the results as a table to disk. The \Rmethod{summary}
 method provides a more detailed overview including the parameters
 used for the analysis.
 
@@ -217,7 +251,7 @@ export(gCol5Sort, exportFile)
 @
 
 
-\section{Adaption of the statistical testing}
+\section{Adaption of statistical tests}
 
 As pointed out in the introduction, the GSRI approach is independent
 of the underlying statistical test. By default a t-test is used to
@@ -227,7 +261,7 @@ for two groups it is equivalent to the t-test.
 
 As an example we arbitrarily define three groups based on the score
 variable indicating the progress of the disease. For this analysis
-we use the F-test provided with this package.
+we use the F-test \Rfunction{rowF} provided with this package.
 
 <<gsriScoreFtest>>=
 phenotypes$class <- cut(phenotypes$score, seq(0, 1, length.out=4), label=c("low", "medium", "high"))
@@ -248,11 +282,11 @@ g3arg2
 @
 
 We can also easily implement our own statistical tests for the GSRI
-analysis. In this example we want to apply an approach taken by the
-\Rpackage{limma} package which as an increased power for small sample
-sizes. The canonical structure of the test function has to be called
-as \Rfunction{function(exprs, groups, id, index, testArgs)}, with
-\Rvar{exprs} the matrix of expression intensities, \Rvar{groups}
+analysis. Next, we want to apply an approach taken by the \Rpackage{limma}
+package \cite{smyth_limma_2005} which as an increased power for small
+sample sizes. The canonical structure of the test function has to
+be called as \Rfunction{function(exprs, groups, id, index, testArgs)},
+with \Rvar{exprs} the matrix of expression intensities, \Rvar{groups}
 the factor of groups defining the differential contrast, \Rvar{id}
 the indices for the genes part of the current gene set, \Rvar{index}
 the indices for the samples in the bootstrapping, and \Rvar{testArgs}
@@ -290,9 +324,9 @@ plot(g3)
 \end{figure}
 
 The \Rmethod{plot} method has an advanced system in order to customize
-the plot in different aspects. This allows us to adapt nearly any
-property of the figure. For a detailed description, please refer to
-the help pages of the \Rmethod{plot} method.
+the plot in different aspects. This allows us to directly adapt nearly
+any property of the figure. For a detailed description, please refer
+to the documentation of the \Rmethod{plot} method.
 
 <<plot2, fig=TRUE, include=FALSE>>=
 plot(gCol5, 5, ecdf=list(type="o"), plot=list(xlab="p", main="GSRI results: chr9"), reg=list(col="lightblue", lty=1, lwd=1.5), gsri=list(col="darkblue"))
@@ -307,11 +341,11 @@ plot(gCol5, 5, ecdf=list(type="o"), plot=list(xlab="p", main="GSRI results: chr9
 
 \section{Weighting of genes in gene sets}
 
-In contrast to other approaches estimating the degree of regulation
-the GSRI package does also allow assign the weighting of each gene
-in the calculation. Such a step is useful for including additional
-information in the estimation process, for example the certainty that
-a gene is part of a gene set.
+In contrast to other approaches estimating the degree of regulation,
+the \Rpackage{GSRI} package does also allow assign the weighting
+of each gene in the calculation. Such a step is useful for including
+additional information in the estimation process, for example the
+certainty that a gene is part of a gene set.
 
 In the following we use a very simple approach in defining weights
 for the gene sets based on the Gene Ontology (GO) annotation. For

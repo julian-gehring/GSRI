@@ -82,19 +82,53 @@ Gene Set Regulation Index
 Julian Gehring, Clemens Kreutz, Kilian Bartholomé, Jens Timmer
 \end_layout
 
+\begin_layout Scrap
+<<settings, echo=FALSE>>=
+\begin_inset Newline newline
+\end_inset
+
+set.seed(1)
+\begin_inset Newline newline
+\end_inset
+
+options(width=65, SweaveHooks=list(fig=function() par(mar=c(5.1, 5.1, 4.1,
+ 1.1))))
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
 \begin_layout Section
 Introduction
 \end_layout
 
 \begin_layout Standard
-The GSRI package estimates the number of significantly regulated genes in
- gene sets, assessing their differential effects between groups through
- statistical testing.
+The 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rpackage{GSRI}
+\end_layout
+
+\end_inset
+
+ package estimates the number of significantly regulated genes in gene sets,
+ assessing their differential effects between groups through statistical
+ testing.
  The approach is based on the fact that p-values of a statistical test are
  uniformly distributed under the null hypothesis and shifted towards small
  values in the case of its violation.
  The resulting density distribution 
 \begin_inset Formula $\rho(p)$
+\end_inset
+
+ of the p-values 
+\begin_inset Formula $p$
 \end_inset
 
  is then given as
@@ -107,11 +141,7 @@ with the fraction
 \begin_inset Formula $r$
 \end_inset
 
- of significant p-values 
-\begin_inset Formula $p$
-\end_inset
-
-, the uniform distribution 
+ of significant p-values, the uniform distribution 
 \begin_inset Formula $\rho_{0}(p)$
 \end_inset
 
@@ -166,6 +196,141 @@ ref{fig:pval_cdf_dist}
 .
 \end_layout
 
+\begin_layout Scrap
+<<preparePdfCdfFig, echo=FALSE>>=
+\begin_inset Newline newline
+\end_inset
+
+x <- seq(0, 1, len=50)
+\begin_inset Newline newline
+\end_inset
+
+r <- 0.2
+\begin_inset Newline newline
+\end_inset
+
+rate <- 10
+\begin_inset Newline newline
+\end_inset
+
+d0 <- dunif(x)
+\begin_inset Newline newline
+\end_inset
+
+d1 <- dexp(x, rate)
+\begin_inset Newline newline
+\end_inset
+
+d <- (1-r)*d0 + r*d1
+\begin_inset Newline newline
+\end_inset
+
+c0 <- punif(x)
+\begin_inset Newline newline
+\end_inset
+
+c1 <- pexp(x, rate)
+\begin_inset Newline newline
+\end_inset
+
+c <- (1-r)*c0 + r*c1
+\begin_inset Newline newline
+\end_inset
+
+x <- seq(0, 1, len=50)
+\begin_inset Newline newline
+\end_inset
+
+cex <- 1.5
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Scrap
+<<pdfFig, fig=TRUE, include=FALSE, echo=FALSE, width=7, height=7>>=
+\begin_inset Newline newline
+\end_inset
+
+plot(x, d, type="n", xaxt="n", yaxt="n", ylim=c(0, max(d)), xlab=expression(past
+e("p-value ", italic(p))), ylab=expression(paste("probability density ",
+ rho(p))), cex.lab=cex)
+\begin_inset Newline newline
+\end_inset
+
+lines(c(0, 1), rep(1-r, 2), lwd=2, col="darkgray")
+\begin_inset Newline newline
+\end_inset
+
+lines(x, d, lwd=2)
+\begin_inset Newline newline
+\end_inset
+
+axis(1, at=seq(0, 1, len=5), labels=c(0, NA, 0.5, NA, 1), cex.axis=cex)
+\begin_inset Newline newline
+\end_inset
+
+axis(2, at=seq(0, max(d), by=0.5), labels=c(0, NA, 1, NA, 2, NA), cex.axis=cex)
+\begin_inset Newline newline
+\end_inset
+
+axis(2, at=1-r, labels=expression(paste(1-italic(r))), cex.axis=cex)
+\begin_inset Newline newline
+\end_inset
+
+text(0.5, (1-r)/2, labels=expression(1-italic(r)), cex=cex, offset=NULL,
+ adj=c(0.5, 0.5))
+\begin_inset Newline newline
+\end_inset
+
+text(0.09, 1.05, labels=expression(italic(r)), cex=cex, offset=NULL, adj=c(0,
+ 0))
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Scrap
+<<cdfFig, fig=TRUE, include=FALSE, echo=FALSE, width=7, height=7>>=
+\begin_inset Newline newline
+\end_inset
+
+plot(x, c, type="n", xaxt="n", yaxt="n", xlim=c(0, 1), ylim=c(0, 1), xlab=expres
+sion(paste("p-value ", italic(p))), ylab=expression(paste("cumulative density
+ ", F(p))), cex.lab=cex)
+\begin_inset Newline newline
+\end_inset
+
+lines(c(0, 1), c(r, 1), lwd=2, col="darkgray")
+\begin_inset Newline newline
+\end_inset
+
+lines(x, c, lwd=2)
+\begin_inset Newline newline
+\end_inset
+
+axis(1, at=seq(0, 1, len=5), labels=c(0, NA, 0.5, NA, 1), cex.axis=cex)
+\begin_inset Newline newline
+\end_inset
+
+axis(2, at=seq(0, 1, len=5), labels=c(0, NA, 0.5, NA, 1), cex.axis=cex)
+\begin_inset Newline newline
+\end_inset
+
+axis(2, at=r, labels=expression(paste(italic(r))), cex.axis=cex)
+\begin_inset Newline newline
+\end_inset
+
+text(0.75, 0.75, labels=expression(1-italic(r)), cex=cex, offset=NULL, adj=c(0,
+ 0))
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
 \begin_layout Standard
 \begin_inset ERT
 status open
@@ -190,11 +355,11 @@ centering
 \backslash
 includegraphics[width=0.5
 \backslash
-columnwidth]{fig_gsri_pdf}
+columnwidth]{gsri-pdfFig}
 \backslash
 includegraphics[width=0.5
 \backslash
-columnwidth]{fig_gsri_cdf}
+columnwidth]{gsri-cdfFig}
 \end_layout
 
 \begin_layout Plain Layout
@@ -203,10 +368,10 @@ columnwidth]{fig_gsri_cdf}
 \backslash
 caption{
 \backslash
-label{fig:pval_cdf_dist}Distributions of p-values  in the probability and
+label{fig:pval_cdf_dist}Distributions of p-values in the probability and
  cumulative density, as shown in the left and right panel, respectively.
  The ratio $r$ of significant tests have an unknown distribution shifted
- towards zero, while the remaining fraction of $1-r$ tests exhibit a uniform
+ towards zero, while the remaining fraction of $1-r$ tests exhibits a uniform
  distribution.
  This translates to a linear CDF with slope $1-r$ and intercept $r$.
  By fitting the linear component of the CDF, as indicated by the dashed
@@ -226,9 +391,9 @@ end{figure}
 \end_layout
 
 \begin_layout Standard
-This approach does not require a cut-off value for the distinction between
- regulated and unregulated genes nor any assumptions about the alternative
- distribution 
+The approach applied here does not require a cut-off value for the distinction
+ between regulated and unregulated genes, nor any assumptions about the
+ alternative distribution 
 \begin_inset Formula $\rho_{A}(p)$
 \end_inset
 
@@ -261,38 +426,25 @@ y expressed genes obtained from bootstrapping the group samples.
 
  introduces a bias, but reduces the variability of the estimates and thereby
  improves the performance for a ranking of gene sets.
-\end_layout
-
-\begin_layout Standard
-This index can also be employed to test the hypothesis whether at least
+ The index can also be employed to test the hypothesis whether at least
  one gene in a gene set is regulated.
  Further, different gene sets can be compared or ranked according to the
  estimated amount of regulation.
  For details of the method, an application to experimental data, and a compariso
 n with related approaches, see 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "bartholom_estimation_2009"
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+cite{bartholom_estimation_2009}
+\end_layout
 
 \end_inset
 
 .
-\end_layout
-
-\begin_layout Scrap
-<<settings, echo=FALSE>>=
-\begin_inset Newline newline
-\end_inset
-
-set.seed(1)
-\begin_inset Newline newline
-\end_inset
-
-options(width=65)
-\begin_inset Newline newline
-\end_inset
-
-@
 \end_layout
 
 \begin_layout Section
@@ -300,7 +452,7 @@ Data set
 \end_layout
 
 \begin_layout Standard
-For the introduction we use the expression data set provided with the 
+In this introduction we use the expression data set provided with the 
 \begin_inset ERT
 status open
 
@@ -424,8 +576,8 @@ Rpackage{GSRI}
 \end_inset
 
  package.
- The results obtained here are far away from any biological meaning and
- should not be interpreted in such a context.
+ Therefore, the results obtained here should not be interpreted in the context
+ of their biological meaning.
 \end_layout
 
 \begin_layout Section
@@ -627,7 +779,23 @@ Rpackage{GSEABase}
 
 \end_inset
 
- package.
+ package
+ 
+\lang english
+
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+cite{morgan_gseabase}
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Scrap
@@ -779,7 +947,7 @@ Rclass{GeneSetCollection}
 
 \end_inset
 
- combining several 
+ combining multiple 
 \begin_inset ERT
 status open
 
@@ -811,8 +979,8 @@ Rvar{type}
 \end_inset
 
  variable.
- Afterwards, we sort the gene sets along the estimated number and fraction
- of genes, and export the results as a table to disk.
+ Afterwards, we sort the gene sets according to the estimated number and
+ fraction of genes, and export the results as a table to disk.
  The 
 \begin_inset ERT
 status open
@@ -867,7 +1035,7 @@ export(gCol5Sort, exportFile)
 \end_layout
 
 \begin_layout Section
-Adaption of the statistical testing
+Adaption of statistical tests
 \end_layout
 
 \begin_layout Standard
@@ -882,7 +1050,20 @@ As pointed out in the introduction, the GSRI approach is independent of
 \begin_layout Standard
 As an example we arbitrarily define three groups based on the score variable
  indicating the progress of the disease.
- For this analysis we use the F-test provided with this package.
+ For this analysis we use the F-test 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rfunction{rowF}
+\end_layout
+
+\end_inset
+
+ provided with this package.
 \end_layout
 
 \begin_layout Scrap
@@ -937,7 +1118,7 @@ g3arg2
 
 \begin_layout Standard
 We can also easily implement our own statistical tests for the GSRI analysis.
- In this example we want to apply an approach taken by the 
+ Next, we want to apply an approach taken by the 
 \begin_inset ERT
 status open
 
@@ -950,7 +1131,20 @@ Rpackage{limma}
 
 \end_inset
 
- package which as an increased power for small sample sizes.
+ package 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+cite{smyth_limma_2005}
+\end_layout
+
+\end_inset
+
+ which as an increased power for small sample sizes.
  The canonical structure of the test function has to be called as 
 \begin_inset ERT
 status open
@@ -1176,8 +1370,8 @@ Rmethod{plot}
 
  method has an advanced system in order to customize the plot in different
  aspects.
- This allows us to adapt nearly any property of the figure.
- For a detailed description, please refer to the help pages of the 
+ This allows us to directly adapt nearly any property of the figure.
+ For a detailed description, please refer to the documentation of the 
 \begin_inset ERT
 status open
 
@@ -1257,9 +1451,21 @@ Weighting of genes in gene sets
 \end_layout
 
 \begin_layout Standard
-In contrast to other approaches estimating the degree of regulation the
- GSRI package does also allow assign the weighting of each gene in the calculati
-on.
+In contrast to other approaches estimating the degree of regulation, the
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rpackage{GSRI}
+\end_layout
+
+\end_inset
+
+ package does also allow assign the weighting of each gene in the calculation.
  Such a step is useful for including additional information in the estimation
  process, for example the certainty that a gene is part of a gene set.
 \end_layout
