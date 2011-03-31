@@ -1,4 +1,5 @@
 \name{read-functions}
+
 \docType{methods}
 
 \alias{readCls}

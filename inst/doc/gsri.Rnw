@@ -44,7 +44,7 @@
 Gene Set Regulation Index}
 
 
-\author{Julian Gehring, Clemens Kreutz, Kilian Bartholomé, Jens Timmer}
+\author{Julian Gehring, Clemens Kreutz, Kilian Bartholome, Jens Timmer}
 
 \maketitle
 <<settings, echo=FALSE>>=
@@ -192,7 +192,7 @@ with the subset of genes of interest. Note that in this case we could
 also use a subset of \Rvar{eset} or \Rvar{exprs} without an additional
 \Rclass{GeneSet} object. For more details on how to define, import,
 and manipulate gene sets, please refer to the documentation of the
-\Rpackage{GSEABase} package{ }\cite{morgan_gseabase}.
+\Rpackage{GSEABase} package \cite{morgan_gseabase}.
 
 <<gsriAllGenesSet>>=
 library(GSEABase)

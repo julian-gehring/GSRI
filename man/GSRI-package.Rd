@@ -37,19 +37,19 @@
   regulation.
   
   For details of the method, an application to experimental data, and a
-  comparison with related approaches, see Bartholomé et al., 2009.
+  comparison with related approaches, see Bartholome et al., 2009.
 
   The package is published under the GPL-3 license.
 }
 
 \author{
-  Julian Gehring, Kilian Bartholomé, Clemens Kreutz, Jens Timmer
+  Julian Gehring, Kilian Bartholome, Clemens Kreutz, Jens Timmer
 
   Maintainer: Julian Gehring <julian.gehring@fdm.uni-freiburg.de>
 }
 
 \references{
-  Kilian Bartholomé, Clemens Kreutz, and Jens Timmer:
+  Kilian Bartholome, Clemens Kreutz, and Jens Timmer:
   Estimation of gene induction enables a relevance-based ranking of gene sets,
   Journal of Computational Biology: A Journal of Computational Molecular Cell 
   Biology 16, no. 7 (July 2009): 959-967.

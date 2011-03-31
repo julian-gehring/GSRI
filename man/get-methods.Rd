@@ -1,4 +1,5 @@
 \name{get-methods}
+
 \docType{methods}
 
 \alias{getGsri}

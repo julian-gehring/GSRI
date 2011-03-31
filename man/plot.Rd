@@ -1,4 +1,5 @@
 \name{plot-methods}
+
 \docType{methods}
 
 \alias{plot}

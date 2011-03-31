@@ -79,7 +79,7 @@ Gene Set Regulation Index
 \end_layout
 
 \begin_layout Author
-Julian Gehring, Clemens Kreutz, Kilian Bartholomé, Jens Timmer
+Julian Gehring, Clemens Kreutz, Kilian Bartholome, Jens Timmer
 \end_layout
 
 \begin_layout Scrap
@@ -779,10 +779,7 @@ Rpackage{GSEABase}
 
 \end_inset
 
- package
- 
-\lang english
-
+ package 
 \begin_inset ERT
 status open
 
