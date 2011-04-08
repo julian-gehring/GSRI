@@ -4,7 +4,7 @@
 \begin_header
 \textclass literate-article
 \begin_preamble
-%\VignetteIndexEntry{Introduction on how to use the Gene Set Regulation Index (GSRI) package to estimate the number of regulated genes in gene sets}
+%\VignetteIndexEntry{Introduction to the GSRI package: Estimating Regulatory Effects utilizing the Gene Set Regulation Index}
 %\VignettePackage{GSRI}
 
 \newcommand{\Robject}[1]{{\texttt{#1}}}
@@ -71,7 +71,24 @@
 \begin_body
 
 \begin_layout Title
-GSRI package:
+Introduction to the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rpackage{GSRI}
+\end_layout
+
+\end_inset
+
+ package:
+\begin_inset Newline newline
+\end_inset
+
+Estimating Regulatory Effects utilizing the
 \begin_inset Newline newline
 \end_inset
 

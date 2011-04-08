@@ -18,7 +18,7 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
-%\VignetteIndexEntry{Introduction on how to use the Gene Set Regulation Index (GSRI) package to estimate the number of regulated genes in gene sets}
+%\VignetteIndexEntry{Introduction to the GSRI package: Estimating Regulatory Effects utilizing the Gene Set Regulation Index}
 %\VignettePackage{GSRI}
 
 \newcommand{\Robject}[1]{{\texttt{#1}}}
@@ -40,7 +40,8 @@
 
 \begin{document}
 
-\title{GSRI package:\\
+\title{Introduction to the \Rpackage{GSRI} package:\\
+Estimating Regulatory Effects utilizing the\\
 Gene Set Regulation Index}
 
 
