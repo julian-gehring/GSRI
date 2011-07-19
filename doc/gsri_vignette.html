@@ -7,7 +7,7 @@ lang="en" xml:lang="en">
 <title>Estimating Regulatory Effects in Gene Sets with the <i>GSRI</i> package</title>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2011-07-19 22:40:09 CEST"/>
+<meta name="generated" content="2011-07-19 22:58:43 CEST"/>
 <meta name="author" content="Julian Gehring"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -181,6 +181,8 @@ lang="en" xml:lang="en">
 
 
 
+
+
 <p>
   <img src="fig1.png"  alt="fig1.png" />
 </p>
@@ -332,7 +334,7 @@ lang="en" xml:lang="en">
 
 <pre class="example">
   pRegGenes pRegGenesSd nRegGenes GSRI(5%) nGenes
-1 0.1425405   0.1402013        71        0    500
+1 0.1425405   0.1496678        71        0    500
 </pre>
 
 
@@ -376,6 +378,7 @@ lang="en" xml:lang="en">
 
 
 <pre class="example">
+Loading required package: DBI
  setName: allGenes 
 geneIds: 31307_at, 31308_at, ..., 31739_at (total: 433)
 geneIdType: Annotation (hgu95av2)
@@ -397,7 +400,7 @@ details: use 'details(object)'
 
 <pre class="example">
              pRegGenes pRegGenesSd nRegGenes GSRI(5%) nGenes
-allGenesType 0.1626202   0.1498435        70        0    433
+allGenesType 0.1626202    0.130124        70        0    433
 </pre>
 
 
@@ -414,7 +417,7 @@ allGenesType 0.1626202   0.1498435        70        0    433
 
 <pre class="example">
                pRegGenes pRegGenesSd nRegGenes GSRI(5%) nGenes
-allGenesSex 2.220446e-16    0.126035         0        0    433
+allGenesSex 2.220446e-16   0.1343235         0        0    433
 </pre>
 
 
@@ -462,8 +465,8 @@ GeneSetCollection
 
 
 <pre class="example">
-      pRegGenes pRegGenesSd nRegGenes  GSRI(5%) nGenes
-chr17 0.2398971    0.148001         2 0.0438873     12
+      pRegGenes pRegGenesSd nRegGenes   GSRI(5%) nGenes
+chr17 0.2398971   0.1477122         2 0.01300221     12
 </pre>
 
 
@@ -505,11 +508,11 @@ chr17 0.2398971    0.148001         2 0.0438873     12
 
 <pre class="example">
          pRegGenes pRegGenesSd nRegGenes   GSRI(5%) nGenes
-chr2     0.0000000   0.1334436         0 0.00000000     24
-chr19q13 0.4010159   0.1769094         4 0.11783394     12
-chr6     0.4679782   0.1180538        10 0.26623301     23
-chr8     0.1126934   0.1703671         1 0.00000000     12
-chr9     0.3778584   0.1538122         3 0.09345041     10
+chr2     0.0000000   0.1433104         0 0.00000000     24
+chr19q13 0.4010159   0.1807569         4 0.08996428     12
+chr6     0.4679782   0.1321866        10 0.23730317     23
+chr8     0.1126934   0.1815490         1 0.00000000     12
+chr9     0.3778584   0.1732648         3 0.10350416     10
 </pre>
 
 
@@ -529,11 +532,11 @@ chr9     0.3778584   0.1538122         3 0.09345041     10
 
   ** Results
 	   pRegGenes pRegGenesSd nRegGenes GSRI(5%) nGenes
-  chr6        0.4680      0.1181        10   0.2662     23
-  chr19q13    0.4010      0.1769         4   0.1178     12
-  chr9        0.3779      0.1538         3   0.0935     10
-  chr8        0.1127      0.1704         1   0.0000     12
-  chr2        0.0000      0.1334         0   0.0000     24
+  chr6        0.4680      0.1322        10   0.2373     23
+  chr19q13    0.4010      0.1808         4   0.0900     12
+  chr9        0.3779      0.1733         3   0.1035     10
+  chr8        0.1127      0.1815         1   0.0000     12
+  chr2        0.0000      0.1433         0   0.0000     24
 
   ** Parameter
    nBoot alpha grenander weighting
@@ -604,7 +607,7 @@ chr9     0.3778584   0.1538122         3 0.09345041     10
 
 <pre class="example">
        pRegGenes pRegGenesSd nRegGenes GSRI(5%) nGenes
-chr17 0.07862739   0.1369181         0        0     12
+chr17 0.07862739   0.1357001         0        0     12
 </pre>
 
 
@@ -628,7 +631,7 @@ chr17 0.07862739   0.1369181         0        0     12
 
 <pre class="example">
         pRegGenes pRegGenesSd nRegGenes GSRI(10%) nGenes
-chr17_2 0.1055541   0.1554536         1         0     12
+chr17_2 0.1055541   0.1639745         1         0     12
 </pre>
 
 
@@ -679,8 +682,8 @@ chr17_2 0.1055541   0.1554536         1         0     12
 
 
 <pre class="example">
-      pRegGenes pRegGenesSd nRegGenes GSRI(5%) nGenes
-chr17 0.2397355   0.1584042         2        0     12
+      pRegGenes pRegGenesSd nRegGenes   GSRI(5%) nGenes
+chr17 0.2397355   0.1600876         2 0.01037466     12
 </pre>
 
 
@@ -809,7 +812,7 @@ chr17 0.2397355   0.1584042         2        0     12
 
 <pre class="example">
   pRegGenes pRegGenesSd nRegGenes GSRI(5%) nGenes
-1 0.1324852   0.1291998        66        0    500
+1 0.1324852   0.1346451        66        0    500
 </pre>
 
 
@@ -825,12 +828,12 @@ chr17 0.2397355   0.1584042         2        0     12
 
 
 <pre class="example">
-         pRegGenes pRegGenesSd nRegGenes   GSRI(5%) nGenes
-chr2     0.0000000   0.1574520         0 0.00000000     24
-chr19q13 0.3557231   0.1858152         4 0.05123323     12
-chr6     0.5136737   0.1792630        11 0.21525833     23
-chr8     0.1023734   0.1694433         1 0.00000000     12
-chr9     0.1753390   0.1942202         1 0.00000000     10
+         pRegGenes pRegGenesSd nRegGenes  GSRI(5%) nGenes
+chr2     0.0000000   0.1405094         0 0.0000000     24
+chr19q13 0.3557231   0.1717597         4 0.1198489     12
+chr6     0.5136737   0.1758591        11 0.2525897     23
+chr8     0.1023734   0.1571465         1 0.0000000     12
+chr9     0.1753390   0.1850025         1 0.0000000     10
 </pre>
 
 
@@ -904,7 +907,7 @@ chr9     0.1753390   0.1942202         1 0.00000000     10
 </div>
 </div>
 <div id="postamble">
-<p class="date">Date: 2011-07-19 22:40:09 CEST</p>
+<p class="date">Date: 2011-07-19 22:58:43 CEST</p>
 <p class="author">Author: Julian Gehring</p>
 <a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
 </div>

@@ -18,7 +18,7 @@ Estimating Regulatory Effects in Gene Sets with the /GSRI/ package
 #+MACRO: Rvar /$1/
 
 
-* Introduction 
+* Introduction
 
   The {{{Rpackage(GSRI)}}} package estimates the number of significantly
   regulated genes in gene sets, assessing their differential effects
@@ -38,6 +38,10 @@ Estimating Regulatory Effects in Gene Sets with the /GSRI/ package
   of this linear component, $r$ and thus the number of regulated genes
   can be estimated. An example for the probability and cumulative density
   distribution is shown in the two figures below.
+
+  #+begin_src R :exports none
+  set.seed(1)
+  #+end_src 
 
   #+begin_src R :exports results
   x <- seq(0, 1, len=50)
