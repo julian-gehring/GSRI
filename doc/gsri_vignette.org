@@ -1,4 +1,4 @@
-Estimating Regulatory Effects in Gene Sets with the /GSRI/ package
+Estimating Regulatory Effects in Gene Sets with the GSRI package
 
 #+AUTHOR: Julian Gehring
 
