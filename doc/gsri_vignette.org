@@ -1,0 +1,378 @@
+Estimating Regulatory Effects in Gene Sets with the /GSRI/ package
+
+#+AUTHOR: Julian Gehring
+
+#+LINK_UP: ../index.html
+
+#+BABEL: :exports both :tangle yes :results output scalar replace :session :width 600 :height 600
+
+#+OPTIONS: creator:nil num:nil timestamp:t email:nil author:t html-postamble:nil
+#+STYLE: <link rel="stylesheet" type="text/css" href="http://julian-gehring.github.com/worg.css" />
+
+#+MACRO: Robject *$1*
+#+MACRO: Rfunction *$1*
+#+MACRO: Rpackage /$1/
+#+MACRO: Rclass /$1/
+#+MACRO: Rmethod /$1/
+#+MACRO: Rfunarg *$1*
+#+MACRO: Rvar /$1/
+
+
+* Introduction 
+
+  The {{{Rpackage(GSRI)}}} package estimates the number of significantly
+  regulated genes in gene sets, assessing their differential effects
+  between groups through statistical testing. The approach is based
+  on the fact that p-values of a statistical test are uniformly distributed
+  under the null hypothesis and shifted towards small values in the
+  case of its violation. The resulting density distribution $\rho(p)$
+  of the p-values $p$ is then given as
+  \[\rho(p)=(1-r)\rho_{0}(p)+r\rho_{A}(p),\]
+  with the fraction $r$ of significant p-values, the uniform distribution
+  $\rho_{0}(p)$ of the p-values under the null hypothesis, and the
+  alternative distribution $\rho_{A}(p)$ of the p-values with a significant
+  effect. In the cumulative density function (CDF) $F(p)$ this is equivalent
+  to \[F(p)=(1-r)p+r,\]
+  with the uniformly distributed $\rho_{0}(p)$ translating to a linear
+  CDF with slope $1-r$ and intercept $r$. Through iterative fitting
+  of this linear component, $r$ and thus the number of regulated genes
+  can be estimated. An example for the probability and cumulative density
+  distribution is shown in the two figures below.
+
+  #+begin_src R :exports results
+  x <- seq(0, 1, len=50)
+  r <- 0.2
+  rate <- 10
+  d0 <- dunif(x)
+  d1 <- dexp(x, rate)
+  d <- (1-r)*d0 + r*d1
+  c0 <- punif(x)
+  c1 <- pexp(x, rate)
+  c <- (1-r)*c0 + r*c1
+  x <- seq(0, 1, len=50)
+  cex <- 1.5
+  #+end_src
+
+  #+begin_src R :results graphics :file fig1.png :exports results
+  plot(x, d, type="n", xaxt="n", yaxt="n", ylim=c(0, max(d)), xlab=expression(paste("p-value ", italic(p))), ylab=expression(paste("probability density ", rho(p))), cex.lab=cex)
+  lines(c(0, 1), rep(1-r, 2), lwd=2, col="darkgray")
+  lines(x, d, lwd=2)
+  axis(1, at=seq(0, 1, len=5), labels=c(0, NA, 0.5, NA, 1), cex.axis=cex)
+  axis(2, at=seq(0, max(d), by=0.5), labels=c(0, NA, 1, NA, 2, NA), cex.axis=cex)
+  axis(2, at=1-r, labels=expression(paste(1-italic(r))), cex.axis=cex)
+  text(0.5, (1-r)/2, labels=expression(1-italic(r)), cex=cex, offset=NULL, adj=c(0.5, 0.5))
+  text(0.09, 1.05, labels=expression(italic(r)), cex=cex, offset=NULL, adj=c(0, 0))
+  #+end_src
+
+  #+begin_src R :results graphics :file fig2.png :exports results
+  plot(x, c, type="n", xaxt="n", yaxt="n", xlim=c(0, 1), ylim=c(0, 1), xlab=expression(paste("p-value ", italic(p))), ylab=expression(paste("cumulative density ", F(p))), cex.lab=cex)
+  lines(c(0, 1), c(r, 1), lwd=2, col="darkgray")
+  lines(x, c, lwd=2)
+  axis(1, at=seq(0, 1, len=5), labels=c(0, NA, 0.5, NA, 1), cex.axis=cex)
+  axis(2, at=seq(0, 1, len=5), labels=c(0, NA, 0.5, NA, 1), cex.axis=cex)
+  axis(2, at=r, labels=expression(paste(italic(r))), cex.axis=cex)
+  text(0.75, 0.75, labels=expression(1-italic(r)), cex=cex, offset=NULL, adj=c(0, 0))
+  #+end_src
+
+  The approach applied here does not require a cut-off value for the
+  distinction between regulated and unregulated genes, nor any assumptions
+  about the alternative distribution $\rho_{A}(p)$ of the p-values.
+  Further, the method is independent of the statistical test used to
+  assess the differential effect of genes in terms of p-values.
+
+  Estimates of the method include the number and fraction of regulated
+  genes as well as the Gene Set Regulation Index $\eta$ (GSRI) for
+  gene set. The GSRI $\eta$ is the 5% quantile of the distribution
+  of the estimated number of differentially expressed genes obtained
+  from bootstrapping the group samples. It indicates that with a probability
+  of 95% more than $\eta$ genes in the gene set are differentially
+  expressed. Utilizing the 5% quantile instead of the expectation $\hat{r}$
+  introduces a bias, but reduces the variability of the estimates and
+  thereby improves the performance for a ranking of gene sets. The index
+  can also be employed to test the hypothesis whether at least one gene
+  in a gene set is regulated. Further, different gene sets can be compared
+  or ranked according to the estimated amount of regulation. For details
+  of the method, an application to experimental data, and a comparison
+  with related approaches, see Bartholomé et al., 2009[fn:1].
+ 
+
+* Data set
+
+  In this introduction we use the expression data set provided with
+  the {{{Rpackage(Biobase)}}} package. It contains the expression intensities
+  of 26 microarray samples with a subset of 500 probe sets. The phenotypes
+  associated with the samples are stored in the pheno data of the {{{Robject(ExpressionSet)}}},
+  including the categorical variables {{{Rvar(type)}}} of disease and {{{Rvar(sex)}}}
+  represented as factors, as well as the continuous {{{Rvar(score)}}} indicating
+  the progress of the disease.
+
+  #+begin_src R :results output silent
+  library(Biobase)  
+  #+end_src
+
+  #+begin_src R
+  data(sample.ExpressionSet)
+  eset <- sample.ExpressionSet
+  eset
+  #+end_src
+
+  #+begin_src R
+  exprs <- exprs(eset)
+  phenotypes <- pData(phenoData(eset))
+  summary(phenotypes)  
+  #+end_src
+
+  Please note that we are using this sample data to illustrate general
+  workflows for the analysis of gene sets with the {{{Rpackage(GSRI)}}}
+  package. Therefore, the results obtained here should not be interpreted
+  in the context of their biological meaning.
+
+
+* Analysis for a single gene set
+
+  Given the expression data we want to find out how many genes show
+  a differential effect with respect to the phenotypic variables, in
+  our case the groups {{{Rvar(sex)}}} and {{{Rvar(type)}}}. In a first step
+  we include all genes in the analysis and focus on the {{{Rvar(type)}}}
+  phenotype.
+
+  #+begin_src R :results output silent
+  library(GSRI)  
+  #+end_src
+
+  #+begin_src R
+  gAllProbes <- gsri(eset, phenotypes$type)
+  gAllProbes
+  #+end_src
+
+  This indicates that around 14% of the genes and thus 71 genes in total 
+  seem to be regulated. However, taking the corresponding
+  standard deviation of around 11.5%
+  and the GSRI of 0% at a
+  5% confidence level into account, we have just an indication for
+  a differential effect.
+
+  In the next step we exclude the controls of the Affymetrix microarray
+  since they do not contain relevant information for our analysis. For
+  this we define an object {{{Robject(gsAllGenes)}}} of the class {{{Rclass(GeneSet)}}}
+  with the subset of genes of interest. Note that in this case we could
+  also use a subset of {{{Rvar(eset)}}} or {{{Rvar(exprs)}}} without an additional
+  {{{Rclass(GeneSet)}}} object. For more details on how to define, import,
+  and manipulate gene sets, please refer to the documentation of the
+  {{{Rpackage(GSEABase)}}} package[fn:2].
+
+  #+begin_src R :results output silent
+  library(GSEABase)  
+  #+end_src
+
+  #+begin_src R
+  gs <- GeneSet(eset, setName="allGenes")
+  ind <- grep("^AFFX", geneIds(gs), invert=TRUE)
+  gsAllGenes <- gs[ind]
+  gsAllGenes  
+  #+end_src
+
+  #+begin_src R
+  gAllGenesType <- gsri(eset, phenotypes$type, gsAllGenes, name="allGenesType")
+  gAllGenesType
+  #+end_src
+
+  #+begin_src R
+  gAllGenesSex <- gsri(exprs, phenotypes$sex, gsAllGenes, name="allGenesSex")
+  gAllGenesSex  
+  #+end_src
+
+  Taking only probes for human genes into acount we explore the effect
+  of the {{{Rvar(type)}}} and {{{Rvar(sex)}}} variable. While the type of disease
+  seems to have a differential effect on the gene expression, the sex
+  of the patient shows no indication to play a role in this example.
+
+  The {{{Rpackage(GSEABase)}}} package provides methods for importing gene
+  sets from different sources. Here we import a gene set from an .xml
+  file, with genes located on chromosome 17.
+
+  #+begin_src R
+  gsChr17 <- getBroadSets(system.file("extdata", "c1chr17.xml", package="GSRI"))
+  gsChr17
+  #+end_src
+
+  #+begin_src R
+  gChr17 <- gsri(eset, phenotypes$type, gsChr17)
+  gChr17  
+  #+end_src
+
+
+* Analysis for multiple gene sets
+
+  It is often desirable to perform the GSRI analysis for an experimental
+  data set, comparing several gene sets. This task can be approached
+  with an object of the class {{{Rclass(GeneSetCollection)}}} combining
+  multiple {{{Rclass(GeneSet)}}} objects.
+
+  We import five gene sets from a .gmt file and perform the analysis
+  for those with respect to the {{{Rvar(type)}}} variable. Afterwards, we
+  sort the gene sets according to the estimated number and fraction
+  of genes, and export the results as a table to disk. The {{{Rmethod(summary)}}}
+  method provides a more detailed overview including the parameters
+  used for the analysis.
+
+  #+begin_src R
+  gmt <- getGmt(system.file("extdata", "c1c10.gmt", package="GSRI"))
+  gCol5 <- gsri(eset, phenotypes$type, gmt)
+  gCol5
+  #+end_src
+
+  #+begin_src R
+  gCol5Sort <- sortGsri(gCol5, c("nRegGenes", "pRegGenes"))
+  summary(gCol5Sort)
+  #+end_src
+
+  #+begin_src R
+  exportFile <- tempfile()
+  export(gCol5Sort, exportFile)  
+  #+end_src
+
+
+* Adaption of statistical tests
+
+  As pointed out in the introduction, the GSRI approach is independent
+  of the underlying statistical test. By default a t-test is used to
+  assess the differential effect between two groups. With an F-test
+  an arbitrary number of groups can be used for the analysis, while
+  for two groups it is equivalent to the t-test.
+
+  As an example we arbitrarily define three groups based on the score
+  variable indicating the progress of the disease. For this analysis
+  we use the F-test {{{Rfunction(rowF)}}} provided with this package.
+
+  #+begin_src R
+  phenotypes$class <- cut(phenotypes$score, seq(0, 1, length.out=4), label=c("low", "medium", "high"))
+  summary(phenotypes$class)
+  #+end_src
+
+  #+begin_src R
+  g3 <- gsri(eset, phenotypes$class, gsChr17, test=rowF)
+  g3
+  #+end_src
+
+  The GSRI approach has several parameters that can be changed in order
+  to adapt the analysis. For illustration we rename the gene set, change
+  the number of bootstraps and confidence level for the GSRI calculation,
+  and use a classical ECDF instead of the modified Grenander estimator
+  for the cumulative density.
+
+  #+begin_src R
+  g3arg2 <- gsri(eset, phenotypes$class, gsChr17, test=rowF, name="chr17_2", nBoot=50, alpha=0.1, grenander=FALSE)
+  g3arg2  
+  #+end_src
+
+  We can also easily implement our own statistical tests for the GSRI
+  analysis. Next, we want to apply an approach taken by the {{{Rpackage(limma)}}}
+  package[fn:3] which as an increased power for small
+  sample sizes. The canonical structure of the test function has to
+  be called as {{{Rfunction(function(exprs, groups, id, index, testArgs))}}},
+  with {{{Rvar(exprs)}}} the matrix of expression intensities, {{{Rvar(groups)}}}
+  the factor of groups defining the differential contrast, {{{Rvar(id)}}}
+  the indices for the genes part of the current gene set, {{{Rvar(index)}}}
+  the indices for the samples in the bootstrapping, and {{{Rvar(testArgs)}}}
+  the list with optional arguments used by the test function.
+
+  #+begin_src R :results output silent
+  library(limma)  
+  #+end_src
+
+  #+begin_src R
+  limmaTest <- function(exprs, groups, id, index, testArgs) {
+    design <- cbind(offset=1, diff=groups)
+    fit <- lmFit(exprs[ ,index], design)
+    fit <- eBayes(fit)
+    pval <- fit$p.value[id,"diff"]
+    return(pval)
+  }
+  #+end_src
+
+  #+begin_src R
+  g3Limma <- gsri(eset, phenotypes$type, gsChr17, test=limmaTest)
+  g3Limma
+  #+end_src
+
+
+* Visualization
+
+  The results of the GSRI analysis can be visualized, showing the empirical
+  cumulative p-values distribution along with the fit of the null distribution
+  $\rho_{0}(p)$ as well as the estimated fraction $\hat{r}$ of significant
+  genes and the GSRI $\eta$.
+
+  #+begin_src R :results graphics :file fig3.png
+  plot(g3)
+  #+end_src
+
+  The {{{Rmethod(plot)}}} method has an advanced system in order to customize
+  the plot in different aspects. This allows us to directly adapt nearly
+  any property of the figure. For a detailed description, please refer
+  to the documentation of the {{{Rmethod(plot)}}} method.
+
+  #+begin_src R :results graphics :file fig4.png
+  plot(gCol5, 5, ecdf=list(type="o"), plot=list(xlab="p", main="GSRI results: chr9"), reg=list(col="lightblue", lty=1, lwd=1.5), gsri=list(col="darkblue"))
+  #+end_src
+
+
+* Weighting of genes in gene sets
+
+  In contrast to other approaches estimating the degree of regulation,
+  the {{{Rpackage(GSRI)}}} package does also allow assign the weighting
+  of each gene in the calculation. Such a step is useful for including
+  additional information in the estimation process, for example the
+  certainty that a gene is part of a gene set.
+
+  In the following we use a very simple approach in defining weights
+  for the gene sets based on the Gene Ontology (GO) annotation. For
+  genes with experimental evidence, we assign higher weights than for
+  those without. Please note that the weights used here are defined
+  arbitrarily and more sophisticated approaches can be used in the actual
+  analysis.
+
+  #+begin_src R :results output silent
+  library(hgu95av2.db) 
+  #+end_src
+
+  #+begin_src R
+  gNames <- rownames(exprs(eset))
+  ind <- Lkeys(hgu95av2GO) %in% gNames
+  evidence <- factor(toTable(hgu95av2GO)[ind,"Evidence"])
+  summary(evidence)
+  #+end_src
+
+  #+begin_src R
+  l <- lapply(gNames, function(name, names, evidence) evidence[names %in% name], gNames, evidence)
+  expInd <- sapply(l, function(l) any(l %in% "EXP"))
+  goWeight <- rep(0.5, length.out=length(expInd))
+  goWeight[expInd] <- 1
+  #+end_src
+
+  #+begin_src R
+  gCol5go <- gsri(eset, phenotypes$type, weight=goWeight)
+  gCol5go
+  #+end_src
+
+  #+begin_src R
+  gCol5go2 <- gsri(eset, phenotypes$type, gmt, weight=goWeight)
+  gCol5go2
+  #+end_src
+
+
+* Session info
+
+  #+begin_src R
+  sessionInfo()
+  #+end_src
+
+
+* Footnotes
+
+[fn:1] Bartholomé et al., 2009: [[http://www.liebertonline.com/doi/abs/10.1089/cmb.2008.0226][Estimation of Gene Induction Enables a Relevance-Based Ranking of Gene Sets]]
+
+[fn:2] Morgan et al.: GSEABase: Gene set enrichment data structures and methods
+
+[fn:3] Smyth, 2005: Limma: linear models for microarray data

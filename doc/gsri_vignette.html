@@ -1,0 +1,913 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+lang="en" xml:lang="en">
+<head>
+<title>Estimating Regulatory Effects in Gene Sets with the <i>GSRI</i> package</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2011-07-19 22:40:09 CEST"/>
+<meta name="author" content="Julian Gehring"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  {margin-left:auto; margin-right:0px;  text-align:right;}
+  .left   {margin-left:0px;  margin-right:auto; text-align:left;}
+  .center {margin-left:auto; margin-right:auto; text-align:center;}
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top;  }
+  th.right  { text-align:center;  }
+  th.left   { text-align:center;   }
+  th.center { text-align:center; }
+  td.right  { text-align:right;  }
+  td.left   { text-align:left;   }
+  td.center { text-align:center; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="http://julian-gehring.github.com/worg.css" />
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+<script type="text/javascript" src="http://orgmode.org/mathjax/MathJax.js">
+<!--/*--><![CDATA[/*><!--*/
+    MathJax.Hub.Config({
+        // Only one of the two following lines, depending on user settings
+        // First allows browser-native MathML display, second forces HTML/CSS
+        //  config: ["MMLorHTML.js"], jax: ["input/TeX"],
+            jax: ["input/TeX", "output/HTML-CSS"],
+        extensions: ["tex2jax.js","TeX/AMSmath.js","TeX/AMSsymbols.js",
+                     "TeX/noUndefined.js"],
+        tex2jax: {
+            inlineMath: [ ["\\(","\\)"] ],
+            displayMath: [ ['$$','$$'], ["\\[","\\]"], ["\\begin{displaymath}","\\end{displaymath}"] ],
+            skipTags: ["script","noscript","style","textarea","pre","code"],
+            ignoreClass: "tex2jax_ignore",
+            processEscapes: false,
+            processEnvironments: true,
+            preview: "TeX"
+        },
+        showProcessingMessages: true,
+        displayAlign: "center",
+        displayIndent: "2em",
+
+        "HTML-CSS": {
+             scale: 100,
+             availableFonts: ["STIX","TeX"],
+             preferredFont: "TeX",
+             webFont: "TeX",
+             imageFont: "TeX",
+             showMathMenu: true,
+        },
+        MMLorHTML: {
+             prefer: {
+                 MSIE:    "MML",
+                 Firefox: "MML",
+                 Opera:   "HTML",
+                 other:   "HTML"
+             }
+        }
+    });
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<div id="org-div-home-and-up" style="text-align:right;font-size:70%;white-space:nowrap;">
+ <a accesskey="h" href="../index.html"> UP </a>
+ |
+ <a accesskey="H" href="../index.html"> HOME </a>
+</div>
+
+<h1 class="title">Estimating Regulatory Effects in Gene Sets with the <i>GSRI</i> package</h1>
+
+
+
+
+
+
+
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">Introduction </a></li>
+<li><a href="#sec-2">Data set </a></li>
+<li><a href="#sec-3">Analysis for a single gene set </a></li>
+<li><a href="#sec-4">Analysis for multiple gene sets </a></li>
+<li><a href="#sec-5">Adaption of statistical tests </a></li>
+<li><a href="#sec-6">Visualization </a></li>
+<li><a href="#sec-7">Weighting of genes in gene sets </a></li>
+<li><a href="#sec-8">Session info </a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1">Introduction </h2>
+<div class="outline-text-2" id="text-1">
+
+
+<p>
+  The <i>GSRI</i> package estimates the number of significantly
+  regulated genes in gene sets, assessing their differential effects
+  between groups through statistical testing. The approach is based
+  on the fact that p-values of a statistical test are uniformly distributed
+  under the null hypothesis and shifted towards small values in the
+  case of its violation. The resulting density distribution \(\rho(p)\)
+  of the p-values \(p\) is then given as
+  \[\rho(p)=(1-r)\rho_{0}(p)+r\rho_{A}(p),\]
+  with the fraction \(r\) of significant p-values, the uniform distribution
+  \(\rho_{0}(p)\) of the p-values under the null hypothesis, and the
+  alternative distribution \(\rho_{A}(p)\) of the p-values with a significant
+  effect. In the cumulative density function (CDF) \(F(p)\) this is equivalent
+  to \[F(p)=(1-r)p+r,\]
+  with the uniformly distributed \(\rho_{0}(p)\) translating to a linear
+  CDF with slope \(1-r\) and intercept \(r\). Through iterative fitting
+  of this linear component, \(r\) and thus the number of regulated genes
+  can be estimated. An example for the probability and cumulative density
+  distribution is shown in the two figures below.
+</p>
+
+
+
+
+
+<p>
+  <img src="fig1.png"  alt="fig1.png" />
+</p>
+
+
+<p>
+  <img src="fig2.png"  alt="fig2.png" />
+</p>
+<p>
+  The approach applied here does not require a cut-off value for the
+  distinction between regulated and unregulated genes, nor any assumptions
+  about the alternative distribution \(\rho_{A}(p)\) of the p-values.
+  Further, the method is independent of the statistical test used to
+  assess the differential effect of genes in terms of p-values.
+</p>
+<p>
+  Estimates of the method include the number and fraction of regulated
+  genes as well as the Gene Set Regulation Index \(\eta\) (GSRI) for
+  gene set. The GSRI \(\eta\) is the 5% quantile of the distribution
+  of the estimated number of differentially expressed genes obtained
+  from bootstrapping the group samples. It indicates that with a probability
+  of 95% more than \(\eta\) genes in the gene set are differentially
+  expressed. Utilizing the 5% quantile instead of the expectation \(\hat{r}\)
+  introduces a bias, but reduces the variability of the estimates and
+  thereby improves the performance for a ranking of gene sets. The index
+  can also be employed to test the hypothesis whether at least one gene
+  in a gene set is regulated. Further, different gene sets can be compared
+  or ranked according to the estimated amount of regulation. For details
+  of the method, an application to experimental data, and a comparison
+  with related approaches, see Bartholomé et al., 2009<sup><a class="footref" name="fnr.1" href="#fn.1">1</a></sup>.
+</p>
+
+</div>
+
+</div>
+
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2">Data set </h2>
+<div class="outline-text-2" id="text-2">
+
+
+<p>
+  In this introduction we use the expression data set provided with
+  the <i>Biobase</i> package. It contains the expression intensities
+  of 26 microarray samples with a subset of 500 probe sets. The phenotypes
+  associated with the samples are stored in the pheno data of the <b>ExpressionSet</b>,
+  including the categorical variables <i>type</i> of disease and <i>sex</i>
+  represented as factors, as well as the continuous <i>score</i> indicating
+  the progress of the disease.
+</p>
+
+
+
+<pre class="src src-R">  <span style="color: #008b8b;">library</span>(Biobase)  
+
+</pre>
+
+
+
+
+
+<pre class="src src-R">  data(sample.ExpressionSet)
+  eset <span style="color: #008b8b;">&lt;-</span> sample.ExpressionSet
+  eset
+
+</pre>
+
+
+
+
+
+<pre class="example">   ExpressionSet (storageMode: lockedEnvironment)
+  assayData: 500 features, 26 samples 
+    element names: exprs, se.exprs 
+  protocolData: none
+  phenoData
+    sampleNames: A B ... Z (26 total)
+    varLabels: sex type score
+    varMetadata: labelDescription
+  featureData: none
+  experimentData: use 'experimentData(object)'
+  Annotation: hgu95av2
+</pre>
+
+
+
+
+<pre class="src src-R">  exprs <span style="color: #008b8b;">&lt;-</span> exprs(eset)
+  phenotypes <span style="color: #008b8b;">&lt;-</span> pData(phenoData(eset))
+  summary(phenotypes)  
+
+</pre>
+
+
+
+
+<pre class="example">
+     sex          type        score       
+ Female:11   Case   :15   Min.   :0.1000  
+ Male  :15   Control:11   1st Qu.:0.3275  
+                          Median :0.4150  
+                          Mean   :0.5369  
+                          3rd Qu.:0.7650  
+                          Max.   :0.9800
+</pre>
+
+
+<p>
+  Please note that we are using this sample data to illustrate general
+  workflows for the analysis of gene sets with the <i>GSRI</i>
+  package. Therefore, the results obtained here should not be interpreted
+  in the context of their biological meaning.
+</p>
+
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3">Analysis for a single gene set </h2>
+<div class="outline-text-2" id="text-3">
+
+
+<p>
+  Given the expression data we want to find out how many genes show
+  a differential effect with respect to the phenotypic variables, in
+  our case the groups <i>sex</i> and <i>type</i>. In a first step
+  we include all genes in the analysis and focus on the <i>type</i>
+  phenotype.
+</p>
+
+
+
+<pre class="src src-R">  <span style="color: #008b8b;">library</span>(GSRI)  
+
+</pre>
+
+
+
+
+
+<pre class="src src-R">  gAllProbes <span style="color: #008b8b;">&lt;-</span> gsri(eset, phenotypes$type)
+  gAllProbes
+
+</pre>
+
+
+
+
+<pre class="example">
+  pRegGenes pRegGenesSd nRegGenes GSRI(5%) nGenes
+1 0.1425405   0.1402013        71        0    500
+</pre>
+
+
+<p>
+  This indicates that around 14% of the genes and thus 71 genes in total 
+  seem to be regulated. However, taking the corresponding
+  standard deviation of around 11.5%
+  and the GSRI of 0% at a
+  5% confidence level into account, we have just an indication for
+  a differential effect.
+</p>
+<p>
+  In the next step we exclude the controls of the Affymetrix microarray
+  since they do not contain relevant information for our analysis. For
+  this we define an object <b>gsAllGenes</b> of the class <i>GeneSet</i>
+  with the subset of genes of interest. Note that in this case we could
+  also use a subset of <i>eset</i> or <i>exprs</i> without an additional
+  <i>GeneSet</i> object. For more details on how to define, import,
+  and manipulate gene sets, please refer to the documentation of the
+  <i>GSEABase</i> package<sup><a class="footref" name="fnr.2" href="#fn.2">2</a></sup>.
+</p>
+
+
+
+<pre class="src src-R">  <span style="color: #008b8b;">library</span>(GSEABase)  
+
+</pre>
+
+
+
+
+
+<pre class="src src-R">  gs <span style="color: #008b8b;">&lt;-</span> GeneSet(eset, setName=<span style="color: #8b2252;">"allGenes"</span>)
+  ind <span style="color: #008b8b;">&lt;-</span> grep(<span style="color: #8b2252;">"^AFFX"</span>, geneIds(gs), invert=<span style="color: #228b22;">TRUE</span>)
+  gsAllGenes <span style="color: #008b8b;">&lt;-</span> gs[ind]
+  gsAllGenes  
+
+</pre>
+
+
+
+
+<pre class="example">
+ setName: allGenes 
+geneIds: 31307_at, 31308_at, ..., 31739_at (total: 433)
+geneIdType: Annotation (hgu95av2)
+collectionType: ExpressionSet 
+details: use 'details(object)'
+</pre>
+
+
+
+
+
+<pre class="src src-R">  gAllGenesType <span style="color: #008b8b;">&lt;-</span> gsri(eset, phenotypes$type, gsAllGenes, name=<span style="color: #8b2252;">"allGenesType"</span>)
+  gAllGenesType
+
+</pre>
+
+
+
+
+<pre class="example">
+             pRegGenes pRegGenesSd nRegGenes GSRI(5%) nGenes
+allGenesType 0.1626202   0.1498435        70        0    433
+</pre>
+
+
+
+
+
+<pre class="src src-R">  gAllGenesSex <span style="color: #008b8b;">&lt;-</span> gsri(exprs, phenotypes$sex, gsAllGenes, name=<span style="color: #8b2252;">"allGenesSex"</span>)
+  gAllGenesSex  
+
+</pre>
+
+
+
+
+<pre class="example">
+               pRegGenes pRegGenesSd nRegGenes GSRI(5%) nGenes
+allGenesSex 2.220446e-16    0.126035         0        0    433
+</pre>
+
+
+<p>
+  Taking only probes for human genes into acount we explore the effect
+  of the <i>type</i> and <i>sex</i> variable. While the type of disease
+  seems to have a differential effect on the gene expression, the sex
+  of the patient shows no indication to play a role in this example.
+</p>
+<p>
+  The <i>GSEABase</i> package provides methods for importing gene
+  sets from different sources. Here we import a gene set from an .xml
+  file, with genes located on chromosome 17.
+</p>
+
+
+
+<pre class="src src-R">  gsChr17 <span style="color: #008b8b;">&lt;-</span> getBroadSets(system.file(<span style="color: #8b2252;">"extdata"</span>, <span style="color: #8b2252;">"c1chr17.xml"</span>, package=<span style="color: #8b2252;">"GSRI"</span>))
+  gsChr17
+
+</pre>
+
+
+
+
+<pre class="example">
+GeneSetCollection
+  names: chr17 (1 total)
+  unique identifiers: 32120_at, 40008_at, ..., 36103_at (526 total)
+  types in collection:
+    geneIdType: SymbolIdentifier (1 total)
+    collectionType: BroadCollection (1 total)
+</pre>
+
+
+
+
+
+<pre class="src src-R">  gChr17 <span style="color: #008b8b;">&lt;-</span> gsri(eset, phenotypes$type, gsChr17)
+  gChr17  
+
+</pre>
+
+
+
+
+<pre class="example">
+      pRegGenes pRegGenesSd nRegGenes  GSRI(5%) nGenes
+chr17 0.2398971    0.148001         2 0.0438873     12
+</pre>
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-4" class="outline-2">
+<h2 id="sec-4">Analysis for multiple gene sets </h2>
+<div class="outline-text-2" id="text-4">
+
+
+<p>
+  It is often desirable to perform the GSRI analysis for an experimental
+  data set, comparing several gene sets. This task can be approached
+  with an object of the class <i>GeneSetCollection</i> combining
+  multiple <i>GeneSet</i> objects.
+</p>
+<p>
+  We import five gene sets from a .gmt file and perform the analysis
+  for those with respect to the <i>type</i> variable. Afterwards, we
+  sort the gene sets according to the estimated number and fraction
+  of genes, and export the results as a table to disk. The <i>summary</i>
+  method provides a more detailed overview including the parameters
+  used for the analysis.
+</p>
+
+
+
+<pre class="src src-R">  gmt <span style="color: #008b8b;">&lt;-</span> getGmt(system.file(<span style="color: #8b2252;">"extdata"</span>, <span style="color: #8b2252;">"c1c10.gmt"</span>, package=<span style="color: #8b2252;">"GSRI"</span>))
+  gCol5 <span style="color: #008b8b;">&lt;-</span> gsri(eset, phenotypes$type, gmt)
+  gCol5
+
+</pre>
+
+
+
+
+<pre class="example">
+         pRegGenes pRegGenesSd nRegGenes   GSRI(5%) nGenes
+chr2     0.0000000   0.1334436         0 0.00000000     24
+chr19q13 0.4010159   0.1769094         4 0.11783394     12
+chr6     0.4679782   0.1180538        10 0.26623301     23
+chr8     0.1126934   0.1703671         1 0.00000000     12
+chr9     0.3778584   0.1538122         3 0.09345041     10
+</pre>
+
+
+
+
+
+<pre class="src src-R">  gCol5Sort <span style="color: #008b8b;">&lt;-</span> sortGsri(gCol5, c(<span style="color: #8b2252;">"nRegGenes"</span>, <span style="color: #8b2252;">"pRegGenes"</span>))
+  summary(gCol5Sort)
+
+</pre>
+
+
+
+
+
+<pre class="example">  * Summary of the GSRI analysis for 5 gene sets:
+
+  ** Results
+	   pRegGenes pRegGenesSd nRegGenes GSRI(5%) nGenes
+  chr6        0.4680      0.1181        10   0.2662     23
+  chr19q13    0.4010      0.1769         4   0.1178     12
+  chr9        0.3779      0.1538         3   0.0935     10
+  chr8        0.1127      0.1704         1   0.0000     12
+  chr2        0.0000      0.1334         0   0.0000     24
+
+  ** Parameter
+   nBoot alpha grenander weighting
+     100  0.05      TRUE     FALSE
+</pre>
+
+
+
+
+<pre class="src src-R">  exportFile <span style="color: #008b8b;">&lt;-</span> tempfile()
+  export(gCol5Sort, exportFile)  
+
+</pre>
+
+
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-5" class="outline-2">
+<h2 id="sec-5">Adaption of statistical tests </h2>
+<div class="outline-text-2" id="text-5">
+
+
+<p>
+  As pointed out in the introduction, the GSRI approach is independent
+  of the underlying statistical test. By default a t-test is used to
+  assess the differential effect between two groups. With an F-test
+  an arbitrary number of groups can be used for the analysis, while
+  for two groups it is equivalent to the t-test.
+</p>
+<p>
+  As an example we arbitrarily define three groups based on the score
+  variable indicating the progress of the disease. For this analysis
+  we use the F-test <b>rowF</b> provided with this package.
+</p>
+
+
+
+<pre class="src src-R">  phenotypes$class <span style="color: #008b8b;">&lt;-</span> cut(phenotypes$score, seq(0, 1, length.out=4), label=c(<span style="color: #8b2252;">"low"</span>, <span style="color: #8b2252;">"medium"</span>, <span style="color: #8b2252;">"high"</span>))
+  summary(phenotypes$class)
+
+</pre>
+
+
+
+
+<pre class="example">
+   low medium   high 
+     7      8     11
+</pre>
+
+
+
+
+
+<pre class="src src-R">  g3 <span style="color: #008b8b;">&lt;-</span> gsri(eset, phenotypes$class, gsChr17, test=rowF)
+  g3
+
+</pre>
+
+
+
+
+<pre class="example">
+       pRegGenes pRegGenesSd nRegGenes GSRI(5%) nGenes
+chr17 0.07862739   0.1369181         0        0     12
+</pre>
+
+
+<p>
+  The GSRI approach has several parameters that can be changed in order
+  to adapt the analysis. For illustration we rename the gene set, change
+  the number of bootstraps and confidence level for the GSRI calculation,
+  and use a classical ECDF instead of the modified Grenander estimator
+  for the cumulative density.
+</p>
+
+
+
+<pre class="src src-R">  g3arg2 <span style="color: #008b8b;">&lt;-</span> gsri(eset, phenotypes$class, gsChr17, test=rowF, name=<span style="color: #8b2252;">"chr17_2"</span>, nBoot=50, alpha=0.1, grenander=<span style="color: #228b22;">FALSE</span>)
+  g3arg2  
+
+</pre>
+
+
+
+
+<pre class="example">
+        pRegGenes pRegGenesSd nRegGenes GSRI(10%) nGenes
+chr17_2 0.1055541   0.1554536         1         0     12
+</pre>
+
+
+<p>
+  We can also easily implement our own statistical tests for the GSRI
+  analysis. Next, we want to apply an approach taken by the <i>limma</i>
+  package<sup><a class="footref" name="fnr.3" href="#fn.3">3</a></sup> which as an increased power for small
+  sample sizes. The canonical structure of the test function has to
+  be called as <b>function(exprs</b>,
+  with <i>exprs</i> the matrix of expression intensities, <i>groups</i>
+  the factor of groups defining the differential contrast, <i>id</i>
+  the indices for the genes part of the current gene set, <i>index</i>
+  the indices for the samples in the bootstrapping, and <i>testArgs</i>
+  the list with optional arguments used by the test function.
+</p>
+
+
+
+<pre class="src src-R">  <span style="color: #008b8b;">library</span>(limma)  
+
+</pre>
+
+
+
+
+
+<pre class="src src-R">  <span style="color: #0000ff;">limmaTest</span> <span style="color: #008b8b;">&lt;-</span> <span style="color: #a020f0;">function</span>(exprs, groups, id, index, testArgs) {
+    design <span style="color: #008b8b;">&lt;-</span> cbind(offset=1, diff=groups)
+    fit <span style="color: #008b8b;">&lt;-</span> lmFit(exprs[ ,index], design)
+    fit <span style="color: #008b8b;">&lt;-</span> eBayes(fit)
+    pval <span style="color: #008b8b;">&lt;-</span> fit$p.value[id,<span style="color: #8b2252;">"diff"</span>]
+    <span style="color: #a020f0;">return</span>(pval)
+  }
+
+</pre>
+
+
+
+
+
+
+<pre class="src src-R">  g3Limma <span style="color: #008b8b;">&lt;-</span> gsri(eset, phenotypes$type, gsChr17, test=limmaTest)
+  g3Limma
+
+</pre>
+
+
+
+
+<pre class="example">
+      pRegGenes pRegGenesSd nRegGenes GSRI(5%) nGenes
+chr17 0.2397355   0.1584042         2        0     12
+</pre>
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-6" class="outline-2">
+<h2 id="sec-6">Visualization </h2>
+<div class="outline-text-2" id="text-6">
+
+
+<p>
+  The results of the GSRI analysis can be visualized, showing the empirical
+  cumulative p-values distribution along with the fit of the null distribution
+  \(\rho_{0}(p)\) as well as the estimated fraction \(\hat{r}\) of significant
+  genes and the GSRI \(\eta\).
+</p>
+
+
+
+<pre class="src src-R">  plot(g3)
+
+</pre>
+
+
+
+
+<p>
+  <img src="fig3.png"  alt="fig3.png" />
+</p>
+<p>
+  The <i>plot</i> method has an advanced system in order to customize
+  the plot in different aspects. This allows us to directly adapt nearly
+  any property of the figure. For a detailed description, please refer
+  to the documentation of the <i>plot</i> method.
+</p>
+
+
+
+<pre class="src src-R">  plot(gCol5, 5, ecdf=list(type=<span style="color: #8b2252;">"o"</span>), plot=list(xlab=<span style="color: #8b2252;">"p"</span>, main=<span style="color: #8b2252;">"GSRI results: chr9"</span>), reg=list(col=<span style="color: #8b2252;">"lightblue"</span>, lty=1, lwd=1.5), gsri=list(col=<span style="color: #8b2252;">"darkblue"</span>))
+
+</pre>
+
+
+
+
+<p>
+  <img src="fig4.png"  alt="fig4.png" />
+</p>
+
+</div>
+
+</div>
+
+<div id="outline-container-7" class="outline-2">
+<h2 id="sec-7">Weighting of genes in gene sets </h2>
+<div class="outline-text-2" id="text-7">
+
+
+<p>
+  In contrast to other approaches estimating the degree of regulation,
+  the <i>GSRI</i> package does also allow assign the weighting
+  of each gene in the calculation. Such a step is useful for including
+  additional information in the estimation process, for example the
+  certainty that a gene is part of a gene set.
+</p>
+<p>
+  In the following we use a very simple approach in defining weights
+  for the gene sets based on the Gene Ontology (GO) annotation. For
+  genes with experimental evidence, we assign higher weights than for
+  those without. Please note that the weights used here are defined
+  arbitrarily and more sophisticated approaches can be used in the actual
+  analysis.
+</p>
+
+
+
+<pre class="src src-R">  <span style="color: #008b8b;">library</span>(hgu95av2.db) 
+
+</pre>
+
+
+
+
+
+<pre class="src src-R">  gNames <span style="color: #008b8b;">&lt;-</span> rownames(exprs(eset))
+  ind <span style="color: #008b8b;">&lt;-</span> Lkeys(hgu95av2GO) %<span style="color: #a020f0;">in</span>% gNames
+  evidence <span style="color: #008b8b;">&lt;-</span> factor(toTable(hgu95av2GO)[ind,<span style="color: #8b2252;">"Evidence"</span>])
+  summary(evidence)
+
+</pre>
+
+
+
+
+<pre class="example">
+ EXP   IC  IDA  IEA  IEP  IGI  IMP  IPI  ISS  NAS   ND  RCA  TAS 
+ 217   37 1193 2985   15   19  228  267  456  297   35    2 1249
+</pre>
+
+
+
+
+
+<pre class="src src-R">  l <span style="color: #008b8b;">&lt;-</span> lapply(gNames, <span style="color: #a020f0;">function</span>(name, names, evidence) evidence[names %<span style="color: #a020f0;">in</span>% name], gNames, evidence)
+  expInd <span style="color: #008b8b;">&lt;-</span> sapply(l, <span style="color: #a020f0;">function</span>(l) any(l %<span style="color: #a020f0;">in</span>% <span style="color: #8b2252;">"EXP"</span>))
+  goWeight <span style="color: #008b8b;">&lt;-</span> rep(0.5, length.out=length(expInd))
+  goWeight[expInd] <span style="color: #008b8b;">&lt;-</span> 1
+
+</pre>
+
+
+
+
+
+
+<pre class="src src-R">  gCol5go <span style="color: #008b8b;">&lt;-</span> gsri(eset, phenotypes$type, weight=goWeight)
+  gCol5go
+
+</pre>
+
+
+
+
+<pre class="example">
+  pRegGenes pRegGenesSd nRegGenes GSRI(5%) nGenes
+1 0.1324852   0.1291998        66        0    500
+</pre>
+
+
+
+
+
+<pre class="src src-R">  gCol5go2 <span style="color: #008b8b;">&lt;-</span> gsri(eset, phenotypes$type, gmt, weight=goWeight)
+  gCol5go2
+
+</pre>
+
+
+
+
+<pre class="example">
+         pRegGenes pRegGenesSd nRegGenes   GSRI(5%) nGenes
+chr2     0.0000000   0.1574520         0 0.00000000     24
+chr19q13 0.3557231   0.1858152         4 0.05123323     12
+chr6     0.5136737   0.1792630        11 0.21525833     23
+chr8     0.1023734   0.1694433         1 0.00000000     12
+chr9     0.1753390   0.1942202         1 0.00000000     10
+</pre>
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-8" class="outline-2">
+<h2 id="sec-8">Session info </h2>
+<div class="outline-text-2" id="text-8">
+
+
+
+
+
+<pre class="src src-R">  sessionInfo()
+
+</pre>
+
+
+
+
+
+<pre class="example">  R version 2.13.1 (2011-07-08)
+  Platform: x86_64-pc-linux-gnu (64-bit)
+
+  locale:
+   [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+   [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+   [5] LC_MONETARY=C              LC_MESSAGES=en_US.UTF-8   
+   [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+   [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+  [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+  attached base packages:
+  [1] stats     graphics  grDevices utils     datasets  methods   base     
+
+  other attached packages:
+   [1] limma_3.9.11         hgu95av2.db_2.5.0    org.Hs.eg.db_2.5.0  
+   [4] RSQLite_0.9-4        DBI_0.2-5            GSEABase_1.15.0     
+   [7] graph_1.31.1         annotate_1.31.0      AnnotationDbi_1.15.9
+  [10] GSRI_2.1.0           fdrtool_1.2.7        Biobase_2.13.7      
+
+  loaded via a namespace (and not attached):
+   [1] boot_1.3-2         gdata_2.8.2        genefilter_1.35.0  gplots_2.8.0      
+   [5] gtools_2.6.2       les_1.3.0          RColorBrewer_1.0-5 splines_2.13.1    
+   [9] survival_2.36-9    tools_2.13.1       XML_3.4-0          xtable_1.5-6
+</pre>
+
+
+
+
+
+
+
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+<p class="footnote"><sup><a class="footnum" name="fn.1" href="#fnr.1">1</a></sup> Bartholomé et al., 2009: <a href="http://www.liebertonline.com/doi/abs/10.1089/cmb.2008.0226">Estimation of Gene Induction Enables a Relevance-Based Ranking of Gene Sets</a>
+</p>
+
+<p class="footnote"><sup><a class="footnum" name="fn.2" href="#fnr.2">2</a></sup> Morgan et al.: GSEABase: Gene set enrichment data structures and methods
+</p>
+
+<p class="footnote"><sup><a class="footnum" name="fn.3" href="#fnr.3">3</a></sup> Smyth, 2005: Limma: linear models for microarray data
+</p>
+</div>
+</div>
+
+</div>
+</div>
+<div id="postamble">
+<p class="date">Date: 2011-07-19 22:40:09 CEST</p>
+<p class="author">Author: Julian Gehring</p>
+<a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
+</div>
+</div>
+</body>
+</html>
