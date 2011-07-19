@@ -1,0 +1,77 @@
+GSRI package: Gene Set Regulation Index
+
+#+AUTHOR: Julian Gehring
+#+DESCRIPTION: GSRI page
+
+#+LINK_UP: index.html
+#+LINK_HOME: index.html
+
+#+OPTIONS: creator:nil num:nil timestamp:t email:nil author:t html-postamble:nil
+#+STYLE: <link rel="stylesheet" type="text/css" href="http://julian-gehring.github.com/worg.css" />
+
+
+* Summary
+
+  The GSRI package estimates the number of differentially expressed genes in gene sets, utilizing the concept of the Gene Set Regulation Index (GSRI).
+
+  Authors: Julian Gehring, Kilian Bartholomé, Clemens Kreutz, Jens Timmer\\
+  Maintainer: Julian Gehring <julian.gehring (at) fdm.uni-freiburg.de>
+
+
+* Methodology
+  
+  For a detailed description of the approach, a comparison to other methods, and an application to experimental data, please see the paper:
+
+  #+begin_quote
+  Kilian Bartholomé, Clemens Kreutz, Jens Timmer:\\
+  [[http://www.liebertonline.com/doi/abs/10.1089/cmb.2008.0226][Estimating of gene induction enables a relevance-based ranking of genes sets]]\\
+  J. Comp. Biol. 16, 2009, 959-967  
+  #+end_quote
+
+
+* Availability, source code, and licensing
+
+  The /GSRI/ package is written for [[http://www.r-project.org/][R]] and part of the [[http://bioconductor.org][bioconductor]] project since the 2.6 release in April 2010. This provides the latest [[http://www.bioconductor.org/help/bioc-views/release/bioc/html/GSRI.html][stable release version]] and the current [[http://www.bioconductor.org/help/bioc-views/devel/bioc/html/GSRI.html][developer version]], including builts for major platforms supported by R.
+
+  The complete source code of the package is publically accessible at [[https://github.com/julian-gehring/GSRI][github]] and licenced under the [[http://www.gnu.org/licenses/gpl-3.0.html][General Public License version 3 (GPL-3)]]. You are free to use the software for any purposes and you are also welcome to contribute to it in any way.
+
+
+* Usage
+   
+** Installation
+
+   In order to install the latest stable version of the /GSRI/ package from the bioconductor repository, simply run in your R session:
+   #+begin_src R
+   source("http://bioconductor.org/biocLite.R")
+   biocLite("GSRI")
+   #+end_src
+   Alternatively, you can also obtain the built packages from bioconductor and install them manually:
+   #+begin_src R
+   install.packages("path/to/GSRI_x.y.z")
+   #+end_src
+   Please note that the first method is generally the best choice.
+
+** Loading the package
+   
+   After the package has been installed, you can load it:
+   #+begin_src R
+   library(GSRI)
+   #+end_src
+
+** Documentation
+
+   A comprehensive example session on how to analyze gene sets with the /GSRI/ package can be found in the [[file:doc/gsri_vignette.org][vignette]] of the package. This can also be assessed as a pdf file from the [[http://www.bioconductor.org/packages/release/bioc/vignettes/GSRI/inst/doc/gsri.pdf][bioconductor website]] or within R:
+   #+begin_src R
+   vignette("gsri")
+   #+end_src
+   Detailed descriptions of the objects, functions, and their parameters are provided in the [[http://www.bioconductor.org/packages/release/bioc/manuals/GSRI/man/GSRI.pdf][help pages]]. For details about individual parts, e.g. the /gsri/ method, you can read the help file within R:
+   #+begin_src R
+   ?gsri
+   #+end_src
+
+* Contact and contribution
+
+  If you have any questions, comments, or contributions:
+  - Contact the maintainer via e-mail.
+  - Report issues to the [[https://github.com/julian-gehring/GSRI/issues][issue tracker]].
+  - Fork the [[https://github.com/julian-gehring/GSRI][project repository]].
