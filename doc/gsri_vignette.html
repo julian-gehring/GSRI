@@ -7,7 +7,7 @@ lang="en" xml:lang="en">
 <title>Estimating Regulatory Effects in Gene Sets with the GSRI package</title>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2011-07-19 23:02:26 CEST"/>
+<meta name="generated" content="2011-07-24 20:57:48 CEST"/>
 <meta name="author" content="Julian Gehring"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -174,7 +174,7 @@ lang="en" xml:lang="en">
   CDF with slope \(1-r\) and intercept \(r\). Through iterative fitting
   of this linear component, \(r\) and thus the number of regulated genes
   can be estimated. An example for the probability and cumulative density
-  distribution is shown in the two figures below.
+  distribution is shown in <a href="#fig1">Figure 1</a> and <a href="#fig2">Figure 2</a>.
 </p>
 
 
@@ -183,14 +183,20 @@ lang="en" xml:lang="en">
 
 
 
-<p>
-  <img src="fig1.png"  alt="fig1.png" />
-</p>
+
+<div id="fig1" class="figure">
+<p><img src="fig1.png"  alt="fig1.png" /></p>
+<p>Figure 1: Distribution of p-values in the probability density. The ratio r of significant tests have an unknown distribution shifted towards zero, while the remaining fraction of 1 − r tests exhibits a uniform distribution.</p>
+</div>
 
 
-<p>
-  <img src="fig2.png"  alt="fig2.png" />
-</p>
+
+
+<div id="fig2" class="figure">
+<p><img src="fig2.png"  alt="fig2.png" /></p>
+<p>Figure 2: Distribution of p-values in the cumulative density. The PDF translates to a linear CDF with slope 1 − r and intercept r. By fitting the linear component of the CDF, as indicated by the gray line, the ratio of significant tests can be estimated.</p>
+</div>
+
 <p>
   The approach applied here does not require a cut-off value for the
   distinction between regulated and unregulated genes, nor any assumptions
@@ -700,7 +706,7 @@ chr17 0.2397355   0.1600876         2 0.01037466     12
   The results of the GSRI analysis can be visualized, showing the empirical
   cumulative p-values distribution along with the fit of the null distribution
   \(\rho_{0}(p)\) as well as the estimated fraction \(\hat{r}\) of significant
-  genes and the GSRI \(\eta\).
+  genes and the GSRI \(\eta\) (<a href="#fig3">Figure 3</a>).
 </p>
 
 
@@ -712,13 +718,16 @@ chr17 0.2397355   0.1600876         2 0.01037466     12
 
 
 
-<p>
-  <img src="fig3.png"  alt="fig3.png" />
-</p>
+
+<div id="fig3" class="figure">
+<p><img src="fig3.png"  alt="fig3.png" /></p>
+<p>Figure 3: Visualization of GSRI results</p>
+</div>
+
 <p>
   The <i>plot</i> method has an advanced system in order to customize
   the plot in different aspects. This allows us to directly adapt nearly
-  any property of the figure. For a detailed description, please refer
+  any property of the figure (see <a href="#fig4">Figure 4</a> for an example). For a detailed description, please refer
   to the documentation of the <i>plot</i> method.
 </p>
 
@@ -731,9 +740,12 @@ chr17 0.2397355   0.1600876         2 0.01037466     12
 
 
 
-<p>
-  <img src="fig4.png"  alt="fig4.png" />
-</p>
+
+<div id="fig4" class="figure">
+<p><img src="fig4.png"  alt="fig4.png" /></p>
+<p>Figure 4: Visualization of GSRI results with customized parameters</p>
+</div>
+
 
 </div>
 
@@ -906,9 +918,9 @@ chr9     0.1753390   0.1850025         1 0.0000000     10
 </div>
 </div>
 <div id="postamble">
-<p class="date">Date: 2011-07-19 23:02:26 CEST</p>
+<p class="date">Date: 2011-07-24 20:57:48 CEST</p>
 <p class="author">Author: Julian Gehring</p>
-<a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
+
 </div>
 </div>
 </body>

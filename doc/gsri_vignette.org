@@ -37,7 +37,7 @@ Estimating Regulatory Effects in Gene Sets with the GSRI package
   CDF with slope $1-r$ and intercept $r$. Through iterative fitting
   of this linear component, $r$ and thus the number of regulated genes
   can be estimated. An example for the probability and cumulative density
-  distribution is shown in the two figures below.
+  distribution is shown in [[fig1][Figure 1]] and [[fig2][Figure 2]].
 
   #+begin_src R :exports none
   set.seed(1)
@@ -57,6 +57,8 @@ Estimating Regulatory Effects in Gene Sets with the GSRI package
   cex <- 1.5
   #+end_src
 
+  #+LABEL: fig1
+  #+CAPTION: Figure 1: Distribution of p-values in the probability density. The ratio r of significant tests have an unknown distribution shifted towards zero, while the remaining fraction of 1 − r tests exhibits a uniform distribution.
   #+begin_src R :results graphics :file fig1.png :exports results
   plot(x, d, type="n", xaxt="n", yaxt="n", ylim=c(0, max(d)), xlab=expression(paste("p-value ", italic(p))), ylab=expression(paste("probability density ", rho(p))), cex.lab=cex)
   lines(c(0, 1), rep(1-r, 2), lwd=2, col="darkgray")
@@ -68,6 +70,8 @@ Estimating Regulatory Effects in Gene Sets with the GSRI package
   text(0.09, 1.05, labels=expression(italic(r)), cex=cex, offset=NULL, adj=c(0, 0))
   #+end_src
 
+  #+LABEL: fig2
+  #+CAPTION: Figure 2: Distribution of p-values in the cumulative density. The PDF translates to a linear CDF with slope 1 − r and intercept r. By fitting the linear component of the CDF, as indicated by the gray line, the ratio of significant tests can be estimated.
   #+begin_src R :results graphics :file fig2.png :exports results
   plot(x, c, type="n", xaxt="n", yaxt="n", xlim=c(0, 1), ylim=c(0, 1), xlab=expression(paste("p-value ", italic(p))), ylab=expression(paste("cumulative density ", F(p))), cex.lab=cex)
   lines(c(0, 1), c(r, 1), lwd=2, col="darkgray")
@@ -306,17 +310,21 @@ Estimating Regulatory Effects in Gene Sets with the GSRI package
   The results of the GSRI analysis can be visualized, showing the empirical
   cumulative p-values distribution along with the fit of the null distribution
   $\rho_{0}(p)$ as well as the estimated fraction $\hat{r}$ of significant
-  genes and the GSRI $\eta$.
+  genes and the GSRI $\eta$ ([[fig3][Figure 3]]).
 
+  #+LABEL: fig3
+  #+CAPTION: Figure 3: Visualization of GSRI results
   #+begin_src R :results graphics :file fig3.png
   plot(g3)
   #+end_src
 
   The {{{Rmethod(plot)}}} method has an advanced system in order to customize
   the plot in different aspects. This allows us to directly adapt nearly
-  any property of the figure. For a detailed description, please refer
+  any property of the figure (see [[fig4][Figure 4]] for an example). For a detailed description, please refer
   to the documentation of the {{{Rmethod(plot)}}} method.
 
+  #+LABEL: fig4
+  #+CAPTION: Figure 4: Visualization of GSRI results with customized parameters
   #+begin_src R :results graphics :file fig4.png
   plot(gCol5, 5, ecdf=list(type="o"), plot=list(xlab="p", main="GSRI results: chr9"), reg=list(col="lightblue", lty=1, lwd=1.5), gsri=list(col="darkblue"))
   #+end_src
