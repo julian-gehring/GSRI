@@ -385,6 +385,6 @@ Estimating Regulatory Effects in Gene Sets with the GSRI package
 
 [fn:1] Bartholomé et al., 2009: [[http://www.liebertonline.com/doi/abs/10.1089/cmb.2008.0226][Estimation of Gene Induction Enables a Relevance-Based Ranking of Gene Sets]]
 
-[fn:2] Morgan et al.: GSEABase: Gene set enrichment data structures and methods
+[fn:2] Morgan et al.: [[http://bioconductor.org/packages/release/bioc/html/GSEABase.html][GSEABase: Gene set enrichment data structures and methods]]
 
 [fn:3] Smyth, 2005: Limma: linear models for microarray data
