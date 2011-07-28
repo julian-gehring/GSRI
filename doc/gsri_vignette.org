@@ -119,7 +119,10 @@ Estimating Regulatory Effects in Gene Sets with the GSRI package
   #+end_src
 
   #+begin_src R
-  data(sample.ExpressionSet)
+  data(sample.ExpressionSet)  
+  #+end_src
+
+  #+begin_src R
   eset <- sample.ExpressionSet
   eset
   #+end_src
@@ -326,7 +329,11 @@ Estimating Regulatory Effects in Gene Sets with the GSRI package
   #+LABEL: fig4
   #+CAPTION: Figure 4: Visualization of GSRI results with customized parameters
   #+begin_src R :results graphics :file fig4.png
-  plot(gCol5, 5, ecdf=list(type="o"), plot=list(xlab="p", main="GSRI results: chr9"), reg=list(col="lightblue", lty=1, lwd=1.5), gsri=list(col="darkblue"))
+  plot(gCol5, 5,
+       plot=list(xlab="p", main="GSRI results: chr9"),
+       ecdf=list(type="o"),
+       reg=list(col="lightblue", lty=1, lwd=1.5),
+       gsri=list(col="darkblue"))
   #+end_src
 
 

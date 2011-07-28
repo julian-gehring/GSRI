@@ -7,7 +7,7 @@ lang="en" xml:lang="en">
 <title>Estimating Regulatory Effects in Gene Sets with the GSRI package</title>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2011-07-24 21:07:31 CEST"/>
+<meta name="generated" content="2011-07-28 23:18:29 CEST"/>
 <meta name="author" content="Julian Gehring"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -120,14 +120,19 @@ lang="en" xml:lang="en">
 </script>
 </head>
 <body>
-<div id="content">
 <div id="org-div-home-and-up" style="text-align:right;font-size:70%;white-space:nowrap;">
  <a accesskey="h" href="../index.html"> UP </a>
  |
  <a accesskey="H" href="../index.html"> HOME </a>
 </div>
 
+<div id="preamble">
+
+</div>
+
+<div id="content">
 <h1 class="title">Estimating Regulatory Effects in Gene Sets with the GSRI package</h1>
+
 
 
 
@@ -243,24 +248,29 @@ lang="en" xml:lang="en">
 
 
 <pre class="src src-R">  <span style="color: #008b8b;">library</span>(Biobase)  
-
 </pre>
 
 
 
 
 
-<pre class="src src-R">  data(sample.ExpressionSet)
-  eset <span style="color: #008b8b;">&lt;-</span> sample.ExpressionSet
+<pre class="src src-R">  data(sample.ExpressionSet)  
+</pre>
+
+
+
+
+
+
+<pre class="src src-R">  eset <span style="color: #008b8b;">&lt;-</span> sample.ExpressionSet
   eset
-
 </pre>
 
 
 
 
 
-<pre class="example">   ExpressionSet (storageMode: lockedEnvironment)
+<pre class="example">  ExpressionSet (storageMode: lockedEnvironment)
   assayData: 500 features, 26 samples 
     element names: exprs, se.exprs 
   protocolData: none
@@ -279,7 +289,6 @@ lang="en" xml:lang="en">
 <pre class="src src-R">  exprs <span style="color: #008b8b;">&lt;-</span> exprs(eset)
   phenotypes <span style="color: #008b8b;">&lt;-</span> pData(phenoData(eset))
   summary(phenotypes)  
-
 </pre>
 
 
@@ -323,7 +332,6 @@ lang="en" xml:lang="en">
 
 
 <pre class="src src-R">  <span style="color: #008b8b;">library</span>(GSRI)  
-
 </pre>
 
 
@@ -332,7 +340,6 @@ lang="en" xml:lang="en">
 
 <pre class="src src-R">  gAllProbes <span style="color: #008b8b;">&lt;-</span> gsri(eset, phenotypes$type)
   gAllProbes
-
 </pre>
 
 
@@ -366,7 +373,6 @@ lang="en" xml:lang="en">
 
 
 <pre class="src src-R">  <span style="color: #008b8b;">library</span>(GSEABase)  
-
 </pre>
 
 
@@ -377,13 +383,13 @@ lang="en" xml:lang="en">
   ind <span style="color: #008b8b;">&lt;-</span> grep(<span style="color: #8b2252;">"^AFFX"</span>, geneIds(gs), invert=<span style="color: #228b22;">TRUE</span>)
   gsAllGenes <span style="color: #008b8b;">&lt;-</span> gs[ind]
   gsAllGenes  
-
 </pre>
 
 
 
 
 <pre class="example">
+Loading required package: DBI
  setName: allGenes 
 geneIds: 31307_at, 31308_at, ..., 31739_at (total: 433)
 geneIdType: Annotation (hgu95av2)
@@ -397,7 +403,6 @@ details: use 'details(object)'
 
 <pre class="src src-R">  gAllGenesType <span style="color: #008b8b;">&lt;-</span> gsri(eset, phenotypes$type, gsAllGenes, name=<span style="color: #8b2252;">"allGenesType"</span>)
   gAllGenesType
-
 </pre>
 
 
@@ -414,7 +419,6 @@ allGenesType 0.1626202    0.130124        70        0    433
 
 <pre class="src src-R">  gAllGenesSex <span style="color: #008b8b;">&lt;-</span> gsri(exprs, phenotypes$sex, gsAllGenes, name=<span style="color: #8b2252;">"allGenesSex"</span>)
   gAllGenesSex  
-
 </pre>
 
 
@@ -442,7 +446,6 @@ allGenesSex 2.220446e-16   0.1343235         0        0    433
 
 <pre class="src src-R">  gsChr17 <span style="color: #008b8b;">&lt;-</span> getBroadSets(system.file(<span style="color: #8b2252;">"extdata"</span>, <span style="color: #8b2252;">"c1chr17.xml"</span>, package=<span style="color: #8b2252;">"GSRI"</span>))
   gsChr17
-
 </pre>
 
 
@@ -463,7 +466,6 @@ GeneSetCollection
 
 <pre class="src src-R">  gChr17 <span style="color: #008b8b;">&lt;-</span> gsri(eset, phenotypes$type, gsChr17)
   gChr17  
-
 </pre>
 
 
@@ -505,7 +507,6 @@ chr17 0.2398971   0.1477122         2 0.01300221     12
 <pre class="src src-R">  gmt <span style="color: #008b8b;">&lt;-</span> getGmt(system.file(<span style="color: #8b2252;">"extdata"</span>, <span style="color: #8b2252;">"c1c10.gmt"</span>, package=<span style="color: #8b2252;">"GSRI"</span>))
   gCol5 <span style="color: #008b8b;">&lt;-</span> gsri(eset, phenotypes$type, gmt)
   gCol5
-
 </pre>
 
 
@@ -526,7 +527,6 @@ chr9     0.3778584   0.1732648         3 0.10350416     10
 
 <pre class="src src-R">  gCol5Sort <span style="color: #008b8b;">&lt;-</span> sortGsri(gCol5, c(<span style="color: #8b2252;">"nRegGenes"</span>, <span style="color: #8b2252;">"pRegGenes"</span>))
   summary(gCol5Sort)
-
 </pre>
 
 
@@ -553,7 +553,6 @@ chr9     0.3778584   0.1732648         3 0.10350416     10
 
 <pre class="src src-R">  exportFile <span style="color: #008b8b;">&lt;-</span> tempfile()
   export(gCol5Sort, exportFile)  
-
 </pre>
 
 
@@ -587,7 +586,6 @@ chr9     0.3778584   0.1732648         3 0.10350416     10
 
 <pre class="src src-R">  phenotypes$class <span style="color: #008b8b;">&lt;-</span> cut(phenotypes$score, seq(0, 1, length.out=4), label=c(<span style="color: #8b2252;">"low"</span>, <span style="color: #8b2252;">"medium"</span>, <span style="color: #8b2252;">"high"</span>))
   summary(phenotypes$class)
-
 </pre>
 
 
@@ -604,7 +602,6 @@ chr9     0.3778584   0.1732648         3 0.10350416     10
 
 <pre class="src src-R">  g3 <span style="color: #008b8b;">&lt;-</span> gsri(eset, phenotypes$class, gsChr17, test=rowF)
   g3
-
 </pre>
 
 
@@ -628,7 +625,6 @@ chr17 0.07862739   0.1357001         0        0     12
 
 <pre class="src src-R">  g3arg2 <span style="color: #008b8b;">&lt;-</span> gsri(eset, phenotypes$class, gsChr17, test=rowF, name=<span style="color: #8b2252;">"chr17_2"</span>, nBoot=50, alpha=0.1, grenander=<span style="color: #228b22;">FALSE</span>)
   g3arg2  
-
 </pre>
 
 
@@ -656,7 +652,6 @@ chr17_2 0.1055541   0.1639745         1         0     12
 
 
 <pre class="src src-R">  <span style="color: #008b8b;">library</span>(limma)  
-
 </pre>
 
 
@@ -670,7 +665,6 @@ chr17_2 0.1055541   0.1639745         1         0     12
     pval <span style="color: #008b8b;">&lt;-</span> fit$p.value[id,<span style="color: #8b2252;">"diff"</span>]
     <span style="color: #a020f0;">return</span>(pval)
   }
-
 </pre>
 
 
@@ -680,7 +674,6 @@ chr17_2 0.1055541   0.1639745         1         0     12
 
 <pre class="src src-R">  g3Limma <span style="color: #008b8b;">&lt;-</span> gsri(eset, phenotypes$type, gsChr17, test=limmaTest)
   g3Limma
-
 </pre>
 
 
@@ -712,7 +705,6 @@ chr17 0.2397355   0.1600876         2 0.01037466     12
 
 
 <pre class="src src-R">  plot(g3)
-
 </pre>
 
 
@@ -733,8 +725,11 @@ chr17 0.2397355   0.1600876         2 0.01037466     12
 
 
 
-<pre class="src src-R">  plot(gCol5, 5, ecdf=list(type=<span style="color: #8b2252;">"o"</span>), plot=list(xlab=<span style="color: #8b2252;">"p"</span>, main=<span style="color: #8b2252;">"GSRI results: chr9"</span>), reg=list(col=<span style="color: #8b2252;">"lightblue"</span>, lty=1, lwd=1.5), gsri=list(col=<span style="color: #8b2252;">"darkblue"</span>))
-
+<pre class="src src-R">  plot(gCol5, 5,
+       plot=list(xlab=<span style="color: #8b2252;">"p"</span>, main=<span style="color: #8b2252;">"GSRI results: chr9"</span>),
+       ecdf=list(type=<span style="color: #8b2252;">"o"</span>),
+       reg=list(col=<span style="color: #8b2252;">"lightblue"</span>, lty=1, lwd=1.5),
+       gsri=list(col=<span style="color: #8b2252;">"darkblue"</span>))
 </pre>
 
 
@@ -775,7 +770,6 @@ chr17 0.2397355   0.1600876         2 0.01037466     12
 
 
 <pre class="src src-R">  <span style="color: #008b8b;">library</span>(hgu95av2.db) 
-
 </pre>
 
 
@@ -786,7 +780,6 @@ chr17 0.2397355   0.1600876         2 0.01037466     12
   ind <span style="color: #008b8b;">&lt;-</span> Lkeys(hgu95av2GO) %<span style="color: #a020f0;">in</span>% gNames
   evidence <span style="color: #008b8b;">&lt;-</span> factor(toTable(hgu95av2GO)[ind,<span style="color: #8b2252;">"Evidence"</span>])
   summary(evidence)
-
 </pre>
 
 
@@ -805,7 +798,6 @@ chr17 0.2397355   0.1600876         2 0.01037466     12
   expInd <span style="color: #008b8b;">&lt;-</span> sapply(l, <span style="color: #a020f0;">function</span>(l) any(l %<span style="color: #a020f0;">in</span>% <span style="color: #8b2252;">"EXP"</span>))
   goWeight <span style="color: #008b8b;">&lt;-</span> rep(0.5, length.out=length(expInd))
   goWeight[expInd] <span style="color: #008b8b;">&lt;-</span> 1
-
 </pre>
 
 
@@ -815,7 +807,6 @@ chr17 0.2397355   0.1600876         2 0.01037466     12
 
 <pre class="src src-R">  gCol5go <span style="color: #008b8b;">&lt;-</span> gsri(eset, phenotypes$type, weight=goWeight)
   gCol5go
-
 </pre>
 
 
@@ -832,7 +823,6 @@ chr17 0.2397355   0.1600876         2 0.01037466     12
 
 <pre class="src src-R">  gCol5go2 <span style="color: #008b8b;">&lt;-</span> gsri(eset, phenotypes$type, gmt, weight=goWeight)
   gCol5go2
-
 </pre>
 
 
@@ -862,7 +852,6 @@ chr9     0.1753390   0.1850025         1 0.0000000     10
 
 
 <pre class="src src-R">  sessionInfo()
-
 </pre>
 
 
@@ -899,8 +888,6 @@ chr9     0.1753390   0.1850025         1 0.0000000     10
 
 
 
-
-
 <div id="footnotes">
 <h2 class="footnotes">Footnotes: </h2>
 <div id="text-footnotes">
@@ -912,16 +899,20 @@ chr9     0.1753390   0.1850025         1 0.0000000     10
 
 <p class="footnote"><sup><a class="footnum" name="fn.3" href="#fnr.3">3</a></sup> Smyth, 2005: Limma: linear models for microarray data
 </p>
+
+
 </div>
 </div>
 
 </div>
 </div>
+</div>
+
 <div id="postamble">
-<p class="date">Date: 2011-07-24 21:07:31 CEST</p>
+<p class="date">Date: 2011-07-28 23:18:29 CEST</p>
 <p class="author">Author: Julian Gehring</p>
 
-</div>
+
 </div>
 </body>
 </html>
