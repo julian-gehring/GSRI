@@ -1,7 +1,8 @@
 GSRI package: Gene Set Regulation Index
 
 #+AUTHOR: Julian Gehring
-#+DESCRIPTION: GSRI page
+#+KEYWORDS: GSRI, Gene Set Regulation Index, R bioconductor package, gene set analysis, differential expression
+#+LANGUAGE: en
 
 #+LINK_UP: index.html
 #+LINK_HOME: index.html

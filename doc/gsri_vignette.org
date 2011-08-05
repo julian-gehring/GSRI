@@ -1,6 +1,8 @@
 Estimating Regulatory Effects in Gene Sets with the GSRI package
 
 #+AUTHOR: Julian Gehring
+#+KEYWORDS: GSRI, Gene Set Regulation Index, R bioconductor package, gene set analysis, differential expression, vignette
+#+LANGUAGE: en
 
 #+LINK_UP: ../index.html
 
