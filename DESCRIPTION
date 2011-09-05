@@ -13,5 +13,5 @@ Description: The GSRI package estimates the number of differentially expressed g
 License: GPL-3
 LazyLoad: yes
 Encoding: UTF-8
-URL: http://www.fdmold.uni-freiburg.de/~jgehring/
+URL: http://julian-gehring.github.com/GSRI/
 biocViews: Microarray, Transcription, DifferentialExpression, Genetics, Bioinformatics
