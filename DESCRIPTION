@@ -1,12 +1,12 @@
 Package: GSRI
 Type: Package
 Title: Gene Set Regulation Index
-Version: 2.1.0
-Date: 2011-04-08
+Version: 2.1.1
+Date: 2011-10-05
 Author: Julian Gehring, Kilian Bartholome, Clemens Kreutz, Jens Timmer
-Maintainer: Julian Gehring <julian.gehring@fdm.uni-freiburg.de>
+Maintainer: Julian Gehring <julian.gehring@embl.de>
 Imports: methods, graphics, stats, utils, genefilter, Biobase, GSEABase, les (>= 1.1.6)
-Depends: R (>= 2.12.1), fdrtool
+Depends: R (>= 2.13.2), fdrtool
 Suggests: limma, hgu95av2.db
 Enhances: multicore
 Description: The GSRI package estimates the number of differentially expressed genes in gene sets, utilizing the concept of the Gene Set Regulation Index (GSRI).
