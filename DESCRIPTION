@@ -12,6 +12,5 @@ Enhances: multicore
 Description: The GSRI package estimates the number of differentially expressed genes in gene sets, utilizing the concept of the Gene Set Regulation Index (GSRI).
 License: GPL-3
 LazyLoad: yes
-Encoding: UTF-8
 URL: http://julian-gehring.github.com/GSRI/
 biocViews: Microarray, Transcription, DifferentialExpression, Genetics, Bioinformatics
