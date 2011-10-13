@@ -14,7 +14,7 @@ GSRI package: Gene Set Regulation Index
 
 * Summary
 
-  The GSRI package estimates the number of differentially expressed genes in gene sets, utilizing the concept of the Gene Set Regulation Index (GSRI).
+  The /GSRI/ package estimates the number of differentially expressed genes in gene sets, utilizing the concept of the Gene Set Regulation Index (GSRI).
 
   Authors: Julian Gehring, Kilian Bartholomé, Clemens Kreutz, Jens Timmer\\
   Maintainer: Julian Gehring <julian.gehring (at) fdm.uni-freiburg.de>
