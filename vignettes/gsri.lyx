@@ -1,0 +1,1597 @@
+#LyX 1.6.9 created this file. For more info see http://www.lyx.org/
+\lyxformat 345
+\begin_document
+\begin_header
+\textclass literate-article
+\begin_preamble
+%\VignetteIndexEntry{Introduction to the GSRI package: Estimating Regulatory Effects utilizing the Gene Set Regulation Index}
+%\VignettePackage{GSRI}
+
+\newcommand{\Robject}[1]{{\texttt{#1}}}
+\newcommand{\Rfunction}[1]{{\texttt{#1}}}
+\newcommand{\Rpackage}[1]{{\textit{#1}}}
+\newcommand{\Rclass}[1]{{\textit{#1}}}
+\newcommand{\Rmethod}[1]{{\textit{#1}}}
+\newcommand{\Rfunarg}[1]{{\texttt{#1}}}
+\newcommand{\Rvar}[1]{{\textit{\textsf{#1}}}}
+
+%% avoid single lines
+\widowpenalty=10000
+\clubpenalty=10000
+
+%% format captions
+\usepackage[small,bf,margin=.5cm]{caption}
+\end_preamble
+\use_default_options false
+\language english
+\inputencoding utf8
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks true
+\pdf_pdfborder true
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize a4paper
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\cite_engine basic
+\use_bibtopic false
+\paperorientation portrait
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\defskip medskip
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\author "" 
+\author "" 
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Introduction to the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rpackage{GSRI}
+\end_layout
+
+\end_inset
+
+ package:
+\begin_inset Newline newline
+\end_inset
+
+Estimating Regulatory Effects utilizing the
+\begin_inset Newline newline
+\end_inset
+
+Gene Set Regulation Index
+\end_layout
+
+\begin_layout Author
+Julian Gehring, Clemens Kreutz, Kilian Bartholome, Jens Timmer
+\end_layout
+
+\begin_layout Scrap
+<<settings, echo=FALSE>>=
+\begin_inset Newline newline
+\end_inset
+
+set.seed(1)
+\begin_inset Newline newline
+\end_inset
+
+options(width=65, SweaveHooks=list(fig=function() par(mar=c(5.1, 5.1, 4.1,
+ 1.1))))
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rpackage{GSRI}
+\end_layout
+
+\end_inset
+
+ package estimates the number of significantly regulated genes in gene sets,
+ assessing their differential effects between groups through statistical
+ testing.
+ The approach is based on the fact that p-values of a statistical test are
+ uniformly distributed under the null hypothesis and shifted towards small
+ values in the case of its violation.
+ The resulting density distribution 
+\begin_inset Formula $\rho(p)$
+\end_inset
+
+ of the p-values 
+\begin_inset Formula $p$
+\end_inset
+
+ is then given as
+\begin_inset Formula \[
+\rho(p)=(1-r)\rho_{0}(p)+r\rho_{A}(p),\]
+
+\end_inset
+
+with the fraction 
+\begin_inset Formula $r$
+\end_inset
+
+ of significant p-values, the uniform distribution 
+\begin_inset Formula $\rho_{0}(p)$
+\end_inset
+
+ of the p-values under the null hypothesis, and the alternative distribution
+ 
+\begin_inset Formula $\rho_{A}(p)$
+\end_inset
+
+ of the p-values with a significant effect.
+ In the cumulative density function (CDF) 
+\begin_inset Formula $F(p)$
+\end_inset
+
+ this is equivalent to
+\begin_inset Formula \[
+F(p)=(1-r)p+r,\]
+
+\end_inset
+
+with the uniformly distributed 
+\begin_inset Formula $\rho_{0}(p)$
+\end_inset
+
+ translating to a linear CDF with slope 
+\begin_inset Formula $1-r$
+\end_inset
+
+ and intercept 
+\begin_inset Formula $r$
+\end_inset
+
+.
+ Through iterative fitting of this linear component, 
+\begin_inset Formula $r$
+\end_inset
+
+ and thus the number of regulated genes can be estimated.
+ An example for the probability and cumulative density distribution is shown
+ in Figure 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+ref{fig:pval_cdf_dist}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Scrap
+<<preparePdfCdfFig, echo=FALSE>>=
+\begin_inset Newline newline
+\end_inset
+
+x <- seq(0, 1, len=50)
+\begin_inset Newline newline
+\end_inset
+
+r <- 0.2
+\begin_inset Newline newline
+\end_inset
+
+rate <- 10
+\begin_inset Newline newline
+\end_inset
+
+d0 <- dunif(x)
+\begin_inset Newline newline
+\end_inset
+
+d1 <- dexp(x, rate)
+\begin_inset Newline newline
+\end_inset
+
+d <- (1-r)*d0 + r*d1
+\begin_inset Newline newline
+\end_inset
+
+c0 <- punif(x)
+\begin_inset Newline newline
+\end_inset
+
+c1 <- pexp(x, rate)
+\begin_inset Newline newline
+\end_inset
+
+c <- (1-r)*c0 + r*c1
+\begin_inset Newline newline
+\end_inset
+
+x <- seq(0, 1, len=50)
+\begin_inset Newline newline
+\end_inset
+
+cex <- 1.5
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Scrap
+<<pdfFig, fig=TRUE, include=FALSE, echo=FALSE, width=7, height=7>>=
+\begin_inset Newline newline
+\end_inset
+
+plot(x, d, type="n", xaxt="n", yaxt="n", ylim=c(0, max(d)), xlab=expression(past
+e("p-value ", italic(p))), ylab=expression(paste("probability density ",
+ rho(p))), cex.lab=cex)
+\begin_inset Newline newline
+\end_inset
+
+lines(c(0, 1), rep(1-r, 2), lwd=2, col="darkgray")
+\begin_inset Newline newline
+\end_inset
+
+lines(x, d, lwd=2)
+\begin_inset Newline newline
+\end_inset
+
+axis(1, at=seq(0, 1, len=5), labels=c(0, NA, 0.5, NA, 1), cex.axis=cex)
+\begin_inset Newline newline
+\end_inset
+
+axis(2, at=seq(0, max(d), by=0.5), labels=c(0, NA, 1, NA, 2, NA), cex.axis=cex)
+\begin_inset Newline newline
+\end_inset
+
+axis(2, at=1-r, labels=expression(paste(1-italic(r))), cex.axis=cex)
+\begin_inset Newline newline
+\end_inset
+
+text(0.5, (1-r)/2, labels=expression(1-italic(r)), cex=cex, offset=NULL,
+ adj=c(0.5, 0.5))
+\begin_inset Newline newline
+\end_inset
+
+text(0.09, 1.05, labels=expression(italic(r)), cex=cex, offset=NULL, adj=c(0,
+ 0))
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Scrap
+<<cdfFig, fig=TRUE, include=FALSE, echo=FALSE, width=7, height=7>>=
+\begin_inset Newline newline
+\end_inset
+
+plot(x, c, type="n", xaxt="n", yaxt="n", xlim=c(0, 1), ylim=c(0, 1), xlab=expres
+sion(paste("p-value ", italic(p))), ylab=expression(paste("cumulative density
+ ", F(p))), cex.lab=cex)
+\begin_inset Newline newline
+\end_inset
+
+lines(c(0, 1), c(r, 1), lwd=2, col="darkgray")
+\begin_inset Newline newline
+\end_inset
+
+lines(x, c, lwd=2)
+\begin_inset Newline newline
+\end_inset
+
+axis(1, at=seq(0, 1, len=5), labels=c(0, NA, 0.5, NA, 1), cex.axis=cex)
+\begin_inset Newline newline
+\end_inset
+
+axis(2, at=seq(0, 1, len=5), labels=c(0, NA, 0.5, NA, 1), cex.axis=cex)
+\begin_inset Newline newline
+\end_inset
+
+axis(2, at=r, labels=expression(paste(italic(r))), cex.axis=cex)
+\begin_inset Newline newline
+\end_inset
+
+text(0.75, 0.75, labels=expression(1-italic(r)), cex=cex, offset=NULL, adj=c(0,
+ 0))
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics[width=0.5
+\backslash
+columnwidth]{gsri-pdfFig}
+\backslash
+includegraphics[width=0.5
+\backslash
+columnwidth]{gsri-cdfFig}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{
+\backslash
+label{fig:pval_cdf_dist}Distributions of p-values in the probability and
+ cumulative density, as shown in the left and right panel, respectively.
+ The ratio $r$ of significant tests have an unknown distribution shifted
+ towards zero, while the remaining fraction of $1-r$ tests exhibits a uniform
+ distribution.
+ This translates to a linear CDF with slope $1-r$ and intercept $r$.
+ By fitting the linear component of the CDF, as indicated by the dashed
+ line, the ratio of significant tests can be estimated.}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The approach applied here does not require a cut-off value for the distinction
+ between regulated and unregulated genes, nor any assumptions about the
+ alternative distribution 
+\begin_inset Formula $\rho_{A}(p)$
+\end_inset
+
+ of the p-values.
+ Further, the method is independent of the statistical test used to assess
+ the differential effect of genes in terms of p-values.
+\end_layout
+
+\begin_layout Standard
+Estimates of the method include the number and fraction of regulated genes
+ as well as the Gene Set Regulation Index 
+\begin_inset Formula $\eta$
+\end_inset
+
+ (GSRI) for gene set.
+ The GSRI 
+\begin_inset Formula $\eta$
+\end_inset
+
+ is the 5% quantile of the distribution of the estimated number of differentiall
+y expressed genes obtained from bootstrapping the group samples.
+ It indicates that with a probability of 95% more than 
+\begin_inset Formula $\eta$
+\end_inset
+
+ genes in the gene set are differentially expressed.
+ Utilizing the 5% quantile instead of the expectation 
+\begin_inset Formula $\hat{r}$
+\end_inset
+
+ introduces a bias, but reduces the variability of the estimates and thereby
+ improves the performance for a ranking of gene sets.
+ The index can also be employed to test the hypothesis whether at least
+ one gene in a gene set is regulated.
+ Further, different gene sets can be compared or ranked according to the
+ estimated amount of regulation.
+ For details of the method, an application to experimental data, and a compariso
+n with related approaches, see 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+cite{bartholom_estimation_2009}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section
+Data set
+\end_layout
+
+\begin_layout Standard
+In this introduction we use the expression data set provided with the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rpackage{Biobase}
+\end_layout
+
+\end_inset
+
+ package.
+ It contains the expression intensities of 26 microarray samples with a
+ subset of 500 probe sets.
+ The phenotypes associated with the samples are stored in the pheno data
+ of the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Robject{ExpressionSet}
+\end_layout
+
+\end_inset
+
+, including the categorical variables 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rvar{type}
+\end_layout
+
+\end_inset
+
+ of disease and 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rvar{sex}
+\end_layout
+
+\end_inset
+
+ represented as factors, as well as the continuous 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rvar{score}
+\end_layout
+
+\end_inset
+
+ indicating the progress of the disease.
+\end_layout
+
+\begin_layout Scrap
+<<extractData>>=
+\begin_inset Newline newline
+\end_inset
+
+library(Biobase)
+\begin_inset Newline newline
+\end_inset
+
+data(sample.ExpressionSet)
+\begin_inset Newline newline
+\end_inset
+
+eset <- sample.ExpressionSet
+\begin_inset Newline newline
+\end_inset
+
+eset
+\begin_inset Newline newline
+\end_inset
+
+exprs <- exprs(eset)
+\begin_inset Newline newline
+\end_inset
+
+phenotypes <- pData(phenoData(eset))
+\begin_inset Newline newline
+\end_inset
+
+summary(phenotypes)
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Standard
+Please note that we are using this sample data to illustrate general workflows
+ for the analysis of gene sets with the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rpackage{GSRI}
+\end_layout
+
+\end_inset
+
+ package.
+ Therefore, the results obtained here should not be interpreted in the context
+ of their biological meaning.
+\end_layout
+
+\begin_layout Section
+Analysis for a single gene set
+\end_layout
+
+\begin_layout Standard
+Given the expression data we want to find out how many genes show a differential
+ effect with respect to the phenotypic variables, in our case the groups
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rvar{sex}
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rvar{type}
+\end_layout
+
+\end_inset
+
+.
+ In a first step we include all genes in the analysis and focus on the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rvar{type}
+\end_layout
+
+\end_inset
+
+ phenotype.
+\end_layout
+
+\begin_layout Scrap
+<<gsriAllProbes>>=
+\begin_inset Newline newline
+\end_inset
+
+library(GSRI)
+\begin_inset Newline newline
+\end_inset
+
+gAllProbes <- gsri(eset, phenotypes$type)
+\begin_inset Newline newline
+\end_inset
+
+gAllProbes
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Standard
+This indicates that around 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{round(getGsri(gAllProbes)[1]*100)}
+\end_layout
+
+\end_inset
+
+% of the genes seem to be regulated.
+ However, taking the corresponding standard deviation of around 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{round(getGsri(gAllProbes)[2]*100)}
+\end_layout
+
+\end_inset
+
+% and the GSRI of 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Sexpr{round(getGsri(gAllProbes)[4]*100)}
+\end_layout
+
+\end_inset
+
+% at the 5% confidence level into account, we have just an indication for
+ a differential effect.
+\end_layout
+
+\begin_layout Standard
+In the next step we exclude the controls of the Affymetrix microarray since
+ they do not contain relevant information for our analysis.
+ For this we define an object 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Robject{gsAllGenes}
+\end_layout
+
+\end_inset
+
+ of the class 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rclass{GeneSet}
+\end_layout
+
+\end_inset
+
+ with the subset of genes of interest.
+ Note that in this case we could also use a subset of 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rvar{eset}
+\end_layout
+
+\end_inset
+
+ or 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rvar{exprs}
+\end_layout
+
+\end_inset
+
+ without an additional 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rclass{GeneSet}
+\end_layout
+
+\end_inset
+
+ object.
+ For more details on how to define, import, and manipulate gene sets, please
+ refer to the documentation of the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rpackage{GSEABase}
+\end_layout
+
+\end_inset
+
+ package 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+cite{morgan_gseabase}
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Scrap
+<<gsriAllGenesSet>>=
+\begin_inset Newline newline
+\end_inset
+
+library(GSEABase)
+\begin_inset Newline newline
+\end_inset
+
+gs <- GeneSet(eset, setName="allGenes")
+\begin_inset Newline newline
+\end_inset
+
+ind <- grep("^AFFX", geneIds(gs), invert=TRUE)
+\begin_inset Newline newline
+\end_inset
+
+gsAllGenes <- gs[ind]
+\begin_inset Newline newline
+\end_inset
+
+gsAllGenes
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Scrap
+<<gsriAllGenes>>=
+\begin_inset Newline newline
+\end_inset
+
+gAllGenesType <- gsri(eset, phenotypes$type, gsAllGenes, name="allGenesType")
+\begin_inset Newline newline
+\end_inset
+
+gAllGenesSex <- gsri(exprs, phenotypes$sex, gsAllGenes, name="allGenesSex")
+\begin_inset Newline newline
+\end_inset
+
+gAllGenesType
+\begin_inset Newline newline
+\end_inset
+
+gAllGenesSex
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Standard
+Taking only probes for human genes into acount we explore the effect of
+ the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rvar{type}
+\end_layout
+
+\end_inset
+
+ and 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rvar{sex}
+\end_layout
+
+\end_inset
+
+ variable.
+ While the type of disease seems to have a differential effect on the gene
+ expression, the sex of the patient shows no indication to play a role in
+ this example.
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rpackage{GSEABase}
+\end_layout
+
+\end_inset
+
+ package provides methods for importing gene sets from different sources.
+ Here we import a gene set from an .xml file, with genes located on chromosome
+ 17.
+\end_layout
+
+\begin_layout Scrap
+<<gsriChr17>>=
+\begin_inset Newline newline
+\end_inset
+
+gsChr17 <- getBroadSets(system.file("extdata", "c1chr17.xml", package="GSRI"))
+\begin_inset Newline newline
+\end_inset
+
+gsChr17
+\begin_inset Newline newline
+\end_inset
+
+gChr17 <- gsri(eset, phenotypes$type, gsChr17)
+\begin_inset Newline newline
+\end_inset
+
+gChr17
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Section
+Analysis for multiple gene sets
+\end_layout
+
+\begin_layout Standard
+It is often desirable to perform the GSRI analysis for an experimental data
+ set, comparing several gene sets.
+ This task can be approached with an object of the class 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rclass{GeneSetCollection}
+\end_layout
+
+\end_inset
+
+ combining multiple 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rclass{GeneSet}
+\end_layout
+
+\end_inset
+
+ objects.
+\end_layout
+
+\begin_layout Standard
+We import five gene sets from a .gmt file and perform the analysis for those
+ with respect to the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rvar{type}
+\end_layout
+
+\end_inset
+
+ variable.
+ Afterwards, we sort the gene sets according to the estimated number and
+ fraction of genes, and export the results as a table to disk.
+ The 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rmethod{summary}
+\end_layout
+
+\end_inset
+
+ method provides a more detailed overview including the parameters used
+ for the analysis.
+\end_layout
+
+\begin_layout Scrap
+<<gsriCol5>>=
+\begin_inset Newline newline
+\end_inset
+
+gmt <- getGmt(system.file("extdata", "c1c10.gmt", package="GSRI"))
+\begin_inset Newline newline
+\end_inset
+
+gCol5 <- gsri(eset, phenotypes$type, gmt)
+\begin_inset Newline newline
+\end_inset
+
+gCol5
+\begin_inset Newline newline
+\end_inset
+
+gCol5Sort <- sortGsri(gCol5, c("nRegGenes", "pRegGenes"))
+\begin_inset Newline newline
+\end_inset
+
+summary(gCol5Sort)
+\begin_inset Newline newline
+\end_inset
+
+exportFile <- tempfile()
+\begin_inset Newline newline
+\end_inset
+
+export(gCol5Sort, exportFile)
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Section
+Adaption of statistical tests
+\end_layout
+
+\begin_layout Standard
+As pointed out in the introduction, the GSRI approach is independent of
+ the underlying statistical test.
+ By default a t-test is used to assess the differential effect between two
+ groups.
+ With an F-test an arbitrary number of groups can be used for the analysis,
+ while for two groups it is equivalent to the t-test.
+\end_layout
+
+\begin_layout Standard
+As an example we arbitrarily define three groups based on the score variable
+ indicating the progress of the disease.
+ For this analysis we use the F-test 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rfunction{rowF}
+\end_layout
+
+\end_inset
+
+ provided with this package.
+\end_layout
+
+\begin_layout Scrap
+<<gsriScoreFtest>>=
+\begin_inset Newline newline
+\end_inset
+
+phenotypes$class <- cut(phenotypes$score, seq(0, 1, length.out=4), label=c("low",
+ "medium", "high"))
+\begin_inset Newline newline
+\end_inset
+
+summary(phenotypes$class)
+\begin_inset Newline newline
+\end_inset
+
+g3 <- gsri(eset, phenotypes$class, gsChr17, test=rowF)
+\begin_inset Newline newline
+\end_inset
+
+g3
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Standard
+The GSRI approach has several parameters that can be changed in order to
+ adapt the analysis.
+ For illustration we rename the gene set, change the number of bootstraps
+ and confidence level for the GSRI calculation, and use a classical ECDF
+ instead of the modified Grenander estimator for the cumulative density.
+\end_layout
+
+\begin_layout Scrap
+<<gsriAllGenesArgs>>=
+\begin_inset Newline newline
+\end_inset
+
+g3arg2 <- gsri(eset, phenotypes$class, gsChr17, test=rowF, name="chr17_2",
+ nBoot=50, alpha=0.1, grenander=FALSE)
+\begin_inset Newline newline
+\end_inset
+
+g3arg2
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Standard
+We can also easily implement our own statistical tests for the GSRI analysis.
+ Next, we want to apply an approach taken by the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rpackage{limma}
+\end_layout
+
+\end_inset
+
+ package 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+cite{smyth_limma_2005}
+\end_layout
+
+\end_inset
+
+ which as an increased power for small sample sizes.
+ The canonical structure of the test function has to be called as 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rfunction{function(exprs, groups, id, index, testArgs)}
+\end_layout
+
+\end_inset
+
+, with 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rvar{exprs}
+\end_layout
+
+\end_inset
+
+ the matrix of expression intensities, 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rvar{groups}
+\end_layout
+
+\end_inset
+
+ the factor of groups defining the differential contrast, 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rvar{id}
+\end_layout
+
+\end_inset
+
+ the indices for the genes part of the current gene set, 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rvar{index}
+\end_layout
+
+\end_inset
+
+ the indices for the samples in the bootstrapping, and 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rvar{testArgs}
+\end_layout
+
+\end_inset
+
+ the list with optional arguments used by the test function.
+\end_layout
+
+\begin_layout Scrap
+<<limmaTest>>=
+\begin_inset Newline newline
+\end_inset
+
+library(limma)
+\begin_inset Newline newline
+\end_inset
+
+limmaTest <- function(exprs, groups, id, index, testArgs) {
+\begin_inset Newline newline
+\end_inset
+
+    design <- cbind(offset=1, diff=groups)
+\begin_inset Newline newline
+\end_inset
+
+    fit <- lmFit(exprs[ ,index], design)
+\begin_inset Newline newline
+\end_inset
+
+    fit <- eBayes(fit)
+\begin_inset Newline newline
+\end_inset
+
+    pval <- fit$p.value[id,"diff"]
+\begin_inset Newline newline
+\end_inset
+
+    return(pval)
+\begin_inset Newline newline
+\end_inset
+
+}
+\begin_inset Newline newline
+\end_inset
+
+g3Limma <- gsri(eset, phenotypes$type, gsChr17, test=limmaTest)
+\begin_inset Newline newline
+\end_inset
+
+g3Limma
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Section
+Visualization
+\end_layout
+
+\begin_layout Standard
+The results of the GSRI analysis can be visualized, showing the empirical
+ cumulative p-values distribution along with the fit of the null distribution
+ 
+\begin_inset Formula $\rho_{0}(p)$
+\end_inset
+
+ as well as the estimated fraction 
+\begin_inset Formula $\hat{r}$
+\end_inset
+
+ of significant genes and the GSRI 
+\begin_inset Formula $\eta$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Scrap
+<<plot1, fig=TRUE, include=FALSE>>=
+\begin_inset Newline newline
+\end_inset
+
+plot(g3)
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics{gsri-plot1}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{
+\backslash
+label{fig:plot1}Visualization of GSRI results}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rmethod{plot}
+\end_layout
+
+\end_inset
+
+ method has an advanced system in order to customize the plot in different
+ aspects.
+ This allows us to directly adapt nearly any property of the figure.
+ For a detailed description, please refer to the documentation of the 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rmethod{plot}
+\end_layout
+
+\end_inset
+
+ method.
+\end_layout
+
+\begin_layout Scrap
+<<plot2, fig=TRUE, include=FALSE>>=
+\begin_inset Newline newline
+\end_inset
+
+plot(gCol5, 5, ecdf=list(type="o"), plot=list(xlab="p", main="GSRI results:
+ chr9"), reg=list(col="lightblue", lty=1, lwd=1.5), gsri=list(col="darkblue"))
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{figure}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+centering
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+includegraphics{gsri-plot2}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+caption{
+\backslash
+label{fig:plot2}Visualization of GSRI results, with customized parameters.}
+\end_layout
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{figure}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Weighting of genes in gene sets
+\end_layout
+
+\begin_layout Standard
+In contrast to other approaches estimating the degree of regulation, the
+ 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+Rpackage{GSRI}
+\end_layout
+
+\end_inset
+
+ package does also allow assign the weighting of each gene in the calculation.
+ Such a step is useful for including additional information in the estimation
+ process, for example the certainty that a gene is part of a gene set.
+\end_layout
+
+\begin_layout Standard
+In the following we use a very simple approach in defining weights for the
+ gene sets based on the Gene Ontology (GO) annotation.
+ For genes with experimental evidence, we assign higher weights than for
+ those without.
+ Please note that the weights used here are defined arbitrarily and more
+ sophisticated approaches can be used in the actual analysis.
+\end_layout
+
+\begin_layout Scrap
+<<weights>>=
+\begin_inset Newline newline
+\end_inset
+
+library(hgu95av2.db)
+\begin_inset Newline newline
+\end_inset
+
+gNames <- rownames(exprs(eset))
+\begin_inset Newline newline
+\end_inset
+
+ind <- Lkeys(hgu95av2GO) %in% gNames
+\begin_inset Newline newline
+\end_inset
+
+evidence <- factor(toTable(hgu95av2GO)[ind,"Evidence"])
+\begin_inset Newline newline
+\end_inset
+
+summary(evidence)
+\begin_inset Newline newline
+\end_inset
+
+l <- lapply(gNames, function(name, names, evidence) evidence[names %in%
+ name], gNames, evidence)
+\begin_inset Newline newline
+\end_inset
+
+expInd <- sapply(l, function(l) any(l %in% "EXP"))
+\begin_inset Newline newline
+\end_inset
+
+goWeight <- rep(0.5, length.out=length(expInd))
+\begin_inset Newline newline
+\end_inset
+
+goWeight[expInd] <- 1
+\begin_inset Newline newline
+\end_inset
+
+gCol5go <- gsri(eset, phenotypes$type, weight=goWeight)
+\begin_inset Newline newline
+\end_inset
+
+gCol5go
+\begin_inset Newline newline
+\end_inset
+
+gCol5go2 <- gsri(eset, phenotypes$type, gmt, weight=goWeight)
+\begin_inset Newline newline
+\end_inset
+
+gCol5go2
+\begin_inset Newline newline
+\end_inset
+
+@
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage newpage
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+btprint "btPrintAll"
+bibfiles "references"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Session info
+\end_layout
+
+\begin_layout Scrap
+<<sessionInfo, results=tex, echo=FALSE>>=
+\begin_inset Newline newline
+\end_inset
+
+toLatex(sessionInfo(), locale=FALSE)
+\begin_inset Newline newline
+\end_inset
+
+@
+\end_layout
+
+\end_body
+\end_document

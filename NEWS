@@ -1,0 +1,48 @@
+CHANGES IN VERSION 2.0.0 (2011-04, bioconductor release 2.8)
+-----------------------------------------------------------------
+
+SIGNIFICANT USER-VISIBLE CHANGES
+
+    - Complete rewrite, making the current GSRI package largely
+      incompatible with any GSRI 1.*.* version
+
+    - All results are now stored in an object of class 'Gsri'
+      which is central for all the analysis in the package.
+
+    - All user-relevant interfaces are now methods using the S4
+      class system.
+
+    - The method 'gsri' is central for all analyses and includes
+      capabilities of the deprecated 'gsriFromFile' and 'gsri'
+      functions. The capability of the 'gsriFromFile' function in
+      reading data files has been moved to the 'read*'
+      methods. The capabilities for plotting, exporting to files
+      etc. of the 'gsri' and 'gsriFromFile' functions has been
+      moved to dedicated methods.
+
+    - Bootstrapping of group labels has been replaced by
+      bootstrapping expression intensities within groups.
+
+    - The internal functionality of the 'GSRI' package has mainly
+      been replaced by the 'les' package, including new features
+      such as weighting.
+
+    - Gene set can be defined using the classes of the 'GSEABase'
+      package
+
+    - Function for reading .gmt files has been dropped in favor
+      of 'getGmt' of the 'GSEABase' package
+
+    - Change of nearly all argument names
+
+
+NEW FEATURES
+
+    - New vignette documenting new features
+
+    - Support for parallelized computing using the 'multicore'
+      package
+
+    - Weighting of genes in gene set possible
+
+
