@@ -1,7 +1,7 @@
 Package: GSRI
 Type: Package
 Title: Gene Set Regulation Index
-Version: 2.13.0
+Version: 2.13.1
 Date: 2014-04-01
 Author: Julian Gehring, Kilian Bartholome, Clemens Kreutz, Jens Timmer
 Maintainer: Julian Gehring <julian.gehring@embl.de>
@@ -17,4 +17,4 @@ License: GPL-3
 LazyLoad: yes
 URL: http://julian-gehring.github.com/GSRI/
 biocViews: Microarray, Transcription, DifferentialExpression,
-    Enrichment, GeneSetEnrichment
+    GeneSetEnrichment
