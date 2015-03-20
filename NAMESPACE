@@ -1,5 +1,5 @@
 import(methods)
-import(fdrtools)
+import(fdrtool)
 importFrom(graphics, lines, plot, text)
 importFrom(stats, quantile, sd)
 importFrom(utils, read.table, write.table)
